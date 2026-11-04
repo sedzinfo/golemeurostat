@@ -1,0 +1,11 @@
+^app\.R$
+^R/_disable_autoload\.R$
+^.*\.Rproj$
+^\.Rproj\.user$
+^.*\.tar\.gz$
+^.*\.pdf$
+^README\.Rmd$
+^manifest\.json$
+^\.rscignore$
+^screenshots$
+^\.github$
