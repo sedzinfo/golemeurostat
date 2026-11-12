@@ -314,7 +314,13 @@ nuts_file <- function(level) {
 #' @param level 0 or 2.
 #' @noRd
 nuts_url <- function(level) {
-  paste0("nuts/", nuts_file_name(level))
+  if ("nuts" %in% names(shiny::resourcePaths())) {
+    # the app serves the files it downloaded
+    paste0("nuts/", nuts_file_name(level))
+  } else {
+    # the website and the R console: GISCO lets any page fetch them
+    paste0("https://gisco-services.ec.europa.eu/distribution/v2/nuts/geojson/", nuts_file_name(level))
+  }
 }
 ##########################################################################################
 #

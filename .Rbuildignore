@@ -10,3 +10,7 @@
 ^screenshots$
 ^\.github$
 ^LICENSE$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^rsconnect$

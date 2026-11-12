@@ -1,0 +1,56 @@
+name: Build package tarball
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:                                        # only when the package itself changes
+      - "R/**"
+      - "man/**"
+      - "inst/**"
+      - "DESCRIPTION"
+      - "NAMESPACE"
+      - "LICENSE"
+      - ".Rbuildignore"
+      - ".github/workflows/build-tarball.yml"
+  workflow_dispatch:                              # also allows a manual run from the Actions tab
+
+permissions:
+  contents: write                                 # needed to publish the release
+
+concurrency:
+  group: build-tarball
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: r-lib/actions/setup-r@v2
+
+      - name: Build tarball
+        run: |
+          rm -f golemeurostat_*.tar.gz              # drop the old build (also an old version number)
+          R CMD build . --resave-data --no-build-vignettes --no-manual
+
+      - uses: r-lib/actions/setup-tinytex@v2
+
+      - name: Install LaTeX packages for the R manual
+        run: |
+          tlmgr update --self                     # tlmgr must match the TeX Live repository, or it refuses to install
+          tlmgr install inconsolata upquote makeindex
+
+      - name: Build PDF manual
+        run: R CMD Rd2pdf . --force --no-preview --output=golemeurostat.pdf
+
+      # the tarball and the manual are not committed: they replace the files of the release
+      # "latest", whose tag moves to the commit they were built from
+      - name: Publish tarball and manual to the "latest" release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete latest --cleanup-tag --yes || true
+          gh release create latest golemeurostat_*.tar.gz golemeurostat.pdf \
+            --target "$GITHUB_SHA" --title "Latest build" \
+            --notes "Built automatically from main: the source tarball and the PDF manual."

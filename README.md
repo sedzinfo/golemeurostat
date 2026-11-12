@@ -1,5 +1,7 @@
 # Eurostat Indicators Explorer
 
+[Website](https://sedzinfo.github.io/golemeurostat/)
+
 A Shiny app, built as a golem package, for exploring indicators of [Eurostat](https://ec.europa.eu/eurostat), the statistical office of the European Union: for the 27 countries of the EU, the 4 of EFTA and the 9 candidate countries, with the EU-27 average for comparison, and for the regions of Europe. It follows the layout of [golemworldbank](https://github.com/sedzinfo/golemworldbank).
 
 # Tabs
@@ -9,6 +11,23 @@ A Shiny app, built as a golem package, for exploring indicators of [Eurostat](ht
 - **Regions**: the regions of Europe (NUTS 2) colored by an indicator, such as GDP per inhabitant or unemployment, animated by year
 - **Scatterplot**: the countries by two indicators, animated by year, with the correlation of the two in each year
 - **Indicators**: every indicator of the app, with its unit, definition and a link to its dataset at Eurostat
+
+# Installation
+Open RStudio (or an R console) and run:
+```r
+# Install devtools if you haven't already
+install.packages("devtools")
+# Install golemeurostat from GitHub
+devtools::install_github("sedzinfo/golemeurostat")
+```
+
+Without devtools, install the source tarball of the [latest release](https://github.com/sedzinfo/golemeurostat/releases/tag/latest), which is rebuilt from `main` on every change, together with the PDF manual:
+```r
+install.packages(
+  "https://github.com/sedzinfo/golemeurostat/releases/download/latest/golemeurostat_0.0.0.9000.tar.gz",
+  repos = NULL, type = "source"
+)
+```
 
 # Usage
 From the package folder:

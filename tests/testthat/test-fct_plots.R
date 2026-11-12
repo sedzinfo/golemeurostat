@@ -20,10 +20,14 @@ test_that("the bar race ranks the countries of each year, without the EU-27 aver
   expect_equal(as.vector(built$data[[1]]$x), c(10.1, 4.2))
 })
 
-test_that("the maps color the outlines served by the app, on one scale for all the years", {
+test_that("the maps color the outlines (from GISCO, or served by the app), on one scale for all the years", {
   built <- plotly::plotly_build(plot_regions(regions, "r_gdp_pps"))$x
-  expect_equal(built$data[[1]]$geojson, "nuts/NUTS_RG_20M_2024_4326_LEVL_2.geojson")
+  expect_equal(built$data[[1]]$geojson, "https://gisco-services.ec.europa.eu/distribution/v2/nuts/geojson/NUTS_RG_20M_2024_4326_LEVL_2.geojson")
   expect_equal(c(built$data[[1]]$zmin, built$data[[1]]$zmax), c(57, 105))
+  # inside the app, the outlines it serves
+  shiny::addResourcePath("nuts", tempdir())
+  expect_equal(nuts_url(2), "nuts/NUTS_RG_20M_2024_4326_LEVL_2.geojson")
+  shiny::removeResourcePath("nuts")
 })
 
 test_that("the scatter plot gives the correlation of each year, and nothing without a common year", {

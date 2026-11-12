@@ -10,7 +10,7 @@ Description: A 'shiny' application, built as a 'golem' package, for exploring
     of the countries and of the regions, and a scatter plot. The data are downloaded from the 'Eurostat' API when first needed
     and kept on disk for a day.
 License: GPL-3
-URL: https://github.com/sedzinfo/golemeurostat
+URL: https://sedzinfo.github.io/golemeurostat/, https://github.com/sedzinfo/golemeurostat
 BugReports: https://github.com/sedzinfo/golemeurostat/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

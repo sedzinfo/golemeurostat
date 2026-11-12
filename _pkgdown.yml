@@ -1,0 +1,83 @@
+url: https://sedzinfo.github.io/golemeurostat/
+
+template:
+  bootstrap: 5
+  bootswatch: flatly
+  math-rendering: katex   # renders the \eqn and \deqn maths of the help pages
+  includes:
+    # cookie banner and Google Analytics, shared by every site under sedzinfo.github.io (consent.js in that repository)
+    after_body: '<script src="/consent.js" defer></script>'
+
+code:
+  width: 200
+
+destination: docs
+
+navbar:
+  structure:
+    left: [intro, reference, articles]
+    right: [sedzinfo, github]
+  components:
+    # no live app yet: once it is deployed, put app in front of sedzinfo in right: above and uncomment
+    # app:
+    #   icon: fas fa-play
+    #   text: live app
+    #   href: <address of the live app>
+    #   aria-label: Open the live app
+    sedzinfo:
+      icon: fas fa-house
+      text: home
+      href: https://sedzinfo.github.io/
+      aria-label: sedzinfo home page
+    github:
+      icon: fab fa-github
+      href: https://github.com/sedzinfo/golemeurostat
+      aria-label: GitHub
+
+reference:
+
+  - title: "App"
+    contents:
+      - run_app
+
+  - title: "Data"
+    desc: "The catalogue of indicators and countries, downloading an indicator from Eurostat for the countries or the regions, and checking the catalogue against Eurostat"
+    contents:
+      - indicators
+      - countries
+      - get_indicator
+      - get_regional
+      - check_indicators
+
+  - title: "Plot"
+    desc: "The plotly charts of the tabs: country comparison, ranked bars, maps of the countries and of the regions, scatter plot"
+    contents:
+      - plot_country_comp
+      - plot_bar
+      - plot_map
+      - plot_regions
+      - plot_scatter
+
+  - title: "Render"
+    desc: "The table of the Indicators tab"
+    contents:
+      - render_index_table
+
+  # the modules are @keywords internal, and matches() skips internal topics unless internal = TRUE
+  - title: "UI"
+    desc: "Internal functions not meant to run independently"
+    contents:
+      - matches("^mod_.*_ui$", internal = TRUE)
+
+  - title: "Server"
+    desc: "Internal functions not meant to run independently"
+    contents:
+      - matches("^mod_.*_server$", internal = TRUE)
+
+footer:
+  structure:
+    left: sedzinfo
+    right: sedzinfo_home
+  components:
+    sedzinfo: '[github.com/sedzinfo](https://github.com/sedzinfo) · [Cookie settings](#cookie-settings)'
+    sedzinfo_home: '[home](https://sedzinfo.github.io/)'
