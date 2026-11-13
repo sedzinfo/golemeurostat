@@ -51,10 +51,22 @@ app_ui <- function(request) {
 ##########################################################################################
 #
 ##########################################################################################
+#' Address of the files shared by the Shiny apps, on sedzinfo.github.io
+#'
+#' The scripts and stylesheets that several apps use (the dark mode) are kept once,
+#' in the shiny folder of the sedzinfo.github.io repository, and each app loads
+#' them from there: a fix reaches every app without deploying it again.
+#'
+#' @noRd
+shared_url <- "https://sedzinfo.github.io/shiny/"
+##########################################################################################
+#
+##########################################################################################
 #' @title Add external resources to the application
-#' @description The favicon, the CSS and JavaScript files of `inst/app/www`,
-#' such as those of the dark mode, and the outlines of the countries and
-#' regions of the maps, downloaded once and served under `nuts/`.
+#' @description The favicon, the CSS and JavaScript files of `inst/app/www`
+#' (such as the style of the dark mode), the script of the dark mode, which the
+#' apps share on sedzinfo.github.io (`shared_url`), and the outlines of the
+#' countries and regions of the maps, downloaded once and served under `nuts/`.
 #' @import shiny
 #' @importFrom golem add_resource_path favicon bundle_resources
 #' @noRd
@@ -71,6 +83,7 @@ golem_add_external_resources <- function() {
   addResourcePath("nuts", nuts_dir())
   tags$head(
     favicon(ext = "svg"),
-    bundle_resources(path = app_sys("app/www"), app_title = "Eurostat")
+    bundle_resources(path = app_sys("app/www"), app_title = "Eurostat"),
+    tags$script(src = paste0(shared_url, "dark_mode.js"))
   )
 }
