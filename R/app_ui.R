@@ -62,11 +62,24 @@ shared_url <- "https://sedzinfo.github.io/shiny/"
 ##########################################################################################
 #
 ##########################################################################################
+#' The stylesheet shared by the Shiny apps
+#'
+#' \code{https://sedzinfo.github.io/shiny/apps.css}, as a link for the head of the page, before
+#' the app's own stylesheets. Shiny puts the head after the stylesheets of Bootstrap and of the
+#' inputs, so the page loads those, then this, then the app's own, which can override it.
+#'
+#' @noRd
+shared_css <- function() {
+  tags$link(rel = "stylesheet", href = paste0(shared_url, "apps.css"))
+}
+##########################################################################################
+#
+##########################################################################################
 #' @title Add external resources to the application
-#' @description The favicon, the CSS and JavaScript files of `inst/app/www`
-#' (such as the style of the dark mode), the script of the dark mode, which the
-#' apps share on sedzinfo.github.io (`shared_url`), and the outlines of the
-#' countries and regions of the maps, downloaded once and served under `nuts/`.
+#' @description The favicon, any CSS and JavaScript file of `inst/app/www`, the
+#' stylesheet and the dark mode that the apps share on sedzinfo.github.io
+#' (`shared_css()`, `shared_url`), and the outlines of the countries and regions
+#' of the maps, downloaded once and served under `nuts/`.
 #' @import shiny
 #' @importFrom golem add_resource_path favicon bundle_resources
 #' @noRd
@@ -83,6 +96,7 @@ golem_add_external_resources <- function() {
   addResourcePath("nuts", nuts_dir())
   tags$head(
     favicon(ext = "svg"),
+    shared_css(),
     bundle_resources(path = app_sys("app/www"), app_title = "Eurostat"),
     tags$script(src = paste0(shared_url, "dark_mode.js"))
   )
