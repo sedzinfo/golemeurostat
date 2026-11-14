@@ -41,29 +41,36 @@ reference:
       - run_app
 
   - title: "Data"
-    desc: "The catalogue of indicators and countries, downloading an indicator from Eurostat for the countries or the regions, and checking the catalogue against Eurostat"
+    desc: "The catalogue of indicators and countries, downloading an indicator from Eurostat for the countries or the regions, or the population of a country by age and sex, checking the catalogue against Eurostat, and the values of all the indicators that the Change (%) tab compares"
     contents:
-      - indicators
+      - all_values
+      - check_indicators
       - countries
       - get_indicator
+      - get_pyramid
       - get_regional
-      - check_indicators
+      - indicator_change
+      - indicators
 
   - title: "Plot"
-    desc: "The plotly charts of the tabs: country comparison, ranked bars, maps of the countries and of the regions, scatter plot"
+    desc: "The plotly charts of the tabs: country and indicator comparisons, population pyramid, ranked bars, maps of the countries and of the regions, scatter plot"
     contents:
-      - plot_country_comp
       - plot_bar
+      - plot_country_comp
+      - plot_indicator_comp
       - plot_map
+      - plot_pyramid
       - plot_regions
       - plot_scatter
 
   - title: "Render"
-    desc: "The table of the Indicators tab"
+    desc: "The tables of the Change (%) and Indicators tabs"
     contents:
+      - render_change_table
       - render_index_table
 
-  # the modules are @keywords internal, and matches() skips internal topics unless internal = TRUE
+  # the modules are @keywords internal, and matches() skips internal topics unless internal = TRUE;
+  # it lists the topics it matches alphabetically
   - title: "UI"
     desc: "Internal functions not meant to run independently"
     contents:
