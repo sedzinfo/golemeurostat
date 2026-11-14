@@ -307,6 +307,60 @@ get_regional <- function(id) {
 ##########################################################################################
 #
 ##########################################################################################
+#' @title The age groups of the population pyramid
+#' @description The five-year groups of Eurostat's population by age group and
+#' sex (`demo_pjangroup`), from under 5 to 85 and over.
+#' @noRd
+pyramid_ages <- c("Y_LT5", paste0("Y", seq(5, 80, 5), "-", seq(9, 84, 5)), "Y_GE85")
+##########################################################################################
+#
+##########################################################################################
+#' @title The population by age group and sex of a Eurostat download
+#' @description The share of each age group in the population of its sex, in
+#' percent, as golemworldbank shows it, for the years that have every age group
+#' of both sexes: the oldest years of some countries stop at 75 or 80 and over.
+#' @param raw Data frame from [eurostat::get_eurostat()].
+#' @return A data frame with `sex` ("Male" or "Female"), `age` (a factor, "0-4"
+#'   to "85+"), `year` and `value`.
+#' @noRd
+tidy_pyramid <- function(raw) {
+  label <- function(age) sub("^Y", "", sub("^Y_GE85$", "85+", sub("^Y_LT5$", "0-4", age)))
+  raw <- raw[!is.na(raw$values) & raw$age %in% pyramid_ages & raw$sex %in% c("M", "F"), ]
+  groups <- tapply(paste(raw$sex, raw$age), raw$time, function(x) length(unique(x)))
+  raw <- raw[as.character(raw$time) %in% names(groups)[groups == 2 * length(pyramid_ages)], ]
+  total <- stats::ave(raw$values, raw$time, raw$sex, FUN = sum)
+  data.frame(
+    sex = ifelse(raw$sex == "M", "Male", "Female"),
+    age = factor(label(raw$age), levels = label(pyramid_ages)),
+    year = as.integer(raw$time),
+    value = raw$values / total * 100
+  )
+}
+##########################################################################################
+#
+##########################################################################################
+#' @title Get the population of a country by age group and sex
+#' @description Downloads the population on 1 January by five-year age group
+#' and sex of one country from Eurostat (`demo_pjangroup`), or takes it from
+#' the disk cache when it was downloaded less than a day ago.
+#' @param country Eurostat code of the country, such as "EL", or "EU27_2020".
+#' @return A data frame with `sex`, `age`, `year` and `value`, the share of the
+#'   age group in the population of its sex, in percent, or `NULL` with a
+#'   message when Eurostat cannot be reached.
+#' @export
+#' @examples
+#' \dontrun{
+#' get_pyramid("EL")
+#' }
+get_pyramid <- function(country) {
+  cached(paste0("pyramid_", tolower(country)), function() {
+    raw <- download_eurostat("demo_pjangroup", list(geo = country, sex = c("M", "F"), age = pyramid_ages, unit = "NR"))
+    if (is.null(raw)) NULL else tidy_pyramid(raw)
+  })
+}
+##########################################################################################
+#
+##########################################################################################
 #' @title The file of the outlines of the countries or regions
 #' @description The outlines of the NUTS 2024 classification at level 0, the
 #' countries, or 2, the regions, from GISCO, the geographic information service

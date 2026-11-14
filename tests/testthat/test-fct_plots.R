@@ -67,3 +67,35 @@ test_that("axis_title() puts a long name on several lines, in a smaller font", {
   expect_equal(axis_title(info, 45), list(text = "Life expectancy at birth (Years)"))
   expect_equal(axis_title(info, 20), list(text = "Life expectancy at<br>birth (Years)", font = list(size = 14)))
 })
+
+test_that("the indicator comparison draws a line per indicator with values for the country", {
+  data <- tidy_countries(raw_unemployment)
+  built <- plotly::plotly_build(plot_indicator_comp(list(unemployment = data, gdp_eur = data[0, ]), "EL", c("unemployment", "gdp_eur")))$x
+  expect_length(built$data, 1)
+  expect_equal(built$data[[1]]$name, "Unemployment rate (% of the labour force)")
+  expect_equal(built$layout$yaxis$title, "% of the labour force")
+  expect_equal(built$layout$title, "Country: Greece")
+  expect_null(plot_indicator_comp(list(unemployment = data), "DE", "unemployment"))
+})
+
+test_that("the pyramid draws the men to the left, opens at the last year and keeps the legend clicks", {
+  data <- data.frame(
+    sex = rep(c("Male", "Female"), each = 4),
+    age = factor(rep(c("0-4", "5-9"), 4), levels = c("0-4", "5-9")),
+    year = rep(c(2024, 2024, 2025, 2025), 2),
+    value = c(48, 52, 47, 53, 49, 51, 48, 52)
+  )
+  built <- plotly::plotly_build(plot_pyramid(data, "EL"))$x
+  expect_length(built$frames, 2)
+  male <- built$data[[which(vapply(built$data, `[[`, "", "name") == "Male")]]
+  expect_equal(as.vector(male$x), c(-47, -53))
+  expect_equal(built$layout$sliders[[1]]$active, 1)
+  expect_null(built$frames[[1]]$data[[1]]$visible)
+})
+
+test_that("an animated chart of one year has no slider", {
+  data <- tidy_countries(raw_unemployment)
+  data <- data[data$year == 2024, ]
+  expect_no_error(built <- plotly::plotly_build(plot_bar(data, "unemployment", "EL"))$x)
+  expect_length(built$layout$sliders, 0)
+})

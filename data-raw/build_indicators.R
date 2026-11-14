@@ -17,7 +17,8 @@
 #   source("data-raw/build_indicators.R")
 # The first run downloads about 680 tables and takes about 10 minutes. The downloads are kept
 # in data-raw/cache, which git ignores, for a week, so a second run is quick; delete the
-# folder to download everything again.
+# folder to download everything again. At its end, it runs build_values.R, which writes the
+# values of the indicators for the Change (%) tab, inst/extdata/values.rds.
 ##########################################################################################
 # a table with more series than this is left out: its rows would crowd the lists of the app
 max_series <- 10
@@ -235,3 +236,8 @@ message(
   "Wrote ", nrow(rows), " indicators to ", output, ": ", sum(rows$level == "country"), " for the countries, ",
   sum(rows$level == "region"), " for the regions, from ", length(unique(rows$dataset)), " tables"
 )
+##########################################################################################
+# THE VALUES of every indicator of the countries, for the Change (%) tab, from the tables
+# just downloaded (see build_values.R)
+##########################################################################################
+source(file.path("data-raw", "build_values.R"))

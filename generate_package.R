@@ -14,7 +14,8 @@ cat("\014")
 ##########################################################################################
 directory <- dirname(rstudioapi::getActiveDocumentContext()$path)
 setwd(directory)
-# rebuild inst/extdata/indicators_generated.csv from the main tables of Eurostat (about 10 minutes the first time)
+# rebuild inst/extdata/indicators_generated.csv from the main tables of Eurostat, and the values of the
+# Change (%) tab, inst/extdata/values.rds (about 12 minutes the first time)
 # source("data-raw/build_indicators.R")
 document()
 if ("golemeurostat" %in% loadedNamespaces()) unloadNamespace("golemeurostat")

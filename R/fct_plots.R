@@ -84,11 +84,15 @@ label_frames <- function(p, labels, annotation) {
 ##########################################################################################
 #' @title The slider of the years of an animated chart
 #' @description Labelled "Year: 2024", as in golemworldbank, rather than with
-#' the name of the column of the frames.
+#' the name of the column of the frames. A chart of one year has no slider.
 #' @param p A plotly object with frames.
 #' @return The plotly object, built.
 #' @noRd
 year_slider <- function(p) {
+  p <- plotly::plotly_build(p)
+  if (length(p$x$layout$sliders) == 0) {
+    return(p)
+  }
   plotly::animation_slider(p, currentvalue = list(prefix = "Year: "))
 }
 ##########################################################################################
@@ -174,6 +178,128 @@ plot_country_comp <- function(data, countries, indicator) {
       font = font_style
     ) %>%
     plotly::config(responsive = TRUE)
+}
+##########################################################################################
+#
+##########################################################################################
+#' @title Line chart of several indicators for one country
+#' @description As in golemworldbank: one line per indicator, named with its
+#' unit in the legend, at the top of the plot. The axis takes the unit when all
+#' the indicators share it. An indicator without values for the country is left
+#' out.
+#' @param data Data frames from [get_indicator()], one per indicator, named by
+#'   its `id`.
+#' @param country Eurostat code of the country, such as "EL", or "EU27_2020".
+#' @param indicators The `id`s of the indicators in [indicators()].
+#' @return A plotly object, or `NULL` when none of the indicators has values for
+#'   the country.
+#' @export
+#' @examples
+#' unemployment <- data.frame(
+#'   geo = "EL", country = "Greece", group = "EU", year = 2022:2024, value = c(12.4, 11.1, 10.1)
+#' )
+#' youth <- transform(unemployment, value = c(31.4, 26.7, 22.4))
+#' plot_indicator_comp(
+#'   list(unemployment = unemployment, youth_unemployment = youth), "EL",
+#'   c("unemployment", "youth_unemployment")
+#' )
+plot_indicator_comp <- function(data, country, indicators) {
+  p <- plotly::plot_ly()
+  units <- character(0)
+  for (id in indicators) {
+    info <- indicator_info(id)
+    d <- data[[id]]
+    d <- d[d$geo == country, ]
+    if (nrow(d) == 0) next
+    d <- d[order(d$year), ]
+    units <- c(units, info$unit)
+    p <- plotly::add_trace(p,
+      x = d$year, y = d$value, name = paste(strwrap(with_unit(info), 80), collapse = "<br>"),
+      type = "scatter", mode = "lines+markers",
+      text = paste0(info$name, "<br>", d$year, ": ", format_value(d$value), " ", info$unit), hoverinfo = "text"
+    )
+  }
+  if (length(units) == 0) {
+    return(NULL)
+  }
+  p %>%
+    plotly::layout(
+      title = paste("Country:", countries()$name[match(country, countries()$code)]),
+      margin = list(l = 50, r = 50, b = 0, t = 100, pad = 0),
+      # the names of Eurostat's indicators are long, so the legend is smaller than the chart's font
+      legend = list(orientation = "h", xanchor = "center", x = 0.5, y = 1, font = list(size = 14)),
+      xaxis = list(title = "", tickangle = -90),
+      yaxis = list(title = if (length(unique(units)) == 1) units[1] else ""),
+      showlegend = TRUE,
+      font = font_style
+    ) %>%
+    plotly::config(responsive = TRUE)
+}
+##########################################################################################
+#
+##########################################################################################
+#' @title Population pyramid, animated by year
+#' @description As in golemworldbank: the share of each five-year age group in
+#' the male population, to the left, and in the female population, to the
+#' right, animated over the years. The male values are drawn negative, so that
+#' the two sexes stand back to back, but the labels on the bars and the axis
+#' show them positive. The axis stays the same for all the years.
+#' @param data Data frame from [get_pyramid()].
+#' @param country Eurostat code of the country, for the title.
+#' @return A plotly object.
+#' @export
+#' @examples
+#' data <- data.frame(
+#'   sex = rep(c("Male", "Female"), each = 4),
+#'   age = factor(rep(c("0-4", "5-9"), 4), levels = c("0-4", "5-9")),
+#'   year = rep(c(2024, 2024, 2025, 2025), 2),
+#'   value = c(48, 52, 47, 53, 49, 51, 48, 52)
+#' )
+#' plot_pyramid(data, "EL")
+plot_pyramid <- function(data, country) {
+  data <- data[order(data$year, data$sex, data$age), ]
+  data$shown <- round(data$value, 2)
+  data$x <- ifelse(data$sex == "Male", -data$shown, data$shown)
+  # room for the labels at the end of the longest bars
+  widest <- 1.25 * max(data$shown)
+  # at most six ticks a side, which leaves them level, where one for each percent stood on end
+  step <- c(1, 2, 5, 10, 20, 50)[which(widest / c(1, 2, 5, 10, 20, 50) <= 6)[1]]
+  ticks <- seq(-floor(widest / step), floor(widest / step)) * step
+  data$year <- factor(data$year)
+  p <- plotly::plot_ly(data,
+    x = ~x,
+    y = ~age,
+    color = ~sex,
+    ids = ~age,
+    frame = ~year,
+    type = "bar",
+    orientation = "h",
+    text = ~shown,
+    textposition = "outside",
+    hovertext = ~ paste0(sex, ", ", age, ": ", shown, "% of the ", tolower(sex), " population"),
+    hoverinfo = "text"
+  ) %>%
+    plotly::layout(
+      bargap = 0.1,
+      barmode = "overlay",
+      title = paste("Population by age and sex:", countries()$name[match(country, countries()$code)]),
+      margin = list(l = 50, r = 50, b = 100, t = 100, pad = 0),
+      yaxis = list(title = list(text = "Age group", standoff = 10), automargin = TRUE),
+      xaxis = list(
+        title = list(text = "% of the male and of the female population", standoff = 3),
+        range = c(-widest, widest),
+        tickmode = "array",
+        tickvals = ticks,
+        ticktext = paste0(abs(ticks), "%")
+      ),
+      font = font_style
+    ) %>%
+    plotly::animation_opts(frame = 100, transition = 100, easing = "linear", redraw = TRUE, mode = "afterall") %>%
+    plotly::layout(updatemenus = animation_buttons(levels(data$year)[1])) %>%
+    year_slider() %>%
+    plotly::config(responsive = TRUE) %>%
+    keep_legend_clicks() %>%
+    start_at_last_year()
 }
 ##########################################################################################
 #

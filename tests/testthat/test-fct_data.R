@@ -104,3 +104,21 @@ test_that("check_indicators() reports the countries and years of a row, or what 
   expect_false(refused$ok)
   expect_equal(refused$problem, "HTTP status: 400 (Bad request)")
 })
+
+test_that("the pyramid gives each age group as a share of its sex, for the years with every group", {
+  ages <- pyramid_ages
+  raw <- data.frame(
+    unit = "NR",
+    sex = rep(c("M", "F"), each = length(ages)),
+    age = ages,
+    geo = "EL",
+    time = rep(c(2024, 2025), each = 2 * length(ages)),
+    values = 1:(4 * length(ages))
+  )
+  # 2024 lacks the group of 85 and over of the men, so it is left out
+  raw <- raw[!(raw$time == 2024 & raw$sex == "M" & raw$age == "Y_GE85"), ]
+  data <- tidy_pyramid(raw)
+  expect_equal(unique(data$year), 2025L)
+  expect_equal(as.vector(tapply(data$value, data$sex, sum)), c(100, 100))
+  expect_equal(levels(data$age)[c(1, 2, 18)], c("0-4", "5-9", "85+"))
+})

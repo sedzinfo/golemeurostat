@@ -15,3 +15,24 @@ test_that("the stylesheet shared by the apps is in the page, before the app's ow
   own <- regexpr("href=\"www/[A-Za-z0-9_.-]+\\.css\"", page)
   if (own > 0) expect_lt(shared, own)
 })
+
+test_that("the cookie banner and Google Analytics are in the page only with analytics = TRUE", {
+  off <- htmltools::renderTags(app_ui(NULL))
+  expect_no_match(off$head, "consent.js", fixed = TRUE)
+  expect_no_match(off$html, "cookie-settings", fixed = TRUE)
+  on <- htmltools::renderTags(app_ui(NULL, analytics = TRUE))
+  expect_match(on$head, "https://sedzinfo.github.io/consent.js", fixed = TRUE)
+  expect_match(on$head, "https://sedzinfo.github.io/shiny/analytics.js", fixed = TRUE)
+  expect_match(on$html, "#cookie-settings", fixed = TRUE)
+})
+
+test_that("the app has the tabs of golemworldbank, with two maps", {
+  html <- htmltools::renderTags(app_ui(NULL))$html
+  # the navbar links, in their order, without the tabs inside the Change (%) tab
+  tabs <- regmatches(html, gregexpr('data-toggle="tab" data-bs-toggle="tab" data-value="[^"]+"', html))[[1]]
+  tabs <- sub('.*data-value="([^"]+)"', "\\1", tabs)
+  expect_equal(
+    tabs[!tabs %in% c("Increased", "Decreased")],
+    c("Country Comparison", "Indicator Comparison", "Pyramid", "Barplot", "Scatterplot", "Map", "Regions", "Change (%)", "Indicators", "About")
+  )
+})

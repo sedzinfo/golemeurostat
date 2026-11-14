@@ -6,15 +6,19 @@
 #' golemworldbank: a compact navbar, and charts that fill the window under
 #' their controls.
 #' @param request Internal parameter for `{shiny}`. DO NOT REMOVE.
+#' @param analytics `TRUE` to add Google Analytics, with its cookie banner
+#'   (see `analytics_resources()`) and a footer with the links of the banner
+#'   (see `analytics_footer()`).
 #' @import shiny
 #' @noRd
 #' @examples
 #' \dontrun{
 #' shiny::shinyApp(ui = app_ui, server = app_server)
 #' }
-app_ui <- function(request) {
+app_ui <- function(request, analytics = FALSE) {
   tagList(
     golem_add_external_resources(),
+    if (analytics) tags$head(analytics_resources()),
     # a spinner on a chart while its data download
     useBusyIndicators(),
     # compact navbar (outside navbarPage, which expects only tabs)
@@ -39,12 +43,18 @@ app_ui <- function(request) {
       collapsible = TRUE,
       fluid = TRUE,
       windowTitle = "Eurostat",
+      footer = if (analytics) analytics_footer(),
+      # the tabs of golemworldbank, in its order, with two maps, of the countries and of the regions
       tabPanel(title = "Country Comparison", mod_country_comp_ui("country_comp")),
+      tabPanel(title = "Indicator Comparison", mod_indicator_comp_ui("indicator_comp")),
+      tabPanel(title = "Pyramid", mod_pyramid_ui("pyramid")),
       tabPanel(title = "Barplot", mod_bar_ui("bar")),
+      tabPanel(title = "Scatterplot", mod_scatter_ui("scatter")),
       tabPanel(title = "Map", mod_map_ui("map")),
       tabPanel(title = "Regions", mod_regions_ui("regions")),
-      tabPanel(title = "Scatterplot", mod_scatter_ui("scatter")),
-      tabPanel(title = "Indicators", mod_index_table_ui("index_table"))
+      tabPanel(title = "Change (%)", mod_change_ui("change")),
+      tabPanel(title = "Indicators", mod_index_table_ui("index_table")),
+      tabPanel(title = "About", mod_about_ui("about"))
     )
   )
 }

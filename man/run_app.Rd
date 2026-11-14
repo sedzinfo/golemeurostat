@@ -5,6 +5,7 @@
 \title{Run the Eurostat Indicators Explorer}
 \usage{
 run_app(
+  analytics = FALSE,
   onStart = NULL,
   options = list(),
   enableBookmarking = NULL,
@@ -13,6 +14,11 @@ run_app(
 )
 }
 \arguments{
+\item{analytics}{\code{TRUE} to add Google Analytics, through the cookie banner
+shared with the sites of sedzinfo.github.io, which loads it only after the
+visitor accepts. Meant for the public deployment (see \code{app.R}); off by
+default, so that running the app yourself sends nothing.}
+
 \item{onStart, options, enableBookmarking, uiPattern}{Passed to
 \code{\link[shiny:shinyApp]{shiny::shinyApp()}}.}
 

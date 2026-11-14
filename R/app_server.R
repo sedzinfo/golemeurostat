@@ -14,9 +14,12 @@
 #' }
 app_server <- function(input, output, session) {
   mod_country_comp_server("country_comp")
+  mod_indicator_comp_server("indicator_comp")
+  mod_pyramid_server("pyramid")
   mod_bar_server("bar")
+  mod_scatter_server("scatter")
   mod_map_server("map")
   mod_regions_server("regions")
-  mod_scatter_server("scatter")
+  mod_change_server("change")
   mod_index_table_server("index_table")
 }

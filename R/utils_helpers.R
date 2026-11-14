@@ -91,12 +91,41 @@ fill_indicators <- function(session, input_id, selected, level = "country") {
 #
 ##########################################################################################
 #' @title The countries to choose from
-#' @description In alphabetical order, without the EU-27 average.
+#' @description In alphabetical order, and the EU-27 first when `average` is
+#' `TRUE`.
+#' @param average Offer the EU-27 too, for the tabs of one country.
 #' @return A named vector of Eurostat codes.
 #' @noRd
-country_choices <- function() {
+country_choices <- function(average = FALSE) {
   known <- countries()
   known <- known[known$group != "EU-27", ]
   known <- known[order(known$name), ]
-  stats::setNames(known$code, known$name)
+  choices <- stats::setNames(known$code, known$name)
+  if (average) c(`EU-27` = eu_average, choices) else choices
+}
+##########################################################################################
+#
+##########################################################################################
+#' @title Keep the legend clicks of an animated chart
+#' @description As in golemworldbank: plotly writes `visible` into every trace of
+#' every frame, so a trace hidden with a click on the legend comes back on the
+#' next frame. This removes `visible` from the frames, so the click lasts while
+#' the animation plays. plotly also hides a trace, with `visible = FALSE`, in a
+#' frame where it has no data, as a copy of its previous frame; that copy is
+#' emptied instead, so nothing is drawn there.
+#' @param p A plotly object with frames.
+#' @return The plotly object, built.
+#' @noRd
+keep_legend_clicks <- function(p) {
+  p <- plotly::plotly_build(p)
+  without_visible <- function(trace) {
+    if (isFALSE(trace$visible)) trace$x <- trace$y <- rep(NA, length(trace$x))
+    trace$visible <- NULL
+    trace
+  }
+  p$x$data <- lapply(p$x$data, without_visible)
+  for (k in seq_along(p$x$frames)) {
+    p$x$frames[[k]]$data <- lapply(p$x$frames[[k]]$data, without_visible)
+  }
+  p
 }
