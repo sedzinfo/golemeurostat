@@ -1,7 +1,7 @@
 # Regions module - UI
 
-A regional indicator to pick, and a map of the regions of Europe colored
-by it, animated by year.
+A regional indicator to pick, across the page, and a map of the regions
+of Europe colored by it, animated by year, as the map of the countries.
 
 ## Usage
 

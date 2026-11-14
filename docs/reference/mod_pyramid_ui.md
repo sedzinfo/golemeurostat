@@ -1,7 +1,7 @@
 # Pyramid module - UI
 
-A country to pick, and its population pyramid, animated by year, as in
-golemworldbank.
+A country to pick, across the page, and its population pyramid, animated
+by year, as in golemworldbank.
 
 ## Usage
 

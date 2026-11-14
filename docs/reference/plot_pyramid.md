@@ -24,7 +24,8 @@ plot_pyramid(data, country)
 
 - country:
 
-  Eurostat code of the country, for the title.
+  Eurostat code of the country, for the title ("Country: " and its name,
+  as in golemworldbank).
 
 ## Value
 

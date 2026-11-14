@@ -6,8 +6,11 @@ A Shiny app, built as a golem package, for exploring indicators of
 [Eurostat](https://ec.europa.eu/eurostat), the statistical office of the
 European Union: for the 27 countries of the EU, the 4 of EFTA and the 9
 candidate countries, with the EU-27 average for comparison, and for the
-regions of Europe. It follows the layout of
-[golemworldbank](https://github.com/sedzinfo/golemworldbank).
+regions of Europe. It follows the design of
+[golemworldbank](https://github.com/sedzinfo/golemworldbank), and shares
+its stylesheets and scripts, which both apps load from
+[sedzinfo.github.io](https://github.com/sedzinfo/sedzinfo.github.io/tree/main/shiny):
+the layout of the page, on a desktop and on a phone, and the dark mode.
 
 # Tabs
 
@@ -18,15 +21,17 @@ over the years for one country, or the EU-27 - **Pyramid**: the
 population of a country by five-year age group and sex, animated by
 year - **Barplot**: the countries ranked by an indicator, as a race
 through the years, with the country you pick in red - **Scatterplot**:
-the countries by two indicators, animated by year, with the correlation
-of the two in each year - **Map**: the countries colored by an
-indicator, animated by year - **Regions**: the regions of Europe (NUTS
-2) colored by an indicator, such as GDP per inhabitant or unemployment,
-animated by year - **Change (%)**: the indicators of a country that rose
-and fell between two years, by how much - **Indicators**: every
-indicator of the app, with its unit, definition and a link to its
-dataset at Eurostat - **About**: where the data comes from, the
-acknowledgments and the license
+the countries by two indicators, as bubbles as large as their
+population, animated by year, with the correlation of the two in each
+year - **Map**: the countries colored by an indicator, from red for the
+lowest through white to dark blue for the highest, animated by year -
+**Regions**: the regions of Europe (NUTS 2) colored in the same way by
+an indicator, such as GDP per inhabitant or unemployment, animated by
+year - **Change (%)**: the indicators of a country that rose and fell
+between two years, by how much - **Indicators**: every indicator of the
+app, with its unit, definition and a link to its dataset at Eurostat -
+**About**: where the data comes from, the acknowledgments and the
+license
 
 The indicators are the 62 chosen by hand and, after them, the series of
 Eurostat’s main tables, about 1,500 more, in the groups of Eurostat’s

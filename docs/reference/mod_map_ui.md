@@ -1,7 +1,7 @@
 # Map module - UI
 
-An indicator to pick, and a map of the countries colored by it, animated
-by year.
+An indicator to pick, across the page, and a map of the countries
+colored by it, animated by year, as in golemworldbank.
 
 ## Usage
 

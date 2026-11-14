@@ -1,7 +1,8 @@
 # Scatterplot module - UI
 
-Two indicators to pick, and the countries plotted by the two, animated
-by year.
+Two indicators to pick, side by side as in golemworldbank, and the
+countries plotted by the two as bubbles as large as their population,
+animated by year.
 
 ## Usage
 
