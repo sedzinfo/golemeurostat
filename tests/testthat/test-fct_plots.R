@@ -99,3 +99,22 @@ test_that("an animated chart of one year has no slider", {
   expect_no_error(built <- plotly::plotly_build(plot_bar(data, "unemployment", "EL"))$x)
   expect_length(built$layout$sliders, 0)
 })
+
+test_that("the pyramid leaves out the years that jump back and forth, and names them", {
+  # two age structures: one that ages slowly, and another far from it, every other year from 1961 to 1969
+  steady <- function(year) c(50 - (year - 1960) * 0.1, 50 + (year - 1960) * 0.1)
+  jumping <- c(1961, 1963, 1965, 1967, 1969)
+  data <- do.call(rbind, lapply(1961:1975, function(year) {
+    value <- if (year %in% jumping) c(65, 35) else steady(year)
+    data.frame(sex = rep(c("Male", "Female"), each = 2), age = factor(c("0-4", "5-9")), year = year, value = rep(value, 2))
+  }))
+  expect_equal(jumping_years(data), jumping)
+  built <- plotly::plotly_build(plot_pyramid(data, "EL"))$x
+  expect_equal(vapply(built$frames, `[[`, "", "name"), as.character(setdiff(1961:1975, jumping)))
+  expect_match(built$layout$annotations[[1]]$text, "1961, 1963, 1965, 1967, 1969", fixed = TRUE)
+  # a year a decade before the next has changed by a decade's worth, and is kept
+  decade <- data[data$year == 1975, ]
+  decade$year <- 1965
+  decade$value <- rep(c(65, 35), 2)
+  expect_equal(jumping_years(rbind(decade, data[data$year >= 1975, ], transform(data[data$year == 1975, ], year = 1976))), integer(0))
+})

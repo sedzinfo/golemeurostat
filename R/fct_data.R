@@ -339,6 +339,46 @@ tidy_pyramid <- function(raw) {
 ##########################################################################################
 #
 ##########################################################################################
+#' @title The years of a population pyramid that jump back and forth
+#' @description Eurostat's population of Greece by age group alternates, from
+#' 1961 to 1970, between two age structures from one year to the next: the men
+#' aged 55 to 59 are 165,000, 237,000, 175,000, 246,000..., which no real
+#' population does. The years are checked from the latest back, against the
+#' last year kept: a year whose age structure differs from it by more than
+#' `least` points a year (the sum of the differences of the shares of the age
+#' groups of the two sexes, over the years between the two; most years move by
+#' about 4), and by more than twice as much as the year before it does, is a
+#' jump, and the year before it is checked against the same year kept; the
+#' first year, which has none before it, is compared with the step between the
+#' two years kept after it. A real change, such as a new border, moves the
+#' years before it too, and is kept, and so is a year a decade before the
+#' next, such as the census of Luxembourg of 1961, whose age structure has
+#' changed by a decade's worth.
+#' @param data Data frame of `tidy_pyramid()`.
+#' @param least The smallest jump, in points.
+#' @return The years that jump, in order.
+#' @noRd
+jumping_years <- function(data, least = 10) {
+  shares <- tapply(data$value, list(data$year, paste(data$sex, data$age)), sum)
+  years <- as.integer(rownames(shares))
+  if (length(years) < 3) {
+    return(integer(0))
+  }
+  # a year apart
+  distance <- function(a, b) sum(abs(shares[a, ] - shares[b, ])) / abs(years[a] - years[b])
+  # the rows of the years kept, the latest first
+  kept <- length(years)
+  for (i in rev(seq_len(length(years) - 1))) {
+    last <- kept[length(kept)]
+    jump <- distance(i, last)
+    reference <- if (i > 1) distance(i - 1, last) else if (length(kept) > 1) distance(last, kept[length(kept) - 1]) else Inf
+    if (jump <= least || jump <= 2 * reference) kept <- c(kept, i)
+  }
+  sort(years[-kept])
+}
+##########################################################################################
+#
+##########################################################################################
 #' @title Get the population of a country by age group and sex
 #' @description Downloads the population on 1 January by five-year age group
 #' and sex of one country from Eurostat (`demo_pjangroup`), or takes it from

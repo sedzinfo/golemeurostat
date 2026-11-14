@@ -243,7 +243,10 @@ plot_indicator_comp <- function(data, country, indicators) {
 #' the male population, to the left, and in the female population, to the
 #' right, animated over the years. The male values are drawn negative, so that
 #' the two sexes stand back to back, but the labels on the bars and the axis
-#' show them positive. The axis stays the same for all the years.
+#' show them positive. The axis stays the same for all the years. The years
+#' whose figures jump back and forth from one year to the next, as Eurostat's
+#' for Greece from 1961 to 1969 do, are left out, and named at the top of the
+#' chart.
 #' @param data Data frame from [get_pyramid()].
 #' @param country Eurostat code of the country, for the title.
 #' @return A plotly object.
@@ -257,6 +260,16 @@ plot_indicator_comp <- function(data, country, indicators) {
 #' )
 #' plot_pyramid(data, "EL")
 plot_pyramid <- function(data, country) {
+  # the years whose figures jump back and forth, as Greece's of the 1960s, are left out, and named
+  left_out <- jumping_years(data)
+  data <- data[!data$year %in% left_out, ]
+  note <- if (length(left_out) > 0) {
+    list(list(
+      text = paste("Left out, as Eurostat's figures for them jump back and forth:", paste(left_out, collapse = ", ")),
+      xref = "paper", yref = "paper", x = 0, y = 1, xanchor = "left", yanchor = "bottom",
+      showarrow = FALSE, font = list(size = 14)
+    ))
+  }
   data <- data[order(data$year, data$sex, data$age), ]
   data$shown <- round(data$value, 2)
   data$x <- ifelse(data$sex == "Male", -data$shown, data$shown)
@@ -292,6 +305,7 @@ plot_pyramid <- function(data, country) {
         tickvals = ticks,
         ticktext = paste0(abs(ticks), "%")
       ),
+      annotations = note,
       font = font_style
     ) %>%
     plotly::animation_opts(frame = 100, transition = 100, easing = "linear", redraw = TRUE, mode = "afterall") %>%
