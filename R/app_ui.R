@@ -3,8 +3,8 @@
 ##########################################################################################
 #' @title The application user interface
 #' @description A navbar page with one tab per module, in the layout of
-#' golemworldbank: a compact navbar, and charts that fill the window under
-#' their controls.
+#' golemworldbank, which the two apps share (`shared_layout()`): a compact
+#' navbar, and charts that fill the window under their controls.
 #' @param request Internal parameter for `{shiny}`. DO NOT REMOVE.
 #' @param analytics `TRUE` to add Google Analytics, with its cookie banner
 #'   (see `analytics_resources()`) and a footer with the links of the banner
@@ -21,23 +21,6 @@ app_ui <- function(request, analytics = FALSE) {
     if (analytics) tags$head(analytics_resources()),
     # a spinner on a chart while its data download
     useBusyIndicators(),
-    # compact navbar (outside navbarPage, which expects only tabs)
-    tags$head(
-      tags$style(HTML(".navbar-nav > li > a, .navbar-brand {
-        padding-top:4px;
-        padding-bottom:4px;
-        height: 25px;
-        }
-        .navbar {min-height:20px;}
-        /* charts fill the space left under the navbar and the controls */
-        body {display:flex; flex-direction:column; height:100vh; margin:0;}
-        body > .container-fluid {flex:1; width:100%;min-height:0; display:flex; flex-direction:column;}
-        .tab-content {flex:1; min-height:0; display:flex;}
-        .tab-content > .tab-pane.active {flex:1; min-width:0; min-height:0; display:flex; flex-direction:column; overflow:auto;}
-        /* a Bootstrap row sticks out 15px on the right (margin-right:-15px), which would make the tab scroll sideways */
-        .tab-pane > .row {margin-right:0;}
-        .tab-pane .plotly.html-widget-output {flex:1 1 0; min-height:300px;}"))
-    ),
     navbarPage(
       title = "Data: Eurostat",
       collapsible = TRUE,
@@ -63,7 +46,7 @@ app_ui <- function(request, analytics = FALSE) {
 ##########################################################################################
 #' Address of the files shared by the Shiny apps, on sedzinfo.github.io
 #'
-#' The scripts and stylesheets that several apps use (the dark mode) are kept once,
+#' The scripts and stylesheets that several apps use (the dark mode, the layout) are kept once,
 #' in the shiny folder of the sedzinfo.github.io repository, and each app loads
 #' them from there: a fix reaches every app without deploying it again.
 #'
@@ -85,11 +68,46 @@ shared_css <- function() {
 ##########################################################################################
 #
 ##########################################################################################
+#' The layout shared with golemworldbank
+#'
+#' \code{layout.css}: a compact navbar, and tabs that fill the window, with charts that stretch
+#' to its bottom; on phones, a page that scrolls, with entries big enough for a finger.
+#' \code{layout.js}: the charts laid out for a phone. Both from sedzinfo.github.io
+#' (\code{shared_url}), for the head of the page, after \code{shared_css()}.
+#'
+#' @noRd
+shared_layout <- function() {
+  tagList(
+    tags$link(rel = "stylesheet", href = paste0(shared_url, "layout.css")),
+    tags$script(src = paste0(shared_url, "layout.js"))
+  )
+}
+##########################################################################################
+#
+##########################################################################################
+#' @title Description of the app, for search engines and link previews
+#' @description Used by `golem_add_external_resources()`, as in golemworldbank:
+#' the description that search engines show, and the Open Graph tags of the
+#' preview that other sites show for a link to the app. `title` is the window
+#' title that `app_ui()` gives the page. `url`, the address of the live app, and
+#' `image`, a screenshot of it, are left out of the page while they are `NULL`:
+#' fill them in once the app is deployed.
+#' @noRd
+app_meta <- list(
+  url = NULL,
+  title = "Eurostat",
+  description = "Explore Eurostat indicators for the countries and regions of Europe with interactive country and indicator comparisons, population pyramids, bar charts, scatter plots and maps.",
+  image = NULL
+)
+##########################################################################################
+#
+##########################################################################################
 #' @title Add external resources to the application
-#' @description The favicon, any CSS and JavaScript file of `inst/app/www`, the
-#' stylesheet and the dark mode that the apps share on sedzinfo.github.io
-#' (`shared_css()`, `shared_url`), and the outlines of the countries and regions
-#' of the maps, downloaded once and served under `nuts/`.
+#' @description The description and Open Graph tags of `app_meta`, the favicon,
+#' any CSS and JavaScript file of `inst/app/www`, the stylesheet, the layout and
+#' the dark mode that the apps share on sedzinfo.github.io (`shared_css()`,
+#' `shared_layout()`, `shared_url`), and the outlines of the countries and
+#' regions of the maps, downloaded once and served under `nuts/`.
 #' @import shiny
 #' @importFrom golem add_resource_path favicon bundle_resources
 #' @noRd
@@ -105,8 +123,21 @@ golem_add_external_resources <- function() {
   nuts_file(2)
   addResourcePath("nuts", nuts_dir())
   tags$head(
+    tags$meta(name = "description", content = app_meta$description),
+    tags$meta(property = "og:type", content = "website"),
+    tags$meta(property = "og:site_name", content = "sedzinfo"),
+    tags$meta(property = "og:title", content = app_meta$title),
+    tags$meta(property = "og:description", content = app_meta$description),
+    if (!is.null(app_meta$url)) tags$meta(property = "og:url", content = app_meta$url),
+    if (!is.null(app_meta$image)) {
+      tagList(
+        tags$meta(property = "og:image", content = app_meta$image),
+        tags$meta(name = "twitter:card", content = "summary_large_image")
+      )
+    },
     favicon(ext = "svg"),
     shared_css(),
+    shared_layout(),
     bundle_resources(path = app_sys("app/www"), app_title = "Eurostat"),
     tags$script(src = paste0(shared_url, "dark_mode.js"))
   )
