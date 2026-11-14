@@ -1,6 +1,61 @@
 ##########################################################################################
 #
 ##########################################################################################
+#' @title A chart title that fits
+#' @description Wraps a long title, such as the names of the indicators of
+#' Eurostat's main tables, on several lines at the top of the chart. The first
+#' line is where plotly puts a title of one line, in the middle of the top
+#' margin; the others go under it, and the chart and its legend lower down by
+#' as much.
+#' @param text The title.
+#' @param top The top margin of the chart with a title of one line.
+#' @param width The most characters on a line.
+#' @return A list: `title`, for the layout, and `top`, the top margin.
+#' @noRd
+chart_title <- function(text, top, width = 70) {
+  lines <- strwrap(text, width)
+  # plotly writes a title 1.4 times the size of the font of the chart, and 1.3 times that
+  # from one line to the next
+  extra <- ceiling(1.3 * 1.4 * font_style$size) * (length(lines) - 1)
+  list(
+    # anchored at the bottom, plotly puts the first line of a title at the anchor and the others
+    # under it (anchored at the top, it moves a title of several lines up, out of the chart)
+    title = list(text = paste(lines, collapse = "<br>"), yref = "paper", y = 1, yanchor = "bottom", pad = list(b = top / 2 + extra)),
+    top = top + extra
+  )
+}
+##########################################################################################
+#
+##########################################################################################
+#' @title The name of an indicator with its unit
+#' @description Such as "Unemployment rate (% of the labour force)", or the
+#' name alone for the indicators of Eurostat's main tables that have no unit.
+#' @param info The row of the indicator in [indicators()].
+#' @noRd
+with_unit <- function(info) {
+  if (nzchar(info$unit)) paste0(info$name, " (", info$unit, ")") else info$name
+}
+##########################################################################################
+#
+##########################################################################################
+#' @title The title of an axis that fits
+#' @description The name of an indicator with its unit; a long one, such as
+#' the names of Eurostat's main tables, in a smaller font on lines of at most
+#' `width` characters, which would otherwise run past the end of the axis.
+#' @param info The row of the indicator in [indicators()].
+#' @param width The most characters on a line.
+#' @return A list for the `title` of a plotly axis.
+#' @noRd
+axis_title <- function(info, width) {
+  text <- with_unit(info)
+  if (nchar(text) <= width) {
+    return(list(text = text))
+  }
+  list(text = paste(strwrap(text, width), collapse = "<br>"), font = list(size = 14))
+}
+##########################################################################################
+#
+##########################################################################################
 #' @title A label of an animated chart that changes with the year
 #' @description Sets the one annotation of a chart with frames to the label of
 #' each frame, and keeps it right while the animation plays, when plotly does
@@ -95,10 +150,11 @@ plot_country_comp <- function(data, countries, indicator) {
       text = hover(average), hoverinfo = "text"
     )
   }
+  heading <- chart_title(info$name, 100)
   p %>%
     plotly::layout(
-      title = info$name,
-      margin = list(l = 80, r = 30, b = 40, t = 100, pad = 0),
+      title = heading$title,
+      margin = list(l = 80, r = 30, b = 40, t = heading$top, pad = 0),
       # above the plot, where it covers no line or bar
       legend = list(orientation = "h", xanchor = "center", x = 0.5, y = 1.02, yanchor = "bottom"),
       xaxis = list(title = ""),
@@ -130,6 +186,7 @@ plot_country_comp <- function(data, countries, indicator) {
 #' plot_bar(data, "unemployment", "EL")
 plot_bar <- function(data, indicator, country = NULL) {
   info <- indicator_info(indicator)
+  heading <- chart_title(info$name, 100)
   data <- data[data$geo != eu_average, ]
   years <- sort(unique(data$year))
   data <- do.call(rbind, lapply(split(data, data$geo), function(d) {
@@ -158,8 +215,8 @@ plot_bar <- function(data, indicator, country = NULL) {
     hoverinfo = "text"
   ) %>%
     plotly::layout(
-      title = info$name,
-      margin = list(l = 50, r = 50, b = 100, t = 100, pad = 0),
+      title = heading$title,
+      margin = list(l = 50, r = 50, b = 100, t = heading$top, pad = 0),
       # rank 1 at the top; the names are on the bars
       yaxis = list(title = "", autorange = "reversed", dtick = 1, zeroline = FALSE),
       xaxis = list(title = info$unit, showticklabels = FALSE, zeroline = TRUE, showgrid = FALSE),
@@ -190,6 +247,7 @@ plot_bar <- function(data, indicator, country = NULL) {
 #' @return A plotly object.
 #' @noRd
 choropleth <- function(data, info, level, label) {
+  heading <- chart_title(info$name, 80)
   data$label <- label
   data <- data[order(data$year), ]
   data$year <- factor(data$year)
@@ -210,8 +268,8 @@ choropleth <- function(data, info, level, label) {
     hoverinfo = "text"
   ) %>%
     plotly::layout(
-      title = info$name,
-      margin = list(l = 10, r = 10, b = 60, t = 80, pad = 0),
+      title = heading$title,
+      margin = list(l = 10, r = 10, b = 60, t = heading$top, pad = 0),
       font = font_style,
       geo = list(
         visible = FALSE,
@@ -294,6 +352,7 @@ plot_regions <- function(data, indicator) {
 plot_scatter <- function(x_data, y_data, x_indicator, y_indicator) {
   x_info <- indicator_info(x_indicator)
   y_info <- indicator_info(y_indicator)
+  heading <- chart_title(paste(y_info$name, "and", x_info$name), 100)
   both <- merge(
     x_data[x_data$geo != eu_average, c("geo", "country", "group", "year", "value")],
     y_data[y_data$geo != eu_average, c("geo", "year", "value")],
@@ -341,12 +400,13 @@ plot_scatter <- function(x_data, y_data, x_indicator, y_indicator) {
     hoverinfo = "text"
   ) %>%
     plotly::layout(
-      title = paste(y_info$name, "and", x_info$name),
-      margin = list(l = 80, r = 30, b = 100, t = 100, pad = 0),
+      title = heading$title,
+      margin = list(l = 80, r = 30, b = 100, t = heading$top, pad = 0),
       # EU, EFTA, Candidate, as plotly lists the groups the other way round
       legend = list(orientation = "h", xanchor = "center", x = 0.5, y = 1.02, yanchor = "bottom", traceorder = "reversed"),
-      xaxis = list(title = paste0(x_info$name, " (", x_info$unit, ")"), range = limits_x),
-      yaxis = list(title = paste0(y_info$name, " (", y_info$unit, ")"), range = limits_y),
+      # the left margin grows to fit a vertical title on several lines
+      xaxis = list(title = axis_title(x_info, 100), range = limits_x),
+      yaxis = list(title = axis_title(y_info, 45), range = limits_y, automargin = TRUE),
       font = font_style
     ) %>%
     plotly::animation_opts(frame = 800, transition = 400, easing = "linear", redraw = FALSE, mode = "afterall") %>%

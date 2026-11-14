@@ -16,7 +16,7 @@ mod_country_comp_ui <- function(id) {
   tagList(
     fluidRow(
       column(6, selectizeInput(ns("countries"), label = "Countries", choices = country_choices(), selected = c("EL", "BG"), multiple = TRUE, width = "100%")),
-      column(6, selectizeInput(ns("indicator"), label = "Indicator", choices = indicator_choices(), selected = "gdp_pps", width = "100%"))
+      column(6, selectizeInput(ns("indicator"), label = "Indicator", choices = NULL, width = "100%", options = indicator_options()))
     ),
     plotly::plotlyOutput(ns("plot"), width = "100%", height = "100%")
   )
@@ -37,6 +37,7 @@ mod_country_comp_ui <- function(id) {
 #' }
 mod_country_comp_server <- function(id) {
   moduleServer(id, function(input, output, session) {
+    fill_indicators(session, "indicator", "gdp_pps")
     data <- reactive({
       req(input$indicator)
       get_indicator(input$indicator)

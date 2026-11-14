@@ -17,21 +17,60 @@ eu_average <- "EU27_2020"
 #
 ##########################################################################################
 #' @title The indicators of the app
-#' @description The catalogue in `inst/extdata/indicators.csv`, one row per
-#' indicator: its `id`, whether it is for countries or regions (`level`), its
-#' `topic`, `name` and `unit`, the Eurostat `dataset` it comes from, the values
-#' that fix the other dimensions of that dataset (`filters`, such as
-#' `sex=T;age=Y15-74`) and a short `definition`. A row added to the file adds an
-#' indicator to the app.
+#' @description The catalogue, one row per indicator: its `id`, whether it is
+#' for countries or regions (`level`), its `topic`, `name` and `unit`, the
+#' Eurostat `dataset` it comes from, the values that fix the other dimensions
+#' of that dataset (`filters`, such as `sex=T;age=Y15-74`) and a short
+#' `definition`.
+#'
+#' The rows come from two files of `inst/extdata`: `indicators.csv`, written
+#' by hand, whose rows come first, and `indicators_generated.csv`, the series
+#' of the main tables of Eurostat, written by `data-raw/build_indicators.R`
+#' (`generated` is `TRUE` for these). A generated row with the same `id`, or
+#' the same `level`, `dataset` and `filters`, as a hand-written one is left
+#' out. A row added to `indicators.csv` adds an indicator to the app.
 #' @return A data frame with one row per indicator.
 #' @export
 #' @examples
 #' indicators()[, c("id", "level", "name", "unit")]
 indicators <- function() {
   if (is.null(memory$indicators)) {
-    memory$indicators <- utils::read.csv(app_sys("extdata", "indicators.csv"), stringsAsFactors = FALSE, encoding = "UTF-8")
+    read <- function(file) {
+      path <- app_sys("extdata", file)
+      if (!nzchar(path)) {
+        return(NULL)
+      }
+      table <- utils::read.csv(path, stringsAsFactors = FALSE, encoding = "UTF-8", na.strings = character(0), colClasses = "character")
+      table$generated <- file == "indicators_generated.csv"
+      table
+    }
+    hand <- read("indicators.csv")
+    generated <- read("indicators_generated.csv")
+    if (!is.null(generated)) {
+      same <- generated$id %in% hand$id | series_key(generated) %in% series_key(hand)
+      hand <- rbind(hand, generated[!same, ])
+    }
+    rownames(hand) <- NULL
+    memory$indicators <- hand
   }
   memory$indicators
+}
+##########################################################################################
+#
+##########################################################################################
+#' @title What a row of the catalogue shows
+#' @description The level, the dataset and its filters in one text, the same
+#' whatever the order of the filters and with or without `freq=A`, to find a
+#' generated row that repeats a hand-written one. A table can give a row for
+#' the countries and one for the regions with the same filters; the level
+#' tells them apart.
+#' @param table Rows of the catalogue.
+#' @noRd
+series_key <- function(table) {
+  vapply(seq_len(nrow(table)), function(i) {
+    pairs <- setdiff(strsplit(table$filters[i], ";", fixed = TRUE)[[1]], "freq=A")
+    paste(c(table$level[i], table$dataset[i], sort(pairs)), collapse = ";")
+  }, "")
 }
 ##########################################################################################
 #
@@ -173,13 +212,16 @@ download_eurostat <- function(dataset, filters) {
 tidy_countries <- function(raw) {
   known <- countries()
   raw <- raw[!is.na(raw$values) & raw$geo %in% known$code, ]
-  # a value more than 1,000 times the median of the countries of its year is an error of units
-  # in the data of Eurostat, such as the net earnings of Turkiye of 2000 to 2003, in old lira
-  # that are a million times too large, which would squeeze every other value of a chart
+  # a value more than 1,000 times the median of the countries of its year, and of the years of
+  # its country, is an error of units in the data of Eurostat, such as the net earnings of
+  # Turkiye of 2000 to 2003, in old lira that are a million times too large, which would
+  # squeeze every other value of a chart; a country far larger than most, such as Germany
+  # among the countries for the number of asylum decisions, is so every year, and is kept
   typical <- stats::ave(abs(raw$values), raw$time, FUN = stats::median)
-  wrong <- typical > 0 & abs(raw$values) > 1000 * typical
+  usual <- stats::ave(abs(raw$values), raw$geo, FUN = stats::median)
+  wrong <- typical > 0 & abs(raw$values) > 1000 * typical & usual > 0 & abs(raw$values) > 1000 * usual
   if (any(wrong)) {
-    message("Left out, as more than 1,000 times the median of their year: ", paste(raw$geo[wrong], raw$time[wrong], collapse = ", "))
+    message("Left out, as more than 1,000 times the median of their year and of their country: ", paste(raw$geo[wrong], raw$time[wrong], collapse = ", "))
     raw <- raw[!wrong, ]
   }
   row <- match(raw$geo, known$code)
@@ -356,7 +398,10 @@ nuts_names <- function(level) {
 #' dataset does not have; or it has more than one value for a country and year,
 #' when a dimension of the dataset is left open. Run it after adding or
 #' changing a row, and now and then, as Eurostat renames or retires datasets.
-#' @param ids The `id`s of the indicators to check, by default all of them.
+#' The generated rows are checked when `data-raw/build_indicators.R` writes
+#' them, so by default only the hand-written rows are checked here.
+#' @param ids The `id`s of the indicators to check, by default those written
+#'   by hand.
 #' @return A data frame with one row per indicator: `id`, `ok`, `areas` (the
 #'   countries or regions with values), `first` and `last` (years), `problem`
 #'   and `note` (values left out as errors of units, see
@@ -367,7 +412,7 @@ nuts_names <- function(level) {
 #' check_indicators()
 #' check_indicators(c("unemployment", "r_gdp_pps"))
 #' }
-check_indicators <- function(ids = indicators()$id) {
+check_indicators <- function(ids = indicators()$id[!indicators()$generated]) {
   do.call(rbind, lapply(ids, function(id) {
     info <- indicator_info(id)
     result <- data.frame(id = id, ok = FALSE, areas = 0L, first = NA_integer_, last = NA_integer_, problem = "", note = "")

@@ -4,10 +4,11 @@
 \alias{check_indicators}
 \title{Check the catalogue against Eurostat}
 \usage{
-check_indicators(ids = indicators()$id)
+check_indicators(ids = indicators()$id[!indicators()$generated])
 }
 \arguments{
-\item{ids}{The \code{id}s of the indicators to check, by default all of them.}
+\item{ids}{The \code{id}s of the indicators to check, by default those written
+by hand.}
 }
 \value{
 A data frame with one row per indicator: \code{id}, \code{ok}, \code{areas} (the
@@ -23,6 +24,8 @@ wrong dimension in \code{filters}; it has no values, often for a value the
 dataset does not have; or it has more than one value for a country and year,
 when a dimension of the dataset is left open. Run it after adding or
 changing a row, and now and then, as Eurostat renames or retires datasets.
+The generated rows are checked when \code{data-raw/build_indicators.R} writes
+them, so by default only the hand-written rows are checked here.
 }
 \examples{
 \dontrun{

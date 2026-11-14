@@ -12,6 +12,8 @@ A Shiny app, built as a golem package, for exploring indicators of [Eurostat](ht
 - **Scatterplot**: the countries by two indicators, animated by year, with the correlation of the two in each year
 - **Indicators**: every indicator of the app, with its unit, definition and a link to its dataset at Eurostat
 
+The indicators are the 62 chosen by hand and, after them, the series of Eurostat's main tables, about 1,500 more, in the groups of Eurostat's themes. Type in a list of indicators to search their names, or the code of a dataset, such as `une_rt_a`.
+
 # Installation
 Open RStudio (or an R console) and run:
 ```r
@@ -46,7 +48,10 @@ plot_regions(get_regional("r_gdp_pps"), "r_gdp_pps")
 Eurostat codes the countries with two letters, as ISO does, except Greece, which is `EL`.
 
 # Adding an indicator
-The indicators are rows of `inst/extdata/indicators.csv`, so adding one needs no R code:
+The indicators come from two files of `inst/extdata`, with the same columns: `indicators.csv`, written by hand, and `indicators_generated.csv`, written by a script from the catalogue of Eurostat.
+
+## By hand
+An indicator added to `indicators.csv` comes first in the lists, under its own topic, and needs no R code:
 
 | Column | Contents |
 |---|---|
@@ -58,6 +63,15 @@ The indicators are rows of `inst/extdata/indicators.csv`, so adding one needs no
 | `definition` | A sentence for the Indicators tab |
 
 The code of a dataset and of its dimensions are in the [Eurostat data browser](https://ec.europa.eu/eurostat/databrowser/). `check_indicators("your_id")` tries a new row: it reports the countries or regions and the years it has, or what is wrong with it, such as a dimension that Eurostat does not know or one left open, which gives more than one value per country and year. Run `check_indicators()` now and then to check them all, as Eurostat sometimes renames or retires a dataset.
+
+## From Eurostat's main tables
+`indicators_generated.csv` holds the series of the [main tables](https://ec.europa.eu/eurostat/web/main/data/database) of Eurostat, its own selection of headline indicators with few breakdowns (codes such as `tps00001`, `tec00115` or `sdg_08_10`). To rebuild it, as Eurostat adds, renames and retires tables, run from the package folder:
+```r
+source("data-raw/build_indicators.R")
+```
+The script reads Eurostat's table of contents and the dimensions of every dataset, downloads each main table with yearly data once (about 680 tables, about 10 minutes the first time; the downloads are kept a week in `data-raw/cache`), and writes a row for each series, a combination of the dimensions other than the country and the year, that has values for at least 10 countries, or 50 regions for the Regions tab, up to 2015 or later. A table with more than 10 such series is left out, and so are amounts in national currency, which cannot be compared between countries, and a series that another table already has under the same name. The names come from the titles of the tables and the labels of the codes; the topic is the folder of the table in Eurostat's themes. These limits are at the top of the script.
+
+A generated row that downloads the same as a hand-written one is left out, so to rename or describe a generated indicator better, copy its row to `indicators.csv` and change it there.
 
 # Data
 Each indicator is downloaded from the Eurostat API, which needs no key, the first time a tab shows it, and kept on disk for a day, in `tools::R_user_dir("golemeurostat", "cache")`; set `options(golemeurostat.cache_dir = )` to keep it elsewhere. The outlines of the countries and regions of the maps, the NUTS 2024 classification, come from [GISCO](https://ec.europa.eu/eurostat/web/gisco) and are downloaded once.

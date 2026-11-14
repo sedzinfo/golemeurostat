@@ -50,14 +50,42 @@ animation_buttons <- function(first_frame) {
 #
 ##########################################################################################
 #' @title The indicators to choose from
-#' @description Grouped by topic, as a select box shows them.
+#' @description Grouped by topic, in the order of the catalogue: the topics of
+#' the hand-written indicators first, then those of Eurostat's main tables.
 #' @param level "country" or "region".
-#' @return A named list of named vectors of ids.
+#' @return A data frame with `label`, `value` (the id), `optgroup` (the topic)
+#'   and `dataset`, as a select box filled by the server takes it.
 #' @noRd
 indicator_choices <- function(level = "country") {
   table <- indicators()
   table <- table[table$level == level, ]
-  lapply(split(table, factor(table$topic, levels = unique(table$topic))), function(t) stats::setNames(t$id, t$name))
+  # selectize shows the groups in the order of their first option
+  table <- table[order(match(table$topic, unique(table$topic))), ]
+  data.frame(label = table$name, value = table$id, optgroup = table$topic, dataset = table$dataset)
+}
+##########################################################################################
+#
+##########################################################################################
+#' @title The options of a select box of indicators
+#' @description Searches the names and the dataset codes, such as "une_rt_a",
+#' and shows every indicator when nothing is typed.
+#' @noRd
+indicator_options <- function() {
+  list(searchField = c("label", "dataset"), maxOptions = nrow(indicators()), placeholder = "Type to search")
+}
+##########################################################################################
+#
+##########################################################################################
+#' @title Fill a select box of indicators
+#' @description The server sends the browser the indicators that match what is
+#' typed, rather than the page carrying every one of them in each select box.
+#' @param session The session of the module.
+#' @param input_id The id of the select box in the module, such as "indicator".
+#' @param selected The id of the indicator picked at first.
+#' @param level "country" or "region".
+#' @noRd
+fill_indicators <- function(session, input_id, selected, level = "country") {
+  updateSelectizeInput(session, input_id, choices = indicator_choices(level), selected = selected, server = TRUE)
 }
 ##########################################################################################
 #

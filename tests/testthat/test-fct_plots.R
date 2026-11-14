@@ -41,3 +41,23 @@ test_that("the scatter plot gives the correlation of each year, and nothing with
   expect_true(all(vapply(names, identical, TRUE, names[[1]])))
   expect_null(plot_scatter(data, transform(data, year = year + 10L), "unemployment", "life_expectancy"))
 })
+
+test_that("with_unit() leaves out the brackets of an indicator without a unit", {
+  expect_equal(with_unit(list(name = "Unemployment rate", unit = "%")), "Unemployment rate (%)")
+  expect_equal(with_unit(list(name = "Population on 1 January", unit = "")), "Population on 1 January")
+})
+
+test_that("chart_title() wraps a long title and makes room for its lines", {
+  short <- chart_title("Unemployment rate", 100)
+  expect_equal(short$title$text, "Unemployment rate")
+  expect_equal(short$top, 100)
+  long <- chart_title(strrep("word ", 40), 100)
+  expect_equal(lengths(regmatches(long$title$text, gregexpr("<br>", long$title$text))), 2)
+  expect_equal(long$top, 100 + 2 * 37)
+})
+
+test_that("axis_title() puts a long name on several lines, in a smaller font", {
+  info <- list(name = "Life expectancy at birth", unit = "Years")
+  expect_equal(axis_title(info, 45), list(text = "Life expectancy at birth (Years)"))
+  expect_equal(axis_title(info, 20), list(text = "Life expectancy at<br>birth (Years)", font = list(size = 14)))
+})

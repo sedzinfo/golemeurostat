@@ -10,12 +10,18 @@ indicators()
 A data frame with one row per indicator.
 }
 \description{
-The catalogue in \code{inst/extdata/indicators.csv}, one row per
-indicator: its \code{id}, whether it is for countries or regions (\code{level}), its
-\code{topic}, \code{name} and \code{unit}, the Eurostat \code{dataset} it comes from, the values
-that fix the other dimensions of that dataset (\code{filters}, such as
-\verb{sex=T;age=Y15-74}) and a short \code{definition}. A row added to the file adds an
-indicator to the app.
+The catalogue, one row per indicator: its \code{id}, whether it is
+for countries or regions (\code{level}), its \code{topic}, \code{name} and \code{unit}, the
+Eurostat \code{dataset} it comes from, the values that fix the other dimensions
+of that dataset (\code{filters}, such as \verb{sex=T;age=Y15-74}) and a short
+\code{definition}.
+
+The rows come from two files of \code{inst/extdata}: \code{indicators.csv}, written
+by hand, whose rows come first, and \code{indicators_generated.csv}, the series
+of the main tables of Eurostat, written by \code{data-raw/build_indicators.R}
+(\code{generated} is \code{TRUE} for these). A generated row with the same \code{id}, or
+the same \code{level}, \code{dataset} and \code{filters}, as a hand-written one is left
+out. A row added to \code{indicators.csv} adds an indicator to the app.
 }
 \examples{
 indicators()[, c("id", "level", "name", "unit")]

@@ -46,3 +46,6 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+# downloads of data-raw/build_indicators.R
+/data-raw/cache/

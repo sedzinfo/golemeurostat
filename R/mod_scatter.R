@@ -15,8 +15,8 @@ mod_scatter_ui <- function(id) {
   ns <- NS(id)
   tagList(
     fluidRow(
-      column(6, selectizeInput(ns("x"), label = "Horizontal axis", choices = indicator_choices(), selected = "gdp_pps", width = "100%")),
-      column(6, selectizeInput(ns("y"), label = "Vertical axis", choices = indicator_choices(), selected = "life_expectancy", width = "100%"))
+      column(6, selectizeInput(ns("x"), label = "Horizontal axis", choices = NULL, width = "100%", options = indicator_options())),
+      column(6, selectizeInput(ns("y"), label = "Vertical axis", choices = NULL, width = "100%", options = indicator_options()))
     ),
     plotly::plotlyOutput(ns("plot"), width = "100%", height = "100%")
   )
@@ -37,6 +37,8 @@ mod_scatter_ui <- function(id) {
 #' }
 mod_scatter_server <- function(id) {
   moduleServer(id, function(input, output, session) {
+    fill_indicators(session, "x", "gdp_pps")
+    fill_indicators(session, "y", "life_expectancy")
     x_data <- reactive({
       req(input$x)
       get_indicator(input$x)

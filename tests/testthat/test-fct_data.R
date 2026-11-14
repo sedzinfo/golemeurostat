@@ -9,7 +9,35 @@ test_that("the catalogue has unique ids, a known level, filters and a definition
   expect_true(all(grepl("^[a-z0-9_]+$", table$id)))
   expect_true(all(table$level %in% c("country", "region")))
   expect_true(all(lengths(lapply(table$filters, parse_filters)) > 0))
-  expect_true(all(nzchar(table$name) & nzchar(table$unit) & nzchar(table$definition)))
+  expect_true(all(nzchar(table$name) & nzchar(table$definition) & nzchar(table$topic)))
+  # some of Eurostat's main tables have no unit; the hand-written rows all have one
+  expect_true(all(nzchar(table$unit[!table$generated])))
+})
+
+test_that("the generated rows come after the hand-written ones and repeat none of them", {
+  table <- indicators()
+  expect_true(any(table$generated))
+  expect_false(is.unsorted(table$generated))
+  expect_false(anyDuplicated(series_key(table)) > 0)
+})
+
+test_that("series_key() finds the same series whatever the order of the filters and freq=A", {
+  row <- function(filters, level = "country") data.frame(level = level, dataset = "une_rt_a", filters = filters)
+  expect_equal(series_key(row("freq=A;unit=PC_ACT;sex=T")), series_key(row("sex=T;unit=PC_ACT")))
+  expect_false(series_key(row("sex=T")) == series_key(row("sex=F")))
+  # the same filters for the regions are another series
+  expect_false(series_key(row("sex=T")) == series_key(row("sex=T", "region")))
+})
+
+test_that("indicator_choices() gives the indicators of a level, each topic in one group", {
+  countries <- indicator_choices()
+  regions <- indicator_choices("region")
+  expect_named(countries, c("label", "value", "optgroup", "dataset"))
+  expect_true(all(regions$value %in% indicators()$id[indicators()$level == "region"]))
+  expect_false(any(regions$value %in% countries$value))
+  # selectize shows a group where its first option is, so the options of a topic must be together
+  runs <- rle(countries$optgroup)$values
+  expect_false(anyDuplicated(runs) > 0)
 })
 
 test_that("countries() has the EU, EFTA and candidate countries and the EU-27 average", {
@@ -27,9 +55,16 @@ test_that("tidy_countries() keeps the countries and the EU-27 average, with thei
 })
 
 test_that("tidy_countries() leaves out values in the wrong units, a million times too large", {
-  raw <- rbind(raw_unemployment, data.frame(freq = "A", age = "Y15-74", unit = "PC_ACT", sex = "T", geo = "TR", time = 2022, values = 9e6))
+  # Turkiye in old lira the first year, in new lira the next two
+  raw <- rbind(raw_unemployment, data.frame(freq = "A", age = "Y15-74", unit = "PC_ACT", sex = "T", geo = "TR", time = 2022:2024, values = c(9e6, 9, 9)))
   expect_message(data <- tidy_countries(raw), "TR 2022")
-  expect_false("TR" %in% data$geo)
+  expect_equal(data$year[data$geo == "TR"], 2023:2024)
+})
+
+test_that("tidy_countries() keeps a country far larger than the others every year", {
+  raw <- data.frame(geo = rep(c("DE", "MT", "CY", "LU"), each = 2), time = 2023:2024, values = c(3e5, 3.2e5, 10, 12, 50, 40, 30, 20))
+  expect_no_message(data <- tidy_countries(raw))
+  expect_equal(nrow(data), 8)
 })
 
 test_that("tidy_regions() keeps the regions of the map, with their names and countries", {

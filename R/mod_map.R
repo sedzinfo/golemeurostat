@@ -14,7 +14,7 @@
 mod_map_ui <- function(id) {
   ns <- NS(id)
   tagList(
-    fluidRow(column(6, selectizeInput(ns("indicator"), label = "Indicator", choices = indicator_choices(), selected = "unemployment", width = "100%"))),
+    fluidRow(column(6, selectizeInput(ns("indicator"), label = "Indicator", choices = NULL, width = "100%", options = indicator_options()))),
     plotly::plotlyOutput(ns("plot"), width = "100%", height = "100%")
   )
 }
@@ -34,6 +34,7 @@ mod_map_ui <- function(id) {
 #' }
 mod_map_server <- function(id) {
   moduleServer(id, function(input, output, session) {
+    fill_indicators(session, "indicator", "unemployment")
     data <- reactive({
       req(input$indicator)
       get_indicator(input$indicator)
