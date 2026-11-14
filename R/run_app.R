@@ -2,9 +2,13 @@
 #
 ##########################################################################################
 #' @title Run the Eurostat Indicators Explorer
-#' @description Starts the app. Each indicator is downloaded from Eurostat when a
-#' tab first needs it, and kept on disk for a day (see [get_indicator()]), so
-#' the first look at an indicator takes a second or two.
+#' @description Starts the app, with the tabs of golemworldbank: country and
+#' indicator comparisons, a population pyramid, a bar chart race, a scatter
+#' plot, maps of the countries and of the regions, the change of the indicators
+#' between two years, the list of the indicators and an About page. Each
+#' indicator is downloaded from Eurostat when a tab first needs it, and kept on
+#' disk for a day (see [get_indicator()]), so the first look at an indicator
+#' takes a second or two.
 #' @param analytics `TRUE` to add Google Analytics, through the cookie banner
 #'   shared with the sites of sedzinfo.github.io, which loads it only after the
 #'   visitor accepts. Meant for the public deployment (see `app.R`); off by

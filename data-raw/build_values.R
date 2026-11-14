@@ -76,7 +76,8 @@ values$geo <- factor(values$geo)
 values <- values[order(values$id, values$geo, values$year), ]
 rownames(values) <- NULL
 attr(values, "built") <- Sys.Date()
-saveRDS(values, output, compress = "xz")
+# version 2, which R older than 3.5 reads too, as R CMD build asks of the files of a package
+saveRDS(values, output, compress = "xz", version = 2)
 message(
   "Wrote ", nrow(values), " values of ", length(unique(values$id)), " indicators to ", output,
   " (", round(file.size(output) / 1024^2, 1), " MB)"

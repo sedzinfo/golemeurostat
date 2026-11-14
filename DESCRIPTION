@@ -6,9 +6,11 @@ Authors@R: person("Dimitrios", "Zacharatos", , "dzacharatos@yahoo.com", role = c
 Description: A 'shiny' application, built as a 'golem' package, for exploring
     indicators of 'Eurostat', the statistical office of the European Union,
     for the countries of the EU and EFTA and the candidate countries, and for
-    the regions of Europe: country comparison, a ranked bar chart race, maps
-    of the countries and of the regions, and a scatter plot. The data are downloaded from the 'Eurostat' API when first needed
-    and kept on disk for a day.
+    the regions of Europe, in the tabs of 'golemworldbank': country and
+    indicator comparisons, population pyramids, a ranked bar chart race, a
+    scatter plot, maps of the countries and of the regions, and the change of
+    every indicator between two years. The data are downloaded from the
+    'Eurostat' API when first needed and kept on disk for a day.
 License: GPL-3
 URL: https://sedzinfo.github.io/golemeurostat/, https://github.com/sedzinfo/golemeurostat
 BugReports: https://github.com/sedzinfo/golemeurostat/issues

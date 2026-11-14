@@ -45,7 +45,7 @@ mod_about_ui <- function(id) {
     p(
       "Thanks to ", strong("Eurostat"), " for making its data open and free to reuse, and to ",
       link("https://ec.europa.eu/eurostat/web/gisco", "GISCO"),
-      " for the outlines of the countries and regions of the maps (© EuroGeographics for",
+      " for the outlines of the countries and regions of the maps (\u00a9 EuroGeographics for",
       " the administrative boundaries)."
     ),
     p(

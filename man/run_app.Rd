@@ -28,9 +28,13 @@ default, so that running the app yourself sends nothing.}
 A \code{\link[shiny:shinyApp]{shiny::shinyApp()}} object; printing it opens the app.
 }
 \description{
-Starts the app. Each indicator is downloaded from Eurostat when a
-tab first needs it, and kept on disk for a day (see \code{\link[=get_indicator]{get_indicator()}}), so
-the first look at an indicator takes a second or two.
+Starts the app, with the tabs of golemworldbank: country and
+indicator comparisons, a population pyramid, a bar chart race, a scatter
+plot, maps of the countries and of the regions, the change of the indicators
+between two years, the list of the indicators and an About page. Each
+indicator is downloaded from Eurostat when a tab first needs it, and kept on
+disk for a day (see \code{\link[=get_indicator]{get_indicator()}}), so the first look at an indicator
+takes a second or two.
 }
 \examples{
 if (interactive()) run_app()
