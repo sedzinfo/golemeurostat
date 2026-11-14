@@ -1,7 +1,8 @@
 # Country Comparison module - UI
 
-Countries and an indicator to pick, and a line per country over the
-years, with the EU-27 average.
+Countries and an indicator to pick, one under the other across the page,
+as in golemworldbank, and a line per country over the years, with the
+EU-27 average.
 
 ## Usage
 

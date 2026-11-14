@@ -1,7 +1,7 @@
 # Indicator Comparison module - UI
 
-Indicators and a country to pick, and a line per indicator over the
-years, as in golemworldbank.
+Indicators and a country to pick, one under the other across the page,
+and a line per indicator over the years, as in golemworldbank.
 
 ## Usage
 
