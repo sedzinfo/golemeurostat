@@ -11,17 +11,22 @@ regions of Europe. It follows the layout of
 
 # Tabs
 
-- **Country Comparison**: an indicator over the years for the countries
-  you pick, with the EU-27 average as a dashed line
-- **Barplot**: the countries ranked by an indicator, as a race through
-  the years, with the country you pick in red
-- **Map**: the countries colored by an indicator, animated by year
-- **Regions**: the regions of Europe (NUTS 2) colored by an indicator,
-  such as GDP per inhabitant or unemployment, animated by year
-- **Scatterplot**: the countries by two indicators, animated by year,
-  with the correlation of the two in each year
-- **Indicators**: every indicator of the app, with its unit, definition
-  and a link to its dataset at Eurostat
+The tabs of golemworldbank, with two maps: - **Country Comparison**: an
+indicator over the years for the countries you pick, with the EU-27
+average as a dashed line - **Indicator Comparison**: several indicators
+over the years for one country, or the EU-27 - **Pyramid**: the
+population of a country by five-year age group and sex, animated by
+year - **Barplot**: the countries ranked by an indicator, as a race
+through the years, with the country you pick in red - **Scatterplot**:
+the countries by two indicators, animated by year, with the correlation
+of the two in each year - **Map**: the countries colored by an
+indicator, animated by year - **Regions**: the regions of Europe (NUTS
+2) colored by an indicator, such as GDP per inhabitant or unemployment,
+animated by year - **Change (%)**: the indicators of a country that rose
+and fell between two years, by how much - **Indicators**: every
+indicator of the app, with its unit, definition and a link to its
+dataset at Eurostat - **About**: where the data comes from, the
+acknowledgments and the license
 
 The indicators are the 62 chosen by hand and, after them, the series of
 Eurostat’s main tables, about 1,500 more, in the groups of Eurostat’s
@@ -46,6 +51,12 @@ manual:
 From the package folder:
 
 `pkgload``::`[`load_all`](https://pkgload.r-lib.org/reference/load_all.html)`(``)`` `[`run_app`](https://sedzinfo.github.io/golemeurostat/reference/run_app.md)`(``)`
+
+`app.R`, which the deployment runs, starts it with
+`run_app(analytics = TRUE)`: Google Analytics, through the cookie banner
+shared with the sites of sedzinfo.github.io, which loads it only after
+the visitor accepts, and a footer with the Cookie settings and Privacy
+links, as in golemworldbank. Without it, the app sends nothing.
 
 The data and the charts can also be used from R:
 
@@ -106,7 +117,10 @@ and so are amounts in national currency, which cannot be compared
 between countries, and a series that another table already has under the
 same name. The names come from the titles of the tables and the labels
 of the codes; the topic is the folder of the table in Eurostat’s themes.
-These limits are at the top of the script.
+These limits are at the top of the script. At its end, it runs
+`data-raw/build_values.R`, which writes `inst/extdata/values.rds`, the
+values of every indicator of the countries (about 750,000, 1 MB), for
+the Change (%) tab.
 
 A generated row that downloads the same as a hand-written one is left
 out, so to rename or describe a generated indicator better, copy its row
@@ -120,7 +134,9 @@ the first time a tab shows it, and kept on disk for a day, in
 `options(golemeurostat.cache_dir = )` to keep it elsewhere. The outlines
 of the countries and regions of the maps, the NUTS 2024 classification,
 come from [GISCO](https://ec.europa.eu/eurostat/web/gisco) and are
-downloaded once.
+downloaded once. The Change (%) tab, which compares all the indicators
+of a country at once, uses instead the values written into the package
+by `data-raw/build_values.R`, and says their date.
 
 Source of the data: Eurostat. Administrative boundaries: ©
 EuroGeographics.
@@ -143,31 +159,43 @@ package check with
 ## Data
 
 The catalogue of indicators and countries, downloading an indicator from
-Eurostat for the countries or the regions, and checking the catalogue
-against Eurostat
+Eurostat for the countries or the regions, or the population of a
+country by age and sex, checking the catalogue against Eurostat, and the
+values of all the indicators that the Change (%) tab compares
 
-- [`indicators()`](https://sedzinfo.github.io/golemeurostat/reference/indicators.md)
-  : The indicators of the app
+- [`all_values()`](https://sedzinfo.github.io/golemeurostat/reference/all_values.md)
+  : The values of all the indicators
+- [`check_indicators()`](https://sedzinfo.github.io/golemeurostat/reference/check_indicators.md)
+  : Check the catalogue against Eurostat
 - [`countries()`](https://sedzinfo.github.io/golemeurostat/reference/countries.md)
   : The countries of the app
 - [`get_indicator()`](https://sedzinfo.github.io/golemeurostat/reference/get_indicator.md)
   : Get an indicator for the countries
+- [`get_pyramid()`](https://sedzinfo.github.io/golemeurostat/reference/get_pyramid.md)
+  : Get the population of a country by age group and sex
 - [`get_regional()`](https://sedzinfo.github.io/golemeurostat/reference/get_regional.md)
   : Get an indicator for the regions
-- [`check_indicators()`](https://sedzinfo.github.io/golemeurostat/reference/check_indicators.md)
-  : Check the catalogue against Eurostat
+- [`indicator_change()`](https://sedzinfo.github.io/golemeurostat/reference/indicator_change.md)
+  : Indicators that rose or fell between two years for one country
+- [`indicators()`](https://sedzinfo.github.io/golemeurostat/reference/indicators.md)
+  : The indicators of the app
 
 ## Plot
 
-The plotly charts of the tabs: country comparison, ranked bars, maps of
-the countries and of the regions, scatter plot
+The plotly charts of the tabs: country and indicator comparisons,
+population pyramid, ranked bars, maps of the countries and of the
+regions, scatter plot
 
-- [`plot_country_comp()`](https://sedzinfo.github.io/golemeurostat/reference/plot_country_comp.md)
-  : Line chart of an indicator for several countries
 - [`plot_bar()`](https://sedzinfo.github.io/golemeurostat/reference/plot_bar.md)
   : Ranked bars of an indicator, animated by year
+- [`plot_country_comp()`](https://sedzinfo.github.io/golemeurostat/reference/plot_country_comp.md)
+  : Line chart of an indicator for several countries
+- [`plot_indicator_comp()`](https://sedzinfo.github.io/golemeurostat/reference/plot_indicator_comp.md)
+  : Line chart of several indicators for one country
 - [`plot_map()`](https://sedzinfo.github.io/golemeurostat/reference/plot_map.md)
   : Map of the countries, animated by year
+- [`plot_pyramid()`](https://sedzinfo.github.io/golemeurostat/reference/plot_pyramid.md)
+  : Population pyramid, animated by year
 - [`plot_regions()`](https://sedzinfo.github.io/golemeurostat/reference/plot_regions.md)
   : Map of the regions, animated by year
 - [`plot_scatter()`](https://sedzinfo.github.io/golemeurostat/reference/plot_scatter.md)
@@ -175,7 +203,14 @@ the countries and of the regions, scatter plot
 
 ## Render
 
-The table of the Indicators tab
+The tables of the Change (%) and Indicators tabs
+
+- [`render_change_table()`](https://sedzinfo.github.io/golemeurostat/reference/render_change_table.md)
+  :
+
+  One table of
+  [`indicator_change()`](https://sedzinfo.github.io/golemeurostat/reference/indicator_change.md)
+  as a DataTable
 
 - [`render_index_table()`](https://sedzinfo.github.io/golemeurostat/reference/render_index_table.md)
   : Table of the indicators
@@ -184,14 +219,22 @@ The table of the Indicators tab
 
 Internal functions not meant to run independently
 
+- [`mod_about_ui()`](https://sedzinfo.github.io/golemeurostat/reference/mod_about_ui.md)
+  : About module - UI
 - [`mod_bar_ui()`](https://sedzinfo.github.io/golemeurostat/reference/mod_bar_ui.md)
   : Barplot module - UI
+- [`mod_change_ui()`](https://sedzinfo.github.io/golemeurostat/reference/mod_change_ui.md)
+  : Change (%) module - UI
 - [`mod_country_comp_ui()`](https://sedzinfo.github.io/golemeurostat/reference/mod_country_comp_ui.md)
   : Country Comparison module - UI
 - [`mod_index_table_ui()`](https://sedzinfo.github.io/golemeurostat/reference/mod_index_table_ui.md)
   : Indicators module - UI
+- [`mod_indicator_comp_ui()`](https://sedzinfo.github.io/golemeurostat/reference/mod_indicator_comp_ui.md)
+  : Indicator Comparison module - UI
 - [`mod_map_ui()`](https://sedzinfo.github.io/golemeurostat/reference/mod_map_ui.md)
   : Map module - UI
+- [`mod_pyramid_ui()`](https://sedzinfo.github.io/golemeurostat/reference/mod_pyramid_ui.md)
+  : Pyramid module - UI
 - [`mod_regions_ui()`](https://sedzinfo.github.io/golemeurostat/reference/mod_regions_ui.md)
   : Regions module - UI
 - [`mod_scatter_ui()`](https://sedzinfo.github.io/golemeurostat/reference/mod_scatter_ui.md)
@@ -203,12 +246,18 @@ Internal functions not meant to run independently
 
 - [`mod_bar_server()`](https://sedzinfo.github.io/golemeurostat/reference/mod_bar_server.md)
   : Barplot module - server
+- [`mod_change_server()`](https://sedzinfo.github.io/golemeurostat/reference/mod_change_server.md)
+  : Change (%) module - server
 - [`mod_country_comp_server()`](https://sedzinfo.github.io/golemeurostat/reference/mod_country_comp_server.md)
   : Country Comparison module - server
 - [`mod_index_table_server()`](https://sedzinfo.github.io/golemeurostat/reference/mod_index_table_server.md)
   : Indicators module - server
+- [`mod_indicator_comp_server()`](https://sedzinfo.github.io/golemeurostat/reference/mod_indicator_comp_server.md)
+  : Indicator Comparison module - server
 - [`mod_map_server()`](https://sedzinfo.github.io/golemeurostat/reference/mod_map_server.md)
   : Map module - server
+- [`mod_pyramid_server()`](https://sedzinfo.github.io/golemeurostat/reference/mod_pyramid_server.md)
+  : Pyramid module - server
 - [`mod_regions_server()`](https://sedzinfo.github.io/golemeurostat/reference/mod_regions_server.md)
   : Regions module - server
 - [`mod_scatter_server()`](https://sedzinfo.github.io/golemeurostat/reference/mod_scatter_server.md)
