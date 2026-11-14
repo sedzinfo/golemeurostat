@@ -48,7 +48,7 @@
       </dl></div><div class="section level2">
       <h2 id="data">Data<a class="anchor" aria-label="anchor" href="#data"></a></h2>
 
-      <div class="section-desc"><p>The catalogue of indicators and countries, downloading an indicator from Eurostat for the countries or the regions, and checking the catalogue against Eurostat</p></div>
+      <div class="section-desc"><p>The catalogue of indicators and countries, downloading an indicator from Eurostat for the countries or the regions, or the population of a country by age and sex, checking the catalogue against Eurostat, and the values of all the indicators that the Change (%) tab compares</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -57,10 +57,17 @@
 
       <dl><dt>
 
-          <code><a href="indicators.html">indicators()</a></code>
+          <code><a href="all_values.html">all_values()</a></code>
 
         </dt>
-        <dd>The indicators of the app</dd>
+        <dd>The values of all the indicators</dd>
+
+        <dt>
+
+          <code><a href="check_indicators.html">check_indicators()</a></code>
+
+        </dt>
+        <dd>Check the catalogue against Eurostat</dd>
 
         <dt>
 
@@ -78,6 +85,13 @@
 
         <dt>
 
+          <code><a href="get_pyramid.html">get_pyramid()</a></code>
+
+        </dt>
+        <dd>Get the population of a country by age group and sex</dd>
+
+        <dt>
+
           <code><a href="get_regional.html">get_regional()</a></code>
 
         </dt>
@@ -85,14 +99,21 @@
 
         <dt>
 
-          <code><a href="check_indicators.html">check_indicators()</a></code>
+          <code><a href="indicator_change.html">indicator_change()</a></code>
 
         </dt>
-        <dd>Check the catalogue against Eurostat</dd>
+        <dd>Indicators that rose or fell between two years for one country</dd>
+
+        <dt>
+
+          <code><a href="indicators.html">indicators()</a></code>
+
+        </dt>
+        <dd>The indicators of the app</dd>
       </dl></div><div class="section level2">
       <h2 id="plot">Plot<a class="anchor" aria-label="anchor" href="#plot"></a></h2>
 
-      <div class="section-desc"><p>The plotly charts of the tabs: country comparison, ranked bars, maps of the countries and of the regions, scatter plot</p></div>
+      <div class="section-desc"><p>The plotly charts of the tabs: country and indicator comparisons, population pyramid, ranked bars, maps of the countries and of the regions, scatter plot</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -101,13 +122,6 @@
 
       <dl><dt>
 
-          <code><a href="plot_country_comp.html">plot_country_comp()</a></code>
-
-        </dt>
-        <dd>Line chart of an indicator for several countries</dd>
-
-        <dt>
-
           <code><a href="plot_bar.html">plot_bar()</a></code>
 
         </dt>
@@ -115,10 +129,31 @@
 
         <dt>
 
+          <code><a href="plot_country_comp.html">plot_country_comp()</a></code>
+
+        </dt>
+        <dd>Line chart of an indicator for several countries</dd>
+
+        <dt>
+
+          <code><a href="plot_indicator_comp.html">plot_indicator_comp()</a></code>
+
+        </dt>
+        <dd>Line chart of several indicators for one country</dd>
+
+        <dt>
+
           <code><a href="plot_map.html">plot_map()</a></code>
 
         </dt>
         <dd>Map of the countries, animated by year</dd>
+
+        <dt>
+
+          <code><a href="plot_pyramid.html">plot_pyramid()</a></code>
+
+        </dt>
+        <dd>Population pyramid, animated by year</dd>
 
         <dt>
 
@@ -136,7 +171,7 @@
       </dl></div><div class="section level2">
       <h2 id="render">Render<a class="anchor" aria-label="anchor" href="#render"></a></h2>
 
-      <div class="section-desc"><p>The table of the Indicators tab</p></div>
+      <div class="section-desc"><p>The tables of the Change (%) and Indicators tabs</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -144,6 +179,13 @@
 
 
       <dl><dt>
+
+          <code><a href="render_change_table.html">render_change_table()</a></code>
+
+        </dt>
+        <dd>One table of <code><a href="../reference/indicator_change.html">indicator_change()</a></code> as a DataTable</dd>
+
+        <dt>
 
           <code><a href="render_index_table.html">render_index_table()</a></code>
 
@@ -161,10 +203,24 @@
 
       <dl><dt>
 
+          <code><a href="mod_about_ui.html">mod_about_ui()</a></code>
+
+        </dt>
+        <dd>About module - UI</dd>
+
+        <dt>
+
           <code><a href="mod_bar_ui.html">mod_bar_ui()</a></code>
 
         </dt>
         <dd>Barplot module - UI</dd>
+
+        <dt>
+
+          <code><a href="mod_change_ui.html">mod_change_ui()</a></code>
+
+        </dt>
+        <dd>Change (%) module - UI</dd>
 
         <dt>
 
@@ -182,10 +238,24 @@
 
         <dt>
 
+          <code><a href="mod_indicator_comp_ui.html">mod_indicator_comp_ui()</a></code>
+
+        </dt>
+        <dd>Indicator Comparison module - UI</dd>
+
+        <dt>
+
           <code><a href="mod_map_ui.html">mod_map_ui()</a></code>
 
         </dt>
         <dd>Map module - UI</dd>
+
+        <dt>
+
+          <code><a href="mod_pyramid_ui.html">mod_pyramid_ui()</a></code>
+
+        </dt>
+        <dd>Pyramid module - UI</dd>
 
         <dt>
 
@@ -219,6 +289,13 @@
 
         <dt>
 
+          <code><a href="mod_change_server.html">mod_change_server()</a></code>
+
+        </dt>
+        <dd>Change (%) module - server</dd>
+
+        <dt>
+
           <code><a href="mod_country_comp_server.html">mod_country_comp_server()</a></code>
 
         </dt>
@@ -233,10 +310,24 @@
 
         <dt>
 
+          <code><a href="mod_indicator_comp_server.html">mod_indicator_comp_server()</a></code>
+
+        </dt>
+        <dd>Indicator Comparison module - server</dd>
+
+        <dt>
+
           <code><a href="mod_map_server.html">mod_map_server()</a></code>
 
         </dt>
         <dd>Map module - server</dd>
+
+        <dt>
+
+          <code><a href="mod_pyramid_server.html">mod_pyramid_server()</a></code>
+
+        </dt>
+        <dd>Pyramid module - server</dd>
 
         <dt>
 
