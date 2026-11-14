@@ -11,17 +11,22 @@ regions of Europe. It follows the layout of
 
 # Tabs
 
-- **Country Comparison**: an indicator over the years for the countries
-  you pick, with the EU-27 average as a dashed line
-- **Barplot**: the countries ranked by an indicator, as a race through
-  the years, with the country you pick in red
-- **Map**: the countries colored by an indicator, animated by year
-- **Regions**: the regions of Europe (NUTS 2) colored by an indicator,
-  such as GDP per inhabitant or unemployment, animated by year
-- **Scatterplot**: the countries by two indicators, animated by year,
-  with the correlation of the two in each year
-- **Indicators**: every indicator of the app, with its unit, definition
-  and a link to its dataset at Eurostat
+The tabs of golemworldbank, with two maps: - **Country Comparison**: an
+indicator over the years for the countries you pick, with the EU-27
+average as a dashed line - **Indicator Comparison**: several indicators
+over the years for one country, or the EU-27 - **Pyramid**: the
+population of a country by five-year age group and sex, animated by
+year - **Barplot**: the countries ranked by an indicator, as a race
+through the years, with the country you pick in red - **Scatterplot**:
+the countries by two indicators, animated by year, with the correlation
+of the two in each year - **Map**: the countries colored by an
+indicator, animated by year - **Regions**: the regions of Europe (NUTS
+2) colored by an indicator, such as GDP per inhabitant or unemployment,
+animated by year - **Change (%)**: the indicators of a country that rose
+and fell between two years, by how much - **Indicators**: every
+indicator of the app, with its unit, definition and a link to its
+dataset at Eurostat - **About**: where the data comes from, the
+acknowledgments and the license
 
 The indicators are the 62 chosen by hand and, after them, the series of
 Eurostat’s main tables, about 1,500 more, in the groups of Eurostat’s
@@ -46,6 +51,12 @@ manual:
 From the package folder:
 
 `pkgload``::`[`load_all`](https://pkgload.r-lib.org/reference/load_all.html)`(``)`` `[`run_app`](https://sedzinfo.github.io/golemeurostat/reference/run_app.md)`(``)`
+
+`app.R`, which the deployment runs, starts it with
+`run_app(analytics = TRUE)`: Google Analytics, through the cookie banner
+shared with the sites of sedzinfo.github.io, which loads it only after
+the visitor accepts, and a footer with the Cookie settings and Privacy
+links, as in golemworldbank. Without it, the app sends nothing.
 
 The data and the charts can also be used from R:
 
@@ -106,7 +117,10 @@ and so are amounts in national currency, which cannot be compared
 between countries, and a series that another table already has under the
 same name. The names come from the titles of the tables and the labels
 of the codes; the topic is the folder of the table in Eurostat’s themes.
-These limits are at the top of the script.
+These limits are at the top of the script. At its end, it runs
+`data-raw/build_values.R`, which writes `inst/extdata/values.rds`, the
+values of every indicator of the countries (about 750,000, 1 MB), for
+the Change (%) tab.
 
 A generated row that downloads the same as a hand-written one is left
 out, so to rename or describe a generated indicator better, copy its row
@@ -120,7 +134,9 @@ the first time a tab shows it, and kept on disk for a day, in
 `options(golemeurostat.cache_dir = )` to keep it elsewhere. The outlines
 of the countries and regions of the maps, the NUTS 2024 classification,
 come from [GISCO](https://ec.europa.eu/eurostat/web/gisco) and are
-downloaded once.
+downloaded once. The Change (%) tab, which compares all the indicators
+of a country at once, uses instead the values written into the package
+by `data-raw/build_values.R`, and says their date.
 
 Source of the data: Eurostat. Administrative boundaries: ©
 EuroGeographics.
