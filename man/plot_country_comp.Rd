@@ -19,7 +19,7 @@ A plotly object.
 }
 \description{
 One line per country, and the EU-27 average as a dashed gray
-line, for comparison.
+line, for comparison. Titled "Indicator: " and its name, as in golemworldbank.
 }
 \examples{
 data <- data.frame(

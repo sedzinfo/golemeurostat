@@ -2,8 +2,9 @@
 #
 ##########################################################################################
 #' @title Regions module - UI
-#' @description A regional indicator to pick, and a map of the regions of Europe
-#' colored by it, animated by year.
+#' @description A regional indicator to pick, across the page, and a map of the
+#' regions of Europe colored by it, animated by year, as the map of the
+#' countries.
 #' @param id Character. Module namespace id.
 #' @return A `tagList` of Shiny UI elements.
 #' @keywords internal
@@ -14,7 +15,7 @@
 mod_regions_ui <- function(id) {
   ns <- NS(id)
   tagList(
-    fluidRow(column(6, selectizeInput(ns("indicator"), label = "Indicator", choices = NULL, width = "100%", options = indicator_options()))),
+    selectizeInput(ns("indicator"), label = "Indicator", choices = NULL, width = "100%", options = indicator_options()),
     plotly::plotlyOutput(ns("plot"), width = "100%", height = "100%")
   )
 }

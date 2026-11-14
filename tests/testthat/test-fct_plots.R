@@ -87,6 +87,8 @@ test_that("the pyramid draws the men to the left, opens at the last year and kee
   )
   built <- plotly::plotly_build(plot_pyramid(data, "EL"))$x
   expect_length(built$frames, 2)
+  # as in golemworldbank
+  expect_equal(built$layout$title, "Country: Greece")
   male <- built$data[[which(vapply(built$data, `[[`, "", "name") == "Male")]]
   expect_equal(as.vector(male$x), c(-47, -53))
   expect_equal(built$layout$sliders[[1]]$active, 1)
@@ -117,4 +119,70 @@ test_that("the pyramid leaves out the years that jump back and forth, and names 
   decade$year <- 1965
   decade$value <- rep(c(65, 35), 2)
   expect_equal(jumping_years(rbind(decade, data[data$year >= 1975, ], transform(data[data$year == 1975, ], year = 1976))), integer(0))
+})
+
+test_that("the charts of one indicator are titled with it, as in golemworldbank", {
+  data <- tidy_countries(raw_unemployment)
+  title <- function(p) plotly::plotly_build(p)$x$layout$title$text
+  expect_equal(title(plot_country_comp(data, c("EL", "BG"), "unemployment")), "Indicator: Unemployment rate")
+  expect_equal(title(plot_map(data, "unemployment")), "Indicator: Unemployment rate")
+  expect_equal(title(plot_regions(regions, "r_gdp_pps")), "Indicator: GDP per inhabitant in PPS")
+})
+
+test_that("the indicator comparison colors its lines as the country comparison its countries, in the order picked", {
+  data <- tidy_countries(raw_unemployment)
+  colors <- function(p) vapply(plotly::plotly_build(p)$x$data, function(t) t$line$color, "")
+  two <- list(unemployment = data, youth_unemployment = transform(data, value = 2 * value))
+  expect_equal(colors(plot_indicator_comp(two, "EL", names(two))), colors(plot_country_comp(data, c("EL", "BG"), "unemployment"))[1:2])
+  built <- plotly::plotly_build(plot_indicator_comp(two, "EL", rev(names(two))))$x
+  expect_match(built$data[[1]]$name, "^Youth unemployment rate")
+  expect_equal(as.vector(built$data[[1]]$y), c(24.8, 22.2, 20.2))
+})
+
+test_that("the maps go from red for the lowest through white to dark blue for the highest, with dark borders, as in golemworldbank", {
+  built <- plotly::plotly_build(plot_map(tidy_countries(raw_unemployment), "unemployment"))$x
+  scale <- built$data[[1]]$colorscale
+  expect_equal(c(scale[1, 2], scale[nrow(scale), 2]), c("rgba(178,24,43,1)", "rgba(8,48,107,1)"))
+  middle <- scale[ceiling(nrow(scale) / 2), 2]
+  middle <- as.numeric(regmatches(middle, gregexpr("[0-9]+", middle))[[1]][1:3])
+  expect_true(all(middle >= 250))
+  expect_equal(built$data[[1]]$marker$line$color, "#444")
+  # thinner between the small regions
+  expect_equal(plotly::plotly_build(plot_regions(regions, "r_gdp_pps"))$x$data[[1]]$marker$line$width, 0.5)
+})
+
+test_that("the scatter plot draws bubbles as large as the population, in plotly's colors, as golemworldbank", {
+  data <- tidy_countries(raw_unemployment)
+  population <- transform(data, value = ifelse(geo == "EL", 10.4e6, 6.4e6))
+  expect_no_warning(
+    built <- plotly::plotly_build(plot_scatter(data, transform(data, value = 2 * value), "unemployment", "life_expectancy", population))$x
+  )
+  names <- vapply(built$data, `[[`, "", "name")
+  # Bulgaria the smallest bubble and Greece the largest, in every year
+  for (frame in built$frames) {
+    eu <- frame$data[[which(names == "EU")]]
+    expect_equal(as.vector(eu$text), c("BG", "EL"))
+    expect_equal(as.vector(eu$marker$size), c(10, 60))
+    # the codes in the font of the chart, not as large as the bubbles
+    expect_null(eu$textfont$size)
+  }
+  expect_match(built$data[[which(names == "EU")]]$hovertext[2], "Population: 10.4M", fixed = TRUE)
+  expect_equal(
+    vapply(built$data, function(t) t$marker$color, "")[match(c("EU", "EFTA", "Candidate"), names)],
+    c("rgba(102,194,165,1)", "rgba(252,141,98,1)", "rgba(141,160,203,1)")
+  )
+  # without the population, bubbles all of the smallest size
+  plain <- plotly::plotly_build(plot_scatter(data, transform(data, value = 2 * value), "unemployment", "life_expectancy"))$x
+  expect_true(all(unlist(lapply(plain$data, function(t) t$marker$size)) == 10))
+})
+
+test_that("the population of a year between two of Eurostat's is in a straight line, and that of the nearest outside them", {
+  population <- data.frame(geo = "EL", year = c(2020, 2022), value = c(100, 200))
+  rows <- data.frame(geo = c("EL", "EL", "EL", "BG"), year = c(2019, 2021, 2024, 2021))
+  expect_equal(population_of(rows, population), c(100, 150, 200, NA))
+  expect_equal(population_of(rows, NULL), rep(NA_real_, 4))
+})
+
+test_that("the table of the indicators is one long page, as in golemworldbank", {
+  expect_false(render_index_table()$x$options$paging)
 })

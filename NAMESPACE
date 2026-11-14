@@ -25,4 +25,5 @@ importFrom(golem,
   favicon,
   with_golem_options
 )
+importFrom(grDevices,colorRampPalette)
 importFrom(plotly,"%>%")

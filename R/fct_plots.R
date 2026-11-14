@@ -131,7 +131,7 @@ start_at_last_year <- function(p) {
 ##########################################################################################
 #' @title Line chart of an indicator for several countries
 #' @description One line per country, and the EU-27 average as a dashed gray
-#' line, for comparison.
+#' line, for comparison. Titled "Indicator: " and its name, as in golemworldbank.
 #' @param data Data frame from [get_indicator()].
 #' @param countries Eurostat codes of the countries, such as `c("EL", "BG")`.
 #' @param indicator The `id` of the indicator in [indicators()], for the title
@@ -166,7 +166,7 @@ plot_country_comp <- function(data, countries, indicator) {
       text = hover(average), hoverinfo = "text"
     )
   }
-  heading <- chart_title(info$name, 100)
+  heading <- chart_title(paste("Indicator:", info$name), 100)
   p %>%
     plotly::layout(
       title = heading$title,
@@ -183,10 +183,10 @@ plot_country_comp <- function(data, countries, indicator) {
 #
 ##########################################################################################
 #' @title Line chart of several indicators for one country
-#' @description As in golemworldbank: one line per indicator, named with its
-#' unit in the legend, at the top of the plot. The axis takes the unit when all
-#' the indicators share it. An indicator without values for the country is left
-#' out.
+#' @description As in golemworldbank: one line per indicator, in the colors of
+#' the Country Comparison, named with its unit in the legend, at the top of the
+#' plot. The axis takes the unit when all the indicators share it. An indicator
+#' without values for the country is left out.
 #' @param data Data frames from [get_indicator()], one per indicator, named by
 #'   its `id`.
 #' @param country Eurostat code of the country, such as "EL", or "EU27_2020".
@@ -204,25 +204,33 @@ plot_country_comp <- function(data, countries, indicator) {
 #'   c("unemployment", "youth_unemployment")
 #' )
 plot_indicator_comp <- function(data, country, indicators) {
-  p <- plotly::plot_ly()
+  lines <- list()
   units <- character(0)
   for (id in indicators) {
     info <- indicator_info(id)
     d <- data[[id]]
     d <- d[d$geo == country, ]
     if (nrow(d) == 0) next
-    d <- d[order(d$year), ]
     units <- c(units, info$unit)
-    p <- plotly::add_trace(p,
-      x = d$year, y = d$value, name = paste(strwrap(with_unit(info), 80), collapse = "<br>"),
-      type = "scatter", mode = "lines+markers",
-      text = paste0(info$name, "<br>", d$year, ": ", format_value(d$value), " ", info$unit), hoverinfo = "text"
+    lines[[id]] <- data.frame(
+      year = d$year,
+      value = d$value,
+      name = paste(strwrap(with_unit(info), 80), collapse = "<br>"),
+      hover = paste0(info$name, "<br>", d$year, ": ", format_value(d$value), " ", info$unit)
     )
   }
-  if (length(units) == 0) {
+  if (length(lines) == 0) {
     return(NULL)
   }
-  p %>%
+  long <- do.call(rbind, lines)
+  long <- long[order(long$year), ]
+  # the lines in the order of the indicators, colored by plotly as the countries are, and as the
+  # indicators of golemworldbank
+  long$name <- factor(long$name, levels = unique(vapply(lines, function(l) l$name[1], "")))
+  plotly::plot_ly(long,
+    x = ~year, y = ~value, color = ~name,
+    type = "scatter", mode = "lines+markers", text = ~hover, hoverinfo = "text"
+  ) %>%
     plotly::layout(
       title = paste("Country:", countries()$name[match(country, countries()$code)]),
       margin = list(l = 50, r = 50, b = 0, t = 100, pad = 0),
@@ -248,7 +256,8 @@ plot_indicator_comp <- function(data, country, indicators) {
 #' for Greece from 1961 to 1969 do, are left out, and named at the top of the
 #' chart.
 #' @param data Data frame from [get_pyramid()].
-#' @param country Eurostat code of the country, for the title.
+#' @param country Eurostat code of the country, for the title ("Country: " and
+#'   its name, as in golemworldbank).
 #' @return A plotly object.
 #' @export
 #' @examples
@@ -295,7 +304,7 @@ plot_pyramid <- function(data, country) {
     plotly::layout(
       bargap = 0.1,
       barmode = "overlay",
-      title = paste("Population by age and sex:", countries()$name[match(country, countries()$code)]),
+      title = paste("Country:", countries()$name[match(country, countries()$code)]),
       margin = list(l = 50, r = 50, b = 100, t = 100, pad = 0),
       yaxis = list(title = list(text = "Age group", standoff = 10), automargin = TRUE),
       xaxis = list(
@@ -425,9 +434,20 @@ fit_year <- function(p) {
 ##########################################################################################
 #
 ##########################################################################################
+#' @title The colors of the maps
+#' @description golemworldbank's: red for the lowest value, white half way, and
+#' dark blue for the highest, in 1000 steps.
+#' @importFrom grDevices colorRampPalette
+#' @noRd
+map_colors <- colorRampPalette(c("#B2182B", "#FFFFFF", "#08306b"))(1000)
+##########################################################################################
+#
+##########################################################################################
 #' @title Map of countries or regions, animated by year
 #' @description Colors the outlines of the NUTS classification by the value of
-#' each year, on one color scale for all the years.
+#' each year, on one color scale for all the years: as in golemworldbank, from
+#' red for the lowest value through white, half way, to dark blue for the
+#' highest, with dark borders, and titled "Indicator: " and its name.
 #' @param data Data frame with `geo`, `year` and `value`.
 #' @param info The row of the indicator in [indicators()].
 #' @param level 0 for countries, 2 for regions.
@@ -435,7 +455,7 @@ fit_year <- function(p) {
 #' @return A plotly object.
 #' @noRd
 choropleth <- function(data, info, level, label) {
-  heading <- chart_title(info$name, 100)
+  heading <- chart_title(paste("Indicator:", info$name), 100)
   data$label <- label
   data <- data[order(data$year), ]
   data$year <- factor(data$year)
@@ -449,8 +469,9 @@ choropleth <- function(data, info, level, label) {
     frame = ~year,
     zmin = limits[1],
     zmax = limits[2],
-    colors = "Blues",
-    marker = list(line = list(width = 0.3, color = "white")),
+    colors = map_colors,
+    # plotly's dark gray borders, as in golemworldbank, thinner between the small regions
+    marker = list(line = list(width = if (level == 0) 1 else 0.5, color = "#444")),
     colorbar = list(title = ""),
     text = ~ paste0(label, "<br>", year, ": ", format_value(value), " ", info$unit),
     hoverinfo = "text"
@@ -483,8 +504,8 @@ choropleth <- function(data, info, level, label) {
 ##########################################################################################
 #' @title Map of the countries, animated by year
 #' @description The countries of [countries()] colored by the value of the
-#' indicator, from light for low to dark blue for high, on one scale for all
-#' the years.
+#' indicator, as in golemworldbank: from red for the lowest through white to
+#' dark blue for the highest, on one scale for all the years.
 #' @inheritParams plot_country_comp
 #' @return A plotly object.
 #' @export
@@ -503,8 +524,8 @@ plot_map <- function(data, indicator) {
 ##########################################################################################
 #' @title Map of the regions, animated by year
 #' @description The regions of the NUTS 2024 classification at level 2 colored
-#' by the value of the indicator, from light for low to dark blue for high, on
-#' one scale for all the years.
+#' by the value of the indicator, as in golemworldbank: from red for the lowest
+#' through white to dark blue for the highest, on one scale for all the years.
 #' @param data Data frame from [get_regional()].
 #' @param indicator The `id` of a regional indicator in [indicators()].
 #' @return A plotly object.
@@ -521,13 +542,46 @@ plot_regions <- function(data, indicator) {
 ##########################################################################################
 #
 ##########################################################################################
+#' @title The population of each country in each year of a chart
+#' @description For the size of the bubbles of [plot_scatter()]: between two
+#' years of `population`, in a straight line, and before its first or after its
+#' last year, that of the nearest; `NA` for a country that it lacks.
+#' @param rows Data frame with `geo` and `year`.
+#' @param population Data frame from [get_indicator()], or `NULL`.
+#' @return The population of each row.
+#' @noRd
+population_of <- function(rows, population) {
+  out <- rep(NA_real_, nrow(rows))
+  if (is.null(population)) {
+    return(out)
+  }
+  population <- population[!is.na(population$value), ]
+  for (g in intersect(unique(rows$geo), population$geo)) {
+    known <- population[population$geo == g, ]
+    at <- rows$geo == g
+    out[at] <- if (nrow(known) == 1) {
+      known$value
+    } else {
+      stats::approx(known$year, known$value, xout = rows$year[at], rule = 2, ties = mean)$y
+    }
+  }
+  out
+}
+##########################################################################################
+#
+##########################################################################################
 #' @title Scatter plot of two indicators, animated by year
-#' @description One point per country, colored by its group (EU, EFTA,
-#' candidate), on axes that stay the same for all the years, with the
-#' correlation of the two indicators across the countries of each year.
+#' @description As in golemworldbank, a bubble per country, as large as its
+#' population, colored by its group (EU, EFTA, candidate), on axes that stay
+#' the same for all the years; here with the code of the country over its
+#' bubble, and the correlation of the two indicators across the countries of
+#' each year.
 #' @param x_data,y_data Data frames from [get_indicator()].
 #' @param x_indicator,y_indicator The `id`s of the two indicators in
 #'   [indicators()].
+#' @param population Data frame of the population of the countries, from
+#'   `get_indicator("population")`, for the size of the bubbles; `NULL`, or a
+#'   country without it, for bubbles of the smallest size.
 #' @return A plotly object, or `NULL` when the two indicators have no year in
 #'   common.
 #' @export
@@ -537,8 +591,9 @@ plot_regions <- function(data, indicator) {
 #'   group = c("EU", "EU", "EU", "EFTA"), year = 2024, value = c(70, 66, 116, 130)
 #' )
 #' y <- transform(x, value = c(81.9, 75.9, 81.2, 83.4))
-#' plot_scatter(x, y, "gdp_pps", "life_expectancy")
-plot_scatter <- function(x_data, y_data, x_indicator, y_indicator) {
+#' population <- transform(x, value = c(10.4e6, 6.4e6, 83.6e6, 5.6e6))
+#' plot_scatter(x, y, "gdp_pps", "life_expectancy", population)
+plot_scatter <- function(x_data, y_data, x_indicator, y_indicator, population = NULL) {
   x_info <- indicator_info(x_indicator)
   y_info <- indicator_info(y_indicator)
   both <- merge(
@@ -550,6 +605,10 @@ plot_scatter <- function(x_data, y_data, x_indicator, y_indicator) {
     return(NULL)
   }
   both$real <- TRUE
+  both$population <- population_of(both, population)
+  sized <- any(!is.na(both$population))
+  smallest <- if (sized) min(both$population, na.rm = TRUE) else NA_real_
+  both$population[is.na(both$population)] <- smallest
   limits_x <- range(both$value_x) + c(-1, 1) * 0.06 * diff(range(both$value_x))
   limits_y <- range(both$value_y) + c(-1, 1) * 0.06 * diff(range(both$value_y))
   # plotly mixes up the groups of a year that lacks one of them, giving one group's points the
@@ -561,7 +620,7 @@ plot_scatter <- function(x_data, y_data, x_indicator, y_indicator) {
   if (nrow(missing) > 0) {
     both <- rbind(both, data.frame(
       geo = paste0("none_", missing$group), year = missing$year, country = "", group = missing$group,
-      value_x = -1e12, value_y = -1e12, real = FALSE
+      value_x = -1e12, value_y = -1e12, real = FALSE, population = smallest
     ))
   }
   both <- both[order(both$year), ]
@@ -570,39 +629,60 @@ plot_scatter <- function(x_data, y_data, x_indicator, y_indicator) {
   both$label <- ifelse(both$real, both$geo, "")
   both$hover <- paste0(
     both$country, ", ", both$year, "<br>", x_info$name, ": ", format_value(both$value_x), " ", x_info$unit,
-    "<br>", y_info$name, ": ", format_value(both$value_y), " ", y_info$unit
+    "<br>", y_info$name, ": ", format_value(both$value_y), " ", y_info$unit,
+    if (sized) paste0("<br>Population: ", format_value(both$population))
   )
-  p <- plotly::plot_ly(both,
-    x = ~value_x,
-    y = ~value_y,
-    color = ~group,
-    colors = c("#2a78d6", "#eb6834", "#1baf7a"),
-    frame = ~year,
-    ids = ~geo,
-    text = ~label,
-    type = "scatter",
-    mode = "markers+text",
-    textposition = "top center",
-    marker = list(size = 12),
-    hovertext = ~hover,
-    hoverinfo = "text"
-  ) %>%
-    plotly::layout(
-      # as in golemworldbank: no title, as the axes name the two indicators, the legend at the
-      # right of the plot, and the title of the x axis right under it, clear of the year slider
-      title = "",
-      margin = list(l = 50, r = 50, b = 100, t = 100, pad = 0),
-      # EU, EFTA, Candidate, as plotly lists the groups the other way round
-      legend = list(traceorder = "reversed"),
-      # the left margin grows to fit a vertical title on several lines
-      xaxis = list(title = c(axis_title(x_info, 100), list(standoff = 3)), range = limits_x),
-      yaxis = list(title = axis_title(y_info, 45), range = limits_y, automargin = TRUE),
-      font = font_style
+  # the colors that plotly gives the groups, as it gives golemworldbank's regions, and bubbles a
+  # little transparent, so that those under them show. As in golemworldbank, the diameter of a
+  # bubble grows in a straight line with the population, from 10px; to 60px for the largest,
+  # where golemworldbank's largest, China and India, take 100px and leave the others small,
+  # which 100px for Germany and Turkey would not
+  p <- withCallingHandlers(
+    plotly::plot_ly(both,
+      x = ~value_x,
+      y = ~value_y,
+      color = ~group,
+      size = if (sized) ~population,
+      sizes = c(10, 60),
+      frame = ~year,
+      ids = ~geo,
+      text = ~label,
+      type = "scatter",
+      mode = "markers+text",
+      textposition = "top center",
+      marker = if (sized) list(sizemode = "diameter") else list(size = 10),
+      hovertext = ~hover,
+      hoverinfo = "text"
     ) %>%
-    plotly::animation_opts(frame = 800, transition = 400, easing = "linear", redraw = FALSE, mode = "afterall") %>%
-    plotly::layout(updatemenus = animation_buttons(levels(both$year)[1])) %>%
-    year_slider() %>%
-    plotly::config(responsive = TRUE)
+      plotly::layout(
+        # as in golemworldbank: no title, as the axes name the two indicators, the legend at the
+        # right of the plot, and the title of the x axis right under it, clear of the year slider
+        title = "",
+        margin = list(l = 50, r = 50, b = 100, t = 100, pad = 0),
+        # EU, EFTA, Candidate, as plotly lists the groups the other way round
+        legend = list(traceorder = "reversed"),
+        # the left margin grows to fit a vertical title on several lines
+        xaxis = list(title = c(axis_title(x_info, 100), list(standoff = 3)), range = limits_x),
+        yaxis = list(title = axis_title(y_info, 45), range = limits_y, automargin = TRUE),
+        font = font_style
+      ) %>%
+      # golemworldbank's pace, half a second a year
+      plotly::animation_opts(frame = 500, easing = "linear", redraw = FALSE, mode = "afterall") %>%
+      plotly::layout(updatemenus = animation_buttons(levels(both$year)[1])) %>%
+      year_slider() %>%
+      plotly::config(responsive = TRUE),
+    # plotly gives the population to the width of the lines too, which a chart of bubbles has not
+    warning = function(w) if (grepl("line.width", conditionMessage(w), fixed = TRUE)) invokeRestart("muffleWarning")
+  )
+  # and to the size of the codes: in the font of the chart instead, as before (smaller on phones)
+  unsized <- function(traces) lapply(traces, function(t) {
+    t$textfont$size <- NULL
+    t
+  })
+  p$x$data <- unsized(p$x$data)
+  for (k in seq_along(p$x$frames)) {
+    p$x$frames[[k]]$data <- unsized(p$x$frames[[k]]$data)
+  }
   real <- both[both$real, ]
   correlation <- vapply(levels(both$year), function(year) {
     d <- real[real$year == year, ]
@@ -620,7 +700,8 @@ plot_scatter <- function(x_data, y_data, x_indicator, y_indicator) {
 #' @title Table of the indicators
 #' @description Every indicator of [indicators()], with its unit, whether it is
 #' for countries or regions, a link to its dataset in the database of Eurostat
-#' and its definition.
+#' and its definition. As in golemworldbank, the table is one long page, which
+#' can be searched and sorted.
 #' @return A DT table.
 #' @export
 #' @examples
@@ -641,6 +722,6 @@ render_index_table <- function() {
   DT::datatable(shown,
     rownames = FALSE,
     escape = setdiff(names(shown), "Dataset"),
-    options = list(pageLength = 50, autoWidth = TRUE)
+    options = list(paging = FALSE, autoWidth = TRUE)
   )
 }

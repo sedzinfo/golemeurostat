@@ -2,8 +2,9 @@
 #
 ##########################################################################################
 #' @title Country Comparison module - UI
-#' @description Countries and an indicator to pick, and a line per country over
-#' the years, with the EU-27 average.
+#' @description Countries and an indicator to pick, one under the other across
+#' the page, as in golemworldbank, and a line per country over the years, with
+#' the EU-27 average.
 #' @param id Character. Module namespace id.
 #' @return A `tagList` of Shiny UI elements.
 #' @keywords internal
@@ -14,10 +15,8 @@
 mod_country_comp_ui <- function(id) {
   ns <- NS(id)
   tagList(
-    fluidRow(
-      column(6, selectizeInput(ns("countries"), label = "Countries", choices = country_choices(), selected = c("EL", "BG"), multiple = TRUE, width = "100%")),
-      column(6, selectizeInput(ns("indicator"), label = "Indicator", choices = NULL, width = "100%", options = indicator_options()))
-    ),
+    selectizeInput(ns("countries"), label = "Countries", choices = country_choices(), selected = c("EL", "BG"), multiple = TRUE, width = "100%"),
+    selectizeInput(ns("indicator"), label = "Indicator", choices = NULL, width = "100%", options = indicator_options()),
     plotly::plotlyOutput(ns("plot"), width = "100%", height = "100%")
   )
 }

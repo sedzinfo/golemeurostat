@@ -1,7 +1,21 @@
-test_that("the files shared by the apps (dark_mode.js) come from sedzinfo.github.io, not from inst/app/www", {
+test_that("the files shared by the apps (dark_mode.js, layout.css, layout.js) come from sedzinfo.github.io, not from inst/app/www", {
   head <- htmltools::renderTags(app_ui(NULL))$head
-  expect_match(head, "https://sedzinfo.github.io/shiny/dark_mode.js", fixed = TRUE)
-  expect_no_match(head, "www/dark_mode.js", fixed = TRUE)
+  for (file in c("dark_mode.js", "layout.css", "layout.js")) {
+    expect_match(head, paste0("https://sedzinfo.github.io/shiny/", file), fixed = TRUE)
+    expect_false(file.exists(app_sys("app/www", file)))
+  }
+  # the layout, as golemworldbank's, is the shared one only
+  expect_no_match(head, ".navbar {min-height", fixed = TRUE)
+  expect_false(file.exists(app_sys("app/www/mobile.css")))
+  expect_false(file.exists(app_sys("app/www/mobile.js")))
+})
+
+test_that("the page has a description, for search engines and link previews, as golemworldbank", {
+  head <- htmltools::renderTags(app_ui(NULL))$head
+  expect_match(head, '<meta name="description" content="Explore Eurostat indicators', fixed = TRUE)
+  expect_match(head, '<meta property="og:title" content="Eurostat"', fixed = TRUE)
+  # no address or screenshot of the live app yet
+  expect_no_match(head, "og:url", fixed = TRUE)
 })
 
 test_that("the stylesheet shared by the apps is in the page, before the app's own", {

@@ -19,10 +19,10 @@ A plotly object, or \code{NULL} when none of the indicators has values for
 the country.
 }
 \description{
-As in golemworldbank: one line per indicator, named with its
-unit in the legend, at the top of the plot. The axis takes the unit when all
-the indicators share it. An indicator without values for the country is left
-out.
+As in golemworldbank: one line per indicator, in the colors of
+the Country Comparison, named with its unit in the legend, at the top of the
+plot. The axis takes the unit when all the indicators share it. An indicator
+without values for the country is left out.
 }
 \examples{
 unemployment <- data.frame(

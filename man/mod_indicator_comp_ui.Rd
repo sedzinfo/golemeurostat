@@ -13,8 +13,8 @@ mod_indicator_comp_ui(id)
 A \code{tagList} of Shiny UI elements.
 }
 \description{
-Indicators and a country to pick, and a line per indicator over
-the years, as in golemworldbank.
+Indicators and a country to pick, one under the other across
+the page, and a line per indicator over the years, as in golemworldbank.
 }
 \examples{
 \dontrun{

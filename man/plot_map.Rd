@@ -17,8 +17,8 @@ A plotly object.
 }
 \description{
 The countries of \code{\link[=countries]{countries()}} colored by the value of the
-indicator, from light for low to dark blue for high, on one scale for all
-the years.
+indicator, as in golemworldbank: from red for the lowest through white to
+dark blue for the highest, on one scale for all the years.
 }
 \examples{
 data <- data.frame(

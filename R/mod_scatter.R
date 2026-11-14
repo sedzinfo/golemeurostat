@@ -2,7 +2,8 @@
 #
 ##########################################################################################
 #' @title Scatterplot module - UI
-#' @description Two indicators to pick, and the countries plotted by the two,
+#' @description Two indicators to pick, side by side as in golemworldbank, and
+#' the countries plotted by the two as bubbles as large as their population,
 #' animated by year.
 #' @param id Character. Module namespace id.
 #' @return A `tagList` of Shiny UI elements.
@@ -15,8 +16,8 @@ mod_scatter_ui <- function(id) {
   ns <- NS(id)
   tagList(
     fluidRow(
-      column(6, selectizeInput(ns("x"), label = "Horizontal axis", choices = NULL, width = "100%", options = indicator_options())),
-      column(6, selectizeInput(ns("y"), label = "Vertical axis", choices = NULL, width = "100%", options = indicator_options()))
+      column(5, selectizeInput(ns("x"), label = "Horizontal axis", choices = NULL, width = "100%", options = indicator_options())),
+      column(5, selectizeInput(ns("y"), label = "Vertical axis", choices = NULL, width = "100%", options = indicator_options()))
     ),
     plotly::plotlyOutput(ns("plot"), width = "100%", height = "100%")
   )
@@ -25,8 +26,10 @@ mod_scatter_ui <- function(id) {
 #
 ##########################################################################################
 #' @title Scatterplot module - server
-#' @description Downloads the two picked indicators, or takes them from the disk
-#' cache, and draws the countries by the two.
+#' @description Downloads the two picked indicators and the population, or
+#' takes them from the disk cache, and draws the countries by the two, as
+#' bubbles as large as their population; all of one size when the population
+#' cannot be downloaded.
 #' @param id Character. Module namespace id, must match the id used in
 #'   [mod_scatter_ui()].
 #' @return None. Called for its side effect of registering the module server.
@@ -43,13 +46,15 @@ mod_scatter_server <- function(id) {
       req(input$x)
       get_indicator(input$x)
     })
+    # the size of the bubbles, as in golemworldbank
+    population <- reactive(get_indicator("population"))
     y_data <- reactive({
       req(input$y)
       get_indicator(input$y)
     })
     output$plot <- plotly::renderPlotly({
       validate(need(x_data(), "Eurostat cannot be reached right now"), need(y_data(), "Eurostat cannot be reached right now"))
-      p <- plot_scatter(x_data(), y_data(), input$x, input$y)
+      p <- plot_scatter(x_data(), y_data(), input$x, input$y, population())
       validate(need(p, "The two indicators have no year in common"))
       p
     })

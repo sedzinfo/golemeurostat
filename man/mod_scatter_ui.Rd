@@ -13,7 +13,8 @@ mod_scatter_ui(id)
 A \code{tagList} of Shiny UI elements.
 }
 \description{
-Two indicators to pick, and the countries plotted by the two,
+Two indicators to pick, side by side as in golemworldbank, and
+the countries plotted by the two as bubbles as large as their population,
 animated by year.
 }
 \examples{

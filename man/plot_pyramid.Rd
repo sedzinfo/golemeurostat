@@ -9,7 +9,8 @@ plot_pyramid(data, country)
 \arguments{
 \item{data}{Data frame from \code{\link[=get_pyramid]{get_pyramid()}}.}
 
-\item{country}{Eurostat code of the country, for the title.}
+\item{country}{Eurostat code of the country, for the title ("Country: " and
+its name, as in golemworldbank).}
 }
 \value{
 A plotly object.

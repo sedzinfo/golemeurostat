@@ -22,6 +22,7 @@ Imports:
     DT,
     eurostat,
     golem,
+    grDevices,
     htmlwidgets,
     jsonlite,
     plotly,

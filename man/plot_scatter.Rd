@@ -4,22 +4,28 @@
 \alias{plot_scatter}
 \title{Scatter plot of two indicators, animated by year}
 \usage{
-plot_scatter(x_data, y_data, x_indicator, y_indicator)
+plot_scatter(x_data, y_data, x_indicator, y_indicator, population = NULL)
 }
 \arguments{
 \item{x_data, y_data}{Data frames from \code{\link[=get_indicator]{get_indicator()}}.}
 
 \item{x_indicator, y_indicator}{The \code{id}s of the two indicators in
 \code{\link[=indicators]{indicators()}}.}
+
+\item{population}{Data frame of the population of the countries, from
+\code{get_indicator("population")}, for the size of the bubbles; \code{NULL}, or a
+country without it, for bubbles of the smallest size.}
 }
 \value{
 A plotly object, or \code{NULL} when the two indicators have no year in
 common.
 }
 \description{
-One point per country, colored by its group (EU, EFTA,
-candidate), on axes that stay the same for all the years, with the
-correlation of the two indicators across the countries of each year.
+As in golemworldbank, a bubble per country, as large as its
+population, colored by its group (EU, EFTA, candidate), on axes that stay
+the same for all the years; here with the code of the country over its
+bubble, and the correlation of the two indicators across the countries of
+each year.
 }
 \examples{
 x <- data.frame(
@@ -27,5 +33,6 @@ x <- data.frame(
   group = c("EU", "EU", "EU", "EFTA"), year = 2024, value = c(70, 66, 116, 130)
 )
 y <- transform(x, value = c(81.9, 75.9, 81.2, 83.4))
-plot_scatter(x, y, "gdp_pps", "life_expectancy")
+population <- transform(x, value = c(10.4e6, 6.4e6, 83.6e6, 5.6e6))
+plot_scatter(x, y, "gdp_pps", "life_expectancy", population)
 }

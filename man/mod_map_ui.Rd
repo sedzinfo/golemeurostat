@@ -13,8 +13,8 @@ mod_map_ui(id)
 A \code{tagList} of Shiny UI elements.
 }
 \description{
-An indicator to pick, and a map of the countries colored by it,
-animated by year.
+An indicator to pick, across the page, and a map of the
+countries colored by it, animated by year, as in golemworldbank.
 }
 \examples{
 \dontrun{

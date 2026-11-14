@@ -13,8 +13,8 @@ mod_pyramid_ui(id)
 A \code{tagList} of Shiny UI elements.
 }
 \description{
-A country to pick, and its population pyramid, animated by
-year, as in golemworldbank.
+A country to pick, across the page, and its population
+pyramid, animated by year, as in golemworldbank.
 }
 \examples{
 \dontrun{

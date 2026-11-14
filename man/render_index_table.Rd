@@ -12,7 +12,8 @@ A DT table.
 \description{
 Every indicator of \code{\link[=indicators]{indicators()}}, with its unit, whether it is
 for countries or regions, a link to its dataset in the database of Eurostat
-and its definition.
+and its definition. As in golemworldbank, the table is one long page, which
+can be searched and sorted.
 }
 \examples{
 render_index_table()

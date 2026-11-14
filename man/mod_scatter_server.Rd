@@ -14,8 +14,10 @@ mod_scatter_server(id)
 None. Called for its side effect of registering the module server.
 }
 \description{
-Downloads the two picked indicators, or takes them from the disk
-cache, and draws the countries by the two.
+Downloads the two picked indicators and the population, or
+takes them from the disk cache, and draws the countries by the two, as
+bubbles as large as their population; all of one size when the population
+cannot be downloaded.
 }
 \examples{
 \dontrun{

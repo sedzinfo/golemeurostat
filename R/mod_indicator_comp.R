@@ -2,8 +2,8 @@
 #
 ##########################################################################################
 #' @title Indicator Comparison module - UI
-#' @description Indicators and a country to pick, and a line per indicator over
-#' the years, as in golemworldbank.
+#' @description Indicators and a country to pick, one under the other across
+#' the page, and a line per indicator over the years, as in golemworldbank.
 #' @param id Character. Module namespace id.
 #' @return A `tagList` of Shiny UI elements.
 #' @keywords internal
@@ -14,10 +14,8 @@
 mod_indicator_comp_ui <- function(id) {
   ns <- NS(id)
   tagList(
-    fluidRow(
-      column(8, selectizeInput(ns("indicators"), label = "Indicators", choices = NULL, multiple = TRUE, width = "100%", options = indicator_options())),
-      column(4, selectizeInput(ns("country"), label = "Country", choices = country_choices(average = TRUE), selected = "EL", width = "100%"))
-    ),
+    selectizeInput(ns("indicators"), label = "Indicators", choices = NULL, multiple = TRUE, width = "100%", options = indicator_options()),
+    selectizeInput(ns("country"), label = "Country", choices = country_choices(average = TRUE), selected = "EL", width = "100%"),
     plotly::plotlyOutput(ns("plot"), width = "100%", height = "100%")
   )
 }

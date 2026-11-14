@@ -16,8 +16,8 @@ A plotly object.
 }
 \description{
 The regions of the NUTS 2024 classification at level 2 colored
-by the value of the indicator, from light for low to dark blue for high, on
-one scale for all the years.
+by the value of the indicator, as in golemworldbank: from red for the lowest
+through white to dark blue for the highest, on one scale for all the years.
 }
 \examples{
 data <- data.frame(

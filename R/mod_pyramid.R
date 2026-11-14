@@ -2,8 +2,8 @@
 #
 ##########################################################################################
 #' @title Pyramid module - UI
-#' @description A country to pick, and its population pyramid, animated by
-#' year, as in golemworldbank.
+#' @description A country to pick, across the page, and its population
+#' pyramid, animated by year, as in golemworldbank.
 #' @param id Character. Module namespace id.
 #' @return A `tagList` of Shiny UI elements.
 #' @keywords internal
@@ -14,9 +14,7 @@
 mod_pyramid_ui <- function(id) {
   ns <- NS(id)
   tagList(
-    fluidRow(
-      column(4, selectizeInput(ns("country"), label = "Country", choices = country_choices(average = TRUE), selected = "EL", width = "100%"))
-    ),
+    selectizeInput(ns("country"), label = "Country", choices = country_choices(average = TRUE), selected = "EL", width = "100%"),
     plotly::plotlyOutput(ns("plot"), width = "100%", height = "100%")
   )
 }
