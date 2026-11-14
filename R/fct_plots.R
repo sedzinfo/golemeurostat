@@ -154,10 +154,10 @@ plot_country_comp <- function(data, countries, indicator) {
   p %>%
     plotly::layout(
       title = heading$title,
-      margin = list(l = 80, r = 30, b = 40, t = heading$top, pad = 0),
-      # above the plot, where it covers no line or bar
-      legend = list(orientation = "h", xanchor = "center", x = 0.5, y = 1.02, yanchor = "bottom"),
-      xaxis = list(title = ""),
+      # as in golemworldbank: the title in the top margin, the legend at the top of the plot
+      margin = list(l = 50, r = 50, b = 0, t = heading$top, pad = 0),
+      legend = list(orientation = "h", xanchor = "center", x = 0.5, y = 1),
+      xaxis = list(title = "", tickangle = -90),
       yaxis = list(title = info$unit),
       font = font_style
     ) %>%
@@ -219,7 +219,7 @@ plot_bar <- function(data, indicator, country = NULL) {
       margin = list(l = 50, r = 50, b = 100, t = heading$top, pad = 0),
       # rank 1 at the top; the names are on the bars
       yaxis = list(title = "", autorange = "reversed", dtick = 1, zeroline = FALSE),
-      xaxis = list(title = info$unit, showticklabels = FALSE, zeroline = TRUE, showgrid = FALSE),
+      xaxis = list(title = list(text = info$unit, standoff = 3), showticklabels = FALSE, zeroline = TRUE, showgrid = FALSE),
       font = font_style,
       showlegend = FALSE
     ) %>%
@@ -247,7 +247,7 @@ plot_bar <- function(data, indicator, country = NULL) {
 #' @return A plotly object.
 #' @noRd
 choropleth <- function(data, info, level, label) {
-  heading <- chart_title(info$name, 80)
+  heading <- chart_title(info$name, 100)
   data$label <- label
   data <- data[order(data$year), ]
   data$year <- factor(data$year)
@@ -269,7 +269,7 @@ choropleth <- function(data, info, level, label) {
   ) %>%
     plotly::layout(
       title = heading$title,
-      margin = list(l = 10, r = 10, b = 60, t = heading$top, pad = 0),
+      margin = list(l = 50, r = 50, b = 100, t = heading$top, pad = 0),
       font = font_style,
       geo = list(
         visible = FALSE,
@@ -352,7 +352,6 @@ plot_regions <- function(data, indicator) {
 plot_scatter <- function(x_data, y_data, x_indicator, y_indicator) {
   x_info <- indicator_info(x_indicator)
   y_info <- indicator_info(y_indicator)
-  heading <- chart_title(paste(y_info$name, "and", x_info$name), 100)
   both <- merge(
     x_data[x_data$geo != eu_average, c("geo", "country", "group", "year", "value")],
     y_data[y_data$geo != eu_average, c("geo", "year", "value")],
@@ -400,12 +399,12 @@ plot_scatter <- function(x_data, y_data, x_indicator, y_indicator) {
     hoverinfo = "text"
   ) %>%
     plotly::layout(
-      title = heading$title,
-      margin = list(l = 80, r = 30, b = 100, t = heading$top, pad = 0),
-      # EU, EFTA, Candidate, as plotly lists the groups the other way round
-      legend = list(orientation = "h", xanchor = "center", x = 0.5, y = 1.02, yanchor = "bottom", traceorder = "reversed"),
+      # as in golemworldbank: no title, as the axes name the two indicators, the legend at the
+      # right of the plot, and the title of the x axis right under it, clear of the year slider
+      title = "",
+      margin = list(l = 50, r = 50, b = 100, t = 100, pad = 0),
       # the left margin grows to fit a vertical title on several lines
-      xaxis = list(title = axis_title(x_info, 100), range = limits_x),
+      xaxis = list(title = c(axis_title(x_info, 100), list(standoff = 3)), range = limits_x),
       yaxis = list(title = axis_title(y_info, 45), range = limits_y, automargin = TRUE),
       font = font_style
     ) %>%

@@ -5,13 +5,17 @@ has, or what is wrong with its row: Eurostat refuses the query, often for a
 wrong dimension in filters; it has no values, often for a value the
 dataset does not have; or it has more than one value for a country and year,
 when a dimension of the dataset is left open. Run it after adding or
-changing a row, and now and then, as Eurostat renames or retires datasets."><meta property="og:description" content="Downloads each indicator of indicators() from Eurostat, past
+changing a row, and now and then, as Eurostat renames or retires datasets.
+The generated rows are checked when data-raw/build_indicators.R writes
+them, so by default only the hand-written rows are checked here."><meta property="og:description" content="Downloads each indicator of indicators() from Eurostat, past
 the disk cache, and reports how many countries or regions and which years it
 has, or what is wrong with its row: Eurostat refuses the query, often for a
 wrong dimension in filters; it has no values, often for a value the
 dataset does not have; or it has more than one value for a country and year,
 when a dimension of the dataset is left open. Run it after adding or
-changing a row, and now and then, as Eurostat renames or retires datasets."></head><body>
+changing a row, and now and then, as Eurostat renames or retires datasets.
+The generated rows are checked when data-raw/build_indicators.R writes
+them, so by default only the hand-written rows are checked here."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -50,12 +54,14 @@ has, or what is wrong with its row: Eurostat refuses the query, often for a
 wrong dimension in <code>filters</code>; it has no values, often for a value the
 dataset does not have; or it has more than one value for a country and year,
 when a dimension of the dataset is left open. Run it after adding or
-changing a row, and now and then, as Eurostat renames or retires datasets.</p>
+changing a row, and now and then, as Eurostat renames or retires datasets.
+The generated rows are checked when <code>data-raw/build_indicators.R</code> writes
+them, so by default only the hand-written rows are checked here.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">check_indicators</span><span class="op">(</span>ids <span class="op">=</span> <span class="fu"><a href="indicators.html">indicators</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">id</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">check_indicators</span><span class="op">(</span>ids <span class="op">=</span> <span class="fu"><a href="indicators.html">indicators</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">id</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="indicators.html">indicators</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">generated</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -63,7 +69,8 @@ changing a row, and now and then, as Eurostat renames or retires datasets.</p>
 
 
 <dl><dt id="arg-ids">ids<a class="anchor" aria-label="anchor" href="#arg-ids"></a></dt>
-<dd><p>The <code>id</code>s of the indicators to check, by default all of them.</p></dd>
+<dd><p>The <code>id</code>s of the indicators to check, by default those written
+by hand.</p></dd>
 
 </dl></div>
     <div class="section level2">

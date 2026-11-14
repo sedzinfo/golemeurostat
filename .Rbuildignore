@@ -15,3 +15,4 @@
 ^pkgdown$
 ^rsconnect$
 ^data-raw$
+^generate_package.*\.R$

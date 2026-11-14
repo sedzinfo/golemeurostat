@@ -68,6 +68,7 @@
 <li>
 <strong>Indicators</strong>: every indicator of the app, with its unit, definition and a link to its dataset at Eurostat</li>
 </ul>
+<p>The indicators are the 62 chosen by hand and, after them, the series of Eurostat’s main tables, about 1,500 more, in the groups of Eurostat’s themes. Type in a list of indicators to search their names, or the code of a dataset, such as <code>une_rt_a</code>.</p>
 </div>
 <div class="section level1">
 <h1 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -103,7 +104,11 @@
 <div class="section level1">
 <h1 id="adding-an-indicator">Adding an indicator<a class="anchor" aria-label="anchor" href="#adding-an-indicator"></a>
 </h1>
-<p>The indicators are rows of <code>inst/extdata/indicators.csv</code>, so adding one needs no R code:</p>
+<p>The indicators come from two files of <code>inst/extdata</code>, with the same columns: <code>indicators.csv</code>, written by hand, and <code>indicators_generated.csv</code>, written by a script from the catalogue of Eurostat.</p>
+<div class="section level2">
+<h2 id="by-hand">By hand<a class="anchor" aria-label="anchor" href="#by-hand"></a>
+</h2>
+<p>An indicator added to <code>indicators.csv</code> comes first in the lists, under its own topic, and needs no R code:</p>
 <table class="table">
 <colgroup>
 <col width="50%">
@@ -146,6 +151,16 @@
 </tbody>
 </table>
 <p>The code of a dataset and of its dimensions are in the <a href="https://ec.europa.eu/eurostat/databrowser/" class="external-link">Eurostat data browser</a>. <code>check_indicators("your_id")</code> tries a new row: it reports the countries or regions and the years it has, or what is wrong with it, such as a dimension that Eurostat does not know or one left open, which gives more than one value per country and year. Run <code><a href="reference/check_indicators.html">check_indicators()</a></code> now and then to check them all, as Eurostat sometimes renames or retires a dataset.</p>
+</div>
+<div class="section level2">
+<h2 id="from-eurostats-main-tables">From Eurostat’s main tables<a class="anchor" aria-label="anchor" href="#from-eurostats-main-tables"></a>
+</h2>
+<p><code>indicators_generated.csv</code> holds the series of the <a href="https://ec.europa.eu/eurostat/web/main/data/database" class="external-link">main tables</a> of Eurostat, its own selection of headline indicators with few breakdowns (codes such as <code>tps00001</code>, <code>tec00115</code> or <code>sdg_08_10</code>). To rebuild it, as Eurostat adds, renames and retires tables, run from the package folder:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"data-raw/build_indicators.R"</span><span class="op">)</span></span></code></pre></div>
+<p>The script reads Eurostat’s table of contents and the dimensions of every dataset, downloads each main table with yearly data once (about 680 tables, about 10 minutes the first time; the downloads are kept a week in <code>data-raw/cache</code>), and writes a row for each series, a combination of the dimensions other than the country and the year, that has values for at least 10 countries, or 50 regions for the Regions tab, up to 2015 or later. A table with more than 10 such series is left out, and so are amounts in national currency, which cannot be compared between countries, and a series that another table already has under the same name. The names come from the titles of the tables and the labels of the codes; the topic is the folder of the table in Eurostat’s themes. These limits are at the top of the script.</p>
+<p>A generated row that downloads the same as a hand-written one is left out, so to rename or describe a generated indicator better, copy its row to <code>indicators.csv</code> and change it there.</p>
+</div>
 </div>
 <div class="section level1">
 <h1 id="data">Data<a class="anchor" aria-label="anchor" href="#data"></a>
