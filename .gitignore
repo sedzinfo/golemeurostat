@@ -14,6 +14,7 @@
 
 # Output files from R CMD build
 /*.tar.gz
+
 # the PDF manual (R CMD Rd2pdf); the workflow publishes it on the "latest" release
 /golemeurostat.pdf
 
@@ -49,3 +50,7 @@ rsconnect/
 
 # downloads of data-raw/build_indicators.R
 /data-raw/cache/
+
+
+
+
