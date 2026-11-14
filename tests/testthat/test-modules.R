@@ -6,7 +6,7 @@ test_that("the tabs of the countries draw their charts", {
     expect_no_error(output$plot)
   })
   testServer(mod_bar_server, {
-    session$setInputs(indicator = "unemployment", country = "EL")
+    session$setInputs(indicator = "unemployment", country = "EL", top_n = "30")
     expect_no_error(output$plot)
   })
   testServer(mod_map_server, {

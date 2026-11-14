@@ -13,8 +13,9 @@ mod_bar_ui(id)
 A \code{tagList} of Shiny UI elements.
 }
 \description{
-An indicator and a country to pick, and the countries ranked by
-the indicator, animated by year, with the picked country in red.
+An indicator, how many countries to show and a country to
+pick, and the countries ranked by the indicator, animated by year, with the
+picked country in red.
 }
 \examples{
 \dontrun{

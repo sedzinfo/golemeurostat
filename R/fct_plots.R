@@ -82,6 +82,18 @@ label_frames <- function(p, labels, annotation) {
 ##########################################################################################
 #
 ##########################################################################################
+#' @title The slider of the years of an animated chart
+#' @description Labelled "Year: 2024", as in golemworldbank, rather than with
+#' the name of the column of the frames.
+#' @param p A plotly object with frames.
+#' @return The plotly object, built.
+#' @noRd
+year_slider <- function(p) {
+  plotly::animation_slider(p, currentvalue = list(prefix = "Year: "))
+}
+##########################################################################################
+#
+##########################################################################################
 #' @title Open an animated chart at its last year
 #' @description An animated chart opens at its first frame, the first year; this
 #' gives it the data of its last frame instead, and moves the slider there, so
@@ -170,9 +182,13 @@ plot_country_comp <- function(data, countries, indicator) {
 #' @description One bar per country, the largest at the top, re-ranked each
 #' year as the animation plays, and the picked country in red. A country's gaps
 #' between its first and last year are filled in a straight line, so that it
-#' does not drop out of the race for a year.
+#' does not drop out of the race for a year. As in golemworldbank, only the
+#' `top_n` largest are shown each year, and the year is printed large and gray
+#' in the bottom right corner.
 #' @inheritParams plot_country_comp
 #' @param country Eurostat code of the country to draw in red.
+#' @param top_n How many countries to show each year, the largest; all of them
+#'   by default.
 #' @return A plotly object.
 #' @export
 #' @examples
@@ -184,7 +200,7 @@ plot_country_comp <- function(data, countries, indicator) {
 #'   value = c(12.4, 11.1, 10.1, 4.3, 4.3, 4.2, 3.1, 3.0, 3.4)
 #' )
 #' plot_bar(data, "unemployment", "EL")
-plot_bar <- function(data, indicator, country = NULL) {
+plot_bar <- function(data, indicator, country = NULL, top_n = Inf) {
   info <- indicator_info(indicator)
   heading <- chart_title(info$name, 100)
   data <- data[data$geo != eu_average, ]
@@ -197,6 +213,7 @@ plot_bar <- function(data, indicator, country = NULL) {
   }))
   data <- data[order(data$year, -data$value), ]
   data$rank <- stats::ave(data$value, data$year, FUN = seq_along)
+  data <- data[data$rank <= top_n, ]
   data$label <- paste0(data$country, "  ", format_value(data$value))
   data$color <- ifelse(data$geo %in% country, "#d62728", "#1f77b4")
   data$year <- factor(data$year)
@@ -219,20 +236,51 @@ plot_bar <- function(data, indicator, country = NULL) {
       margin = list(l = 50, r = 50, b = 100, t = heading$top, pad = 0),
       # rank 1 at the top; the names are on the bars
       yaxis = list(title = "", autorange = "reversed", dtick = 1, zeroline = FALSE),
-      xaxis = list(title = list(text = info$unit, standoff = 3), showticklabels = FALSE, zeroline = TRUE, showgrid = FALSE),
+      xaxis = list(title = info$unit, showticklabels = FALSE, zeroline = TRUE, showgrid = FALSE),
       font = font_style,
       showlegend = FALSE
     ) %>%
     plotly::animation_opts(frame = 1000, transition = 0, easing = "linear", redraw = TRUE, mode = "afterall") %>%
     plotly::layout(updatemenus = animation_buttons(levels(data$year)[1])) %>%
+    year_slider() %>%
     plotly::config(responsive = TRUE)
-  p <- plotly::plotly_build(p)
-  # the year, big and gray in the bottom right corner, where the bars are shortest
+  # the year, big and gray in the bottom right corner, where the bars are shortest, as large
+  # as in golemworldbank
   label_frames(p, stats::setNames(levels(data$year), levels(data$year)), list(
     xref = "paper", yref = "paper", x = 1, y = 0, xanchor = "right", yanchor = "bottom",
-    showarrow = FALSE, font = list(size = 200, color = "rgba(128,128,128,0.35)")
+    showarrow = FALSE, font = list(size = 480, color = "rgba(128,128,128,0.35)")
   )) %>%
+    fit_year() %>%
     start_at_last_year()
+}
+##########################################################################################
+#
+##########################################################################################
+#' @title Keep the year of the bar race inside its plot
+#' @description The year is as large as in golemworldbank, 480px, when the plot
+#' has room for it, and smaller in a smaller window, at most 80% of the height
+#' of the plot and a third of its width, where it would otherwise rise behind
+#' the title. Fitted again when the window, and so the plot, changes size.
+#' @param p The plotly object of [plot_bar()], with the year as its first
+#'   annotation, in the chart and in each frame.
+#' @return The plotly object.
+#' @noRd
+fit_year <- function(p) {
+  htmlwidgets::onRender(p, "function(el) {
+    function fit() {
+      var size = el._fullLayout && el._fullLayout._size, year = el.layout.annotations && el.layout.annotations[0];
+      if (!size || !year) return;
+      var font = Math.round(Math.min(480, 0.8 * size.h, size.w / 3));
+      if (Math.abs(year.font.size - font) < 2) return;
+      // the frames carry the year too, and would put back its size
+      (el._transitionData._frames || []).forEach(function(f) {
+        if (f.layout && f.layout.annotations) f.layout.annotations[0].font.size = font;
+      });
+      Plotly.relayout(el, {'annotations[0].font.size': font});
+    }
+    el.on('plotly_afterplot', fit);
+    fit();
+  }")
 }
 ##########################################################################################
 #
@@ -286,6 +334,7 @@ choropleth <- function(data, info, level, label) {
     ) %>%
     plotly::animation_opts(frame = 500, transition = 0, easing = "linear", redraw = TRUE, mode = "afterall") %>%
     plotly::layout(updatemenus = animation_buttons(levels(data$year)[1])) %>%
+    year_slider() %>%
     plotly::config(responsive = TRUE) %>%
     start_at_last_year()
 }
@@ -403,6 +452,8 @@ plot_scatter <- function(x_data, y_data, x_indicator, y_indicator) {
       # right of the plot, and the title of the x axis right under it, clear of the year slider
       title = "",
       margin = list(l = 50, r = 50, b = 100, t = 100, pad = 0),
+      # EU, EFTA, Candidate, as plotly lists the groups the other way round
+      legend = list(traceorder = "reversed"),
       # the left margin grows to fit a vertical title on several lines
       xaxis = list(title = c(axis_title(x_info, 100), list(standoff = 3)), range = limits_x),
       yaxis = list(title = axis_title(y_info, 45), range = limits_y, automargin = TRUE),
@@ -410,13 +461,14 @@ plot_scatter <- function(x_data, y_data, x_indicator, y_indicator) {
     ) %>%
     plotly::animation_opts(frame = 800, transition = 400, easing = "linear", redraw = FALSE, mode = "afterall") %>%
     plotly::layout(updatemenus = animation_buttons(levels(both$year)[1])) %>%
+    year_slider() %>%
     plotly::config(responsive = TRUE)
   real <- both[both$real, ]
   correlation <- vapply(levels(both$year), function(year) {
     d <- real[real$year == year, ]
     if (nrow(d) < 3) "" else sprintf("Correlation r = %.2f, %d countries", stats::cor(d$value_x, d$value_y), nrow(d))
   }, "")
-  label_frames(plotly::plotly_build(p), correlation, list(
+  label_frames(p, correlation, list(
     xref = "paper", yref = "paper", x = 0, y = 1, xanchor = "left", yanchor = "bottom",
     showarrow = FALSE, font = list(size = 14)
   )) %>%

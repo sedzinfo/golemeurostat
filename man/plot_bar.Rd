@@ -4,7 +4,7 @@
 \alias{plot_bar}
 \title{Ranked bars of an indicator, animated by year}
 \usage{
-plot_bar(data, indicator, country = NULL)
+plot_bar(data, indicator, country = NULL, top_n = Inf)
 }
 \arguments{
 \item{data}{Data frame from \code{\link[=get_indicator]{get_indicator()}}.}
@@ -13,6 +13,9 @@ plot_bar(data, indicator, country = NULL)
 and the unit.}
 
 \item{country}{Eurostat code of the country to draw in red.}
+
+\item{top_n}{How many countries to show each year, the largest; all of them
+by default.}
 }
 \value{
 A plotly object.
@@ -21,7 +24,9 @@ A plotly object.
 One bar per country, the largest at the top, re-ranked each
 year as the animation plays, and the picked country in red. A country's gaps
 between its first and last year are filled in a straight line, so that it
-does not drop out of the race for a year.
+does not drop out of the race for a year. As in golemworldbank, only the
+\code{top_n} largest are shown each year, and the year is printed large and gray
+in the bottom right corner.
 }
 \examples{
 data <- data.frame(

@@ -17,7 +17,13 @@ test_that("the bar race ranks the countries of each year, without the EU-27 aver
   # it opens at the last year, with that year's bars
   expect_equal(built$layout$annotations[[1]]$text, "2024")
   expect_equal(built$layout$sliders[[1]]$active, 2)
+  expect_equal(built$layout$sliders[[1]]$currentvalue$prefix, "Year: ")
   expect_equal(as.vector(built$data[[1]]$x), c(10.1, 4.2))
+})
+
+test_that("the bar race shows the top_n largest countries of each year", {
+  built <- plotly::plotly_build(plot_bar(tidy_countries(raw_unemployment), "unemployment", "EL", top_n = 1))$x
+  expect_true(all(vapply(built$frames, function(f) length(f$data[[1]]$y) == 1, TRUE)))
 })
 
 test_that("the maps color the outlines (from GISCO, or served by the app), on one scale for all the years", {
