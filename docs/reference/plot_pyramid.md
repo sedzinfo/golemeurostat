@@ -4,7 +4,10 @@ As in golemworldbank: the share of each five-year age group in the male
 population, to the left, and in the female population, to the right,
 animated over the years. The male values are drawn negative, so that the
 two sexes stand back to back, but the labels on the bars and the axis
-show them positive. The axis stays the same for all the years.
+show them positive. The axis stays the same for all the years. The years
+whose figures jump back and forth from one year to the next, as
+Eurostat's for Greece from 1961 to 1969 do, are left out, and named at
+the top of the chart.
 
 ## Usage
 
