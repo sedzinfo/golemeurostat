@@ -5,7 +5,8 @@
 #' @description As in golemworldbank: a country, the two years to compare, the
 #' two checkboxes of [indicator_change()] (rates of change, changes of sign), a
 #' note that the comparison is automatic and needs interpretation, a one-line
-#' summary, and the indicators that increased and decreased, in two tabs.
+#' summary, and the indicators that increased and decreased, by percent change,
+#' and those that are percentages, by percentage points, in four tabs.
 #' @param id Character. Module namespace id.
 #' @return A `tagList` of Shiny UI elements.
 #' @keywords internal
@@ -34,9 +35,10 @@ mod_change_ui <- function(id) {
       tags$b("Note:"),
       "these tables are produced automatically by comparing the two selected years,",
       "and need interpretation. Change % is (To - From) / |From| x 100, the change",
-      "relative to the starting value; for indicators that are already percentages",
-      "(e.g. % of the population) it is not the difference in percentage points, which is",
-      "the Change column. A change can come from a data revision, a missing or",
+      "relative to the starting value. The indicators that are already percentages",
+      "(e.g. % of the population) are in the Percentages tabs, by their Change, the",
+      "difference in percentage points, as a percent change of a percentage misleads",
+      "(0.2% to 1% would be +400%). A change can come from a data revision, a missing or",
       "estimated value, a break in the series or a change of method rather than a real",
       "change, and a large percent change from a small starting value can matter little.",
       "Check the indicator's definition (Indicators tab) and its full time series",
@@ -46,7 +48,9 @@ mod_change_ui <- function(id) {
     textOutput(ns("summary")),
     tabsetPanel(
       tabPanel("Increased", DT::dataTableOutput(ns("increased"))),
-      tabPanel("Decreased", DT::dataTableOutput(ns("decreased")))
+      tabPanel("Decreased", DT::dataTableOutput(ns("decreased"))),
+      tabPanel("Percentages increased", DT::dataTableOutput(ns("percentages_increased"))),
+      tabPanel("Percentages decreased", DT::dataTableOutput(ns("percentages_decreased")))
     )
   )
 }
@@ -55,8 +59,9 @@ mod_change_ui <- function(id) {
 ##########################################################################################
 #' @title Change (%) module - server
 #' @description Runs [indicator_change()] for the picked country, years and
-#' checkboxes, and shows how many indicators increased and decreased, and its
-#' two tables with [render_change_table()]. Asks for two different years, and
+#' checkboxes, and shows how many indicators increased and decreased, how many
+#' of them percentages, and its four tables with [render_change_table()]. Asks
+#' for two different years, and
 #' shows the error of [indicator_change()] (no values in either year) in place
 #' of the tables.
 #' @param id Character. Module namespace id, must match the id used in
@@ -80,11 +85,15 @@ mod_change_server <- function(id) {
     output$summary <- renderText({
       r <- res()
       paste0(
-        nrow(r$increased), " indicators increased and ", nrow(r$decreased), " decreased from ",
-        input$year1, " to ", input$year2, " (only indicators with a value in both years)."
+        nrow(r$increased) + nrow(r$percentages_increased), " indicators increased and ",
+        nrow(r$decreased) + nrow(r$percentages_decreased), " decreased from ", input$year1, " to ",
+        input$year2, " (only indicators with a value in both years), ", nrow(r$percentages_increased),
+        " and ", nrow(r$percentages_decreased), " of them percentages."
       )
     })
     output$increased <- DT::renderDataTable(render_change_table(res()$increased))
     output$decreased <- DT::renderDataTable(render_change_table(res()$decreased))
+    output$percentages_increased <- DT::renderDataTable(render_change_table(res()$percentages_increased))
+    output$percentages_decreased <- DT::renderDataTable(render_change_table(res()$percentages_decreased))
   })
 }

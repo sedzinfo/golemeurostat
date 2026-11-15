@@ -14,7 +14,7 @@ The tabs of golemworldbank, with two maps:
 - **Scatterplot**: the countries by two indicators, as bubbles as large as their population, animated by year, with the correlation of the two in each year
 - **Map**: the countries colored by an indicator, from red for the lowest through white to dark blue for the highest, animated by year
 - **Regions**: the regions of Europe (NUTS 2) colored in the same way by an indicator, such as GDP per inhabitant or unemployment, animated by year
-- **Change (%)**: the indicators of a country that rose and fell between two years, by how much
+- **Change (%)**: the indicators of a country that rose and fell between two years, by how much: by percent, and those that are percentages, such as the unemployment rate, by percentage points, in tabs of their own
 - **Indicators**: every indicator of the app, with its unit, definition and a link to its dataset at Eurostat
 - **About**: where the data comes from, the acknowledgments and the license
 

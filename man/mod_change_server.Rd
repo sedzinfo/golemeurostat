@@ -15,8 +15,9 @@ None. Called for its side effect of registering the module server.
 }
 \description{
 Runs \code{\link[=indicator_change]{indicator_change()}} for the picked country, years and
-checkboxes, and shows how many indicators increased and decreased, and its
-two tables with \code{\link[=render_change_table]{render_change_table()}}. Asks for two different years, and
+checkboxes, and shows how many indicators increased and decreased, how many
+of them percentages, and its four tables with \code{\link[=render_change_table]{render_change_table()}}. Asks
+for two different years, and
 shows the error of \code{\link[=indicator_change]{indicator_change()}} (no values in either year) in place
 of the tables.
 }

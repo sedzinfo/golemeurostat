@@ -20,17 +20,18 @@ indicator_change(
 
 \item{include_rates}{Keep the rates of change.}
 
-\item{include_sign_change}{Keep the indicators whose value changed sign
-between the two years, whose percent change means little; either way they
-are listed in \code{sign_change}.}
+\item{include_sign_change}{Keep the indicators, other than the percentages,
+whose value changed sign between the two years, whose percent change means
+little; either way they are listed in \code{sign_change}.}
 
 \item{values}{Data frame of \code{\link[=all_values]{all_values()}}.}
 }
 \value{
 A list with \code{increased} and \code{decreased} (data frames with the columns
 \code{Indicator}, \code{Unit}, one named after each year with its value, \code{Change} and
-\verb{Change \%}), \code{zero_base} and \code{sign_change} (names of indicators). Stops
-with an error when the country has no values in either year.
+\verb{Change \%}), \code{percentages_increased} and \code{percentages_decreased} (the same
+without \verb{Change \%}), \code{zero_base} and \code{sign_change} (names of indicators).
+Stops with an error when the country has no values in either year.
 }
 \description{
 As in golemworldbank: compares every indicator a country has a
@@ -41,17 +42,23 @@ percent change, the largest first. The percent change is
 is 0, so those indicators are in neither table (they are in \code{zero_base}), nor
 are those that did not change.
 
+The indicators that are percentages, whose unit is one (such as "\% of GDP",
+"Percentage of total population" or "Percentage point"), or whose name says
+so when they have no unit (such as "Outward FDI stocks in \% of GDP"), are in two tables
+of their own, by their change in percentage points, the largest first,
+without a percent change: relative to the old percentage, it misleads (a
+share going from 0.2\% to 1\% reads as +400\%). A change in points needs no
+starting value other than 0, nor the same sign in both years, so these
+tables keep those indicators.
+
 Rates of change, whose name or unit says "change" or "growth" (such as
 "Real GDP growth" or "Percentage change on previous period"), are left out
 unless \code{include_rates = TRUE}: a percent change of a rate of change means
 little (a rate going from 0.1 to 1.7 reads as +1,600\%).
-
-For indicators that are percentages, such as the unemployment rate, the
-percent change is relative to the old percentage, not a difference in
-percentage points; the \code{Change} column gives the plain difference.
 }
 \examples{
 res <- indicator_change("EL", 2015, 2024)
 head(res$increased)
 head(res$decreased)
+head(res$percentages_increased)
 }

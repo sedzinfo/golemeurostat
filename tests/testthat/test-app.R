@@ -50,7 +50,7 @@ test_that("the app has the tabs of golemworldbank, with two maps", {
   tabs <- regmatches(html, gregexpr('data-toggle="tab" data-bs-toggle="tab" data-value="[^"]+"', html))[[1]]
   tabs <- sub('.*data-value="([^"]+)"', "\\1", tabs)
   expect_equal(
-    tabs[!tabs %in% c("Increased", "Decreased")],
+    tabs[!tabs %in% c("Increased", "Decreased", "Percentages increased", "Percentages decreased")],
     c("Country Comparison", "Indicator Comparison", "Pyramid", "Barplot", "Scatterplot", "Map", "Regions", "Change (%)", "Indicators", "About")
   )
 })

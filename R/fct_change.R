@@ -50,30 +50,37 @@ change_years <- function(values = all_values()) {
 #' is 0, so those indicators are in neither table (they are in `zero_base`), nor
 #' are those that did not change.
 #'
+#' The indicators that are percentages, whose unit is one (such as "% of GDP",
+#' "Percentage of total population" or "Percentage point"), or whose name says
+#' so when they have no unit (such as "Outward FDI stocks in % of GDP"), are in two tables
+#' of their own, by their change in percentage points, the largest first,
+#' without a percent change: relative to the old percentage, it misleads (a
+#' share going from 0.2% to 1% reads as +400%). A change in points needs no
+#' starting value other than 0, nor the same sign in both years, so these
+#' tables keep those indicators.
+#'
 #' Rates of change, whose name or unit says "change" or "growth" (such as
 #' "Real GDP growth" or "Percentage change on previous period"), are left out
 #' unless `include_rates = TRUE`: a percent change of a rate of change means
 #' little (a rate going from 0.1 to 1.7 reads as +1,600%).
-#'
-#' For indicators that are percentages, such as the unemployment rate, the
-#' percent change is relative to the old percentage, not a difference in
-#' percentage points; the `Change` column gives the plain difference.
 #' @param country Eurostat code of the country, such as "EL", or "EU27_2020".
 #' @param year1,year2 The two years to compare.
 #' @param include_rates Keep the rates of change.
-#' @param include_sign_change Keep the indicators whose value changed sign
-#'   between the two years, whose percent change means little; either way they
-#'   are listed in `sign_change`.
+#' @param include_sign_change Keep the indicators, other than the percentages,
+#'   whose value changed sign between the two years, whose percent change means
+#'   little; either way they are listed in `sign_change`.
 #' @param values Data frame of [all_values()].
 #' @return A list with `increased` and `decreased` (data frames with the columns
 #'   `Indicator`, `Unit`, one named after each year with its value, `Change` and
-#'   `Change %`), `zero_base` and `sign_change` (names of indicators). Stops
-#'   with an error when the country has no values in either year.
+#'   `Change %`), `percentages_increased` and `percentages_decreased` (the same
+#'   without `Change %`), `zero_base` and `sign_change` (names of indicators).
+#'   Stops with an error when the country has no values in either year.
 #' @export
 #' @examples
 #' res <- indicator_change("EL", 2015, 2024)
 #' head(res$increased)
 #' head(res$decreased)
+#' head(res$percentages_increased)
 indicator_change <- function(country, year1, year2, include_rates = FALSE, include_sign_change = FALSE, values = all_values()) {
   if (is.null(values)) {
     stop("The package has no values: run data-raw/build_values.R", call. = FALSE)
@@ -92,27 +99,52 @@ indicator_change <- function(country, year1, year2, include_rates = FALSE, inclu
   if (!include_rates) {
     both <- both[!grepl("\\b(change|growth)\\b", paste(both$name, both$unit), ignore.case = TRUE, perl = TRUE), ]
   }
-  zero_base <- both$name[both$value_1 == 0]
-  both <- both[both$value_1 != 0, ]
-  flipped <- sign(both$value_1) != sign(both$value_2) & both$value_2 != 0
+  # the change of a percentage, in percentage points, needs no starting value other than 0, nor the
+  # same sign in the two years
+  both$percent <- is_percentage(both$unit, both$name)
+  zero_base <- both$name[!both$percent & both$value_1 == 0]
+  both <- both[both$percent | both$value_1 != 0, ]
+  flipped <- !both$percent & sign(both$value_1) != sign(both$value_2) & both$value_2 != 0
   sign_change <- both$name[flipped]
   if (!include_sign_change) both <- both[!flipped, ]
   both$change <- both$value_2 - both$value_1
   both$pct <- both$change / abs(both$value_1) * 100
-  as_table <- function(x) {
-    out <- data.frame(x$name, x$unit, x$value_1, x$value_2, x$change, round(x$pct, 2), check.names = FALSE, stringsAsFactors = FALSE)
-    names(out) <- c("Indicator", "Unit", as.character(year1), as.character(year2), "Change", "Change %")
+  as_table <- function(x, pct = TRUE) {
+    out <- data.frame(x$name, x$unit, x$value_1, x$value_2, x$change, check.names = FALSE, stringsAsFactors = FALSE)
+    names(out) <- c("Indicator", "Unit", as.character(year1), as.character(year2), "Change")
+    if (pct) out$`Change %` <- round(x$pct, 2)
     row.names(out) <- NULL
     out
   }
-  increased <- both[both$pct > 0, ]
-  decreased <- both[both$pct < 0, ]
+  others <- both[!both$percent, ]
+  percentages <- both[both$percent, ]
+  increased <- others[others$change > 0, ]
+  decreased <- others[others$change < 0, ]
+  rose <- percentages[percentages$change > 0, ]
+  fell <- percentages[percentages$change < 0, ]
   list(
     increased = as_table(increased[order(-increased$pct), ]),
     decreased = as_table(decreased[order(decreased$pct), ]),
+    percentages_increased = as_table(rose[order(-rose$change), ], pct = FALSE),
+    percentages_decreased = as_table(fell[order(fell$change), ], pct = FALSE),
     zero_base = zero_base,
     sign_change = sign_change
   )
+}
+##########################################################################################
+#
+##########################################################################################
+#' @title Whether an indicator is a percentage
+#' @description By its unit, such as "% of GDP", "Percentage of total
+#' population", "Percentage point" or "Percentual share of total current health
+#' expenditure (CHE)", but not "Per 1,000 inhabitants" or "Index, EU-27 = 100";
+#' or, without a unit, as some of Eurostat's main tables have, by its name, such
+#' as "Outward FDI stocks in % of GDP".
+#' @param unit,name Units and names of indicators, from [indicators()].
+#' @return A logical vector.
+#' @noRd
+is_percentage <- function(unit, name = "") {
+  grepl("%|percent", ifelse(nzchar(unit), unit, name), ignore.case = TRUE)
 }
 ##########################################################################################
 #
@@ -123,9 +155,11 @@ indicator_change <- function(country, year1, year2, include_rates = FALSE, inclu
 #' full numbers, and the percent change with one decimal, in bold green for an
 #' increase and red for a decrease, on one long page with compact rows (by
 #' their padding: golemworldbank's line height of 80% would make the long names
-#' of Eurostat's indicators, on two lines, run into each other).
-#' @param tab One of the data frames of [indicator_change()], `increased` or
-#'   `decreased`.
+#' of Eurostat's indicators, on two lines, run into each other). A table of the
+#' percentages, without a percent change, has its change in percentage points
+#' in bold green and red instead.
+#' @param tab One of the data frames of [indicator_change()], such as
+#'   `increased` or `percentages_decreased`.
 #' @return A DT table.
 #' @export
 #' @examples
@@ -146,6 +180,8 @@ render_change_table <- function(tab) {
       columnDefs = list(list(targets = 2:4, render = compact, className = "dt-right"))
     )
   )
-  result <- DT::formatRound(result, "Change %", digits = 1)
-  DT::formatStyle(result, "Change %", color = DT::styleInterval(0, c("#B3261E", "#1E7B34")), fontWeight = "bold")
+  # the measure the table is sorted by: the percent change, or the change of the percentages
+  measure <- if ("Change %" %in% names(tab)) "Change %" else "Change"
+  if (measure == "Change %") result <- DT::formatRound(result, "Change %", digits = 1)
+  DT::formatStyle(result, measure, color = DT::styleInterval(0, c("#B3261E", "#1E7B34")), fontWeight = "bold")
 }

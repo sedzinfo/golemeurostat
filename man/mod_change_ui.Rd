@@ -16,7 +16,8 @@ A \code{tagList} of Shiny UI elements.
 As in golemworldbank: a country, the two years to compare, the
 two checkboxes of \code{\link[=indicator_change]{indicator_change()}} (rates of change, changes of sign), a
 note that the comparison is automatic and needs interpretation, a one-line
-summary, and the indicators that increased and decreased, in two tabs.
+summary, and the indicators that increased and decreased, by percent change,
+and those that are percentages, by percentage points, in four tabs.
 }
 \examples{
 \dontrun{

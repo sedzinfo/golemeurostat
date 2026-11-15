@@ -7,8 +7,8 @@
 render_change_table(tab)
 }
 \arguments{
-\item{tab}{One of the data frames of \code{\link[=indicator_change]{indicator_change()}}, \code{increased} or
-\code{decreased}.}
+\item{tab}{One of the data frames of \code{\link[=indicator_change]{indicator_change()}}, such as
+\code{increased} or \code{percentages_decreased}.}
 }
 \value{
 A DT table.
@@ -19,7 +19,9 @@ to 3 significant digits (6.02M, 1.42B, 0.0752), while sorting still uses the
 full numbers, and the percent change with one decimal, in bold green for an
 increase and red for a decrease, on one long page with compact rows (by
 their padding: golemworldbank's line height of 80\% would make the long names
-of Eurostat's indicators, on two lines, run into each other).
+of Eurostat's indicators, on two lines, run into each other). A table of the
+percentages, without a percent change, has its change in percentage points
+in bold green and red instead.
 }
 \examples{
 render_change_table(indicator_change("EL", 2015, 2024)$increased)

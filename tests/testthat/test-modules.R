@@ -56,8 +56,9 @@ test_that("the new tabs of golemworldbank draw their charts and tables", {
   })
   testServer(mod_change_server, {
     session$setInputs(country = "EL", year1 = "2015", year2 = "2024", rates = FALSE, sign = FALSE)
-    expect_match(output$summary, "indicators increased and")
+    expect_match(output$summary, "indicators increased and .* of them percentages")
     expect_no_error(output$increased)
+    expect_no_error(output$percentages_increased)
     session$setInputs(year2 = "2015")
     expect_error(output$summary, "two different years")
   })
