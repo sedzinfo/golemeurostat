@@ -131,7 +131,9 @@ of the codes; the topic is the folder of the table in Eurostat’s themes.
 These limits are at the top of the script. At its end, it runs
 `data-raw/build_values.R`, which writes `inst/extdata/values.rds`, the
 values of every indicator of the countries (about 750,000, 1 MB), for
-the Change (%) tab.
+the Change (%) tab, and `regions.rds` and `pyramids.rds`, the values of
+every indicator of the regions and the population of each country by age
+group and sex (0.5 MB together).
 
 A generated row that downloads the same as a hand-written one is left
 out, so to rename or describe a generated indicator better, copy its row
@@ -147,7 +149,19 @@ of the countries and regions of the maps, the NUTS 2024 classification,
 come from [GISCO](https://ec.europa.eu/eurostat/web/gisco) and are
 downloaded once. The Change (%) tab, which compares all the indicators
 of a country at once, uses instead the values written into the package
-by `data-raw/build_values.R`, and says their date.
+by `data-raw/build_values.R`, and says their date. The same saved values
+work without internet:
+[`saved_indicator()`](https://sedzinfo.github.io/golemeurostat/reference/saved_indicator.md),
+[`saved_regional()`](https://sedzinfo.github.io/golemeurostat/reference/saved_regional.md)
+and
+[`saved_pyramid()`](https://sedzinfo.github.io/golemeurostat/reference/saved_pyramid.md)
+give them in the shape of
+[`get_indicator()`](https://sedzinfo.github.io/golemeurostat/reference/get_indicator.md),
+[`get_regional()`](https://sedzinfo.github.io/golemeurostat/reference/get_regional.md)
+and
+[`get_pyramid()`](https://sedzinfo.github.io/golemeurostat/reference/get_pyramid.md),
+and the examples of the charts use them, such as
+`plot_bar(saved_indicator("unemployment"), "unemployment", country = "EL", top_n = 10)`.
 
 Source of the data: Eurostat. Administrative boundaries: ©
 EuroGeographics.
