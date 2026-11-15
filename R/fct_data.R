@@ -202,14 +202,65 @@ download_eurostat <- function(dataset, filters) {
 ##########################################################################################
 #
 ##########################################################################################
+#' @title The values of Eurostat that are plainly wrong
+#' @description `inst/extdata/errors.csv`, one row per value: the `id` of the
+#' indicator, the country or region (`geo`), the `year`, the `value` Eurostat
+#' gives, and the `reason` it cannot be right, such as a share of the
+#' population of 933.2% in a year between two of about 94%, a decimal point
+#' misplaced. Read once and kept in memory.
+#' @return A data frame with `id`, `geo`, `year`, `value` and `reason`.
+#' @noRd
+known_errors <- function() {
+  if (is.null(memory$errors)) {
+    path <- app_sys("extdata", "errors.csv")
+    memory$errors <- if (nzchar(path)) {
+      utils::read.csv(path,
+        stringsAsFactors = FALSE, encoding = "UTF-8",
+        colClasses = c(id = "character", geo = "character", year = "integer", value = "numeric", reason = "character")
+      )
+    } else {
+      data.frame(id = character(0), geo = character(0), year = integer(0), value = numeric(0), reason = character(0))
+    }
+  }
+  memory$errors
+}
+##########################################################################################
+#
+##########################################################################################
+#' @title Leave out the values of Eurostat that are plainly wrong
+#' @description The values of `known_errors()` of an indicator, while Eurostat
+#' still gives them: a value Eurostat corrects is kept.
+#' @param data Data frame with `geo`, `year` and `value`.
+#' @param id The `id` of the indicator, or `NULL` to keep every value.
+#' @return `data` without the values that are wrong.
+#' @noRd
+drop_known_errors <- function(data, id) {
+  errors <- known_errors()
+  errors <- errors[errors$id %in% id, ]
+  if (nrow(errors) == 0) {
+    return(data)
+  }
+  k <- match(paste(data$geo, data$year), paste(errors$geo, errors$year))
+  wrong <- !is.na(k) & abs(data$value - errors$value[k]) <= 1e-9 * pmax(1, abs(errors$value[k]))
+  if (any(wrong)) {
+    message("Left out, as known errors in the data of Eurostat: ", paste(data$geo[wrong], data$year[wrong], collapse = ", "))
+    data <- data[!wrong, ]
+    rownames(data) <- NULL
+  }
+  data
+}
+##########################################################################################
+#
+##########################################################################################
 #' @title Keep the countries of the app
 #' @description Leaves out the other areas of a Eurostat download, such as the
-#' euro area, and the missing values, and adds the names and groups of the
-#' countries.
+#' euro area, the missing values, the values in wrong units and those of
+#' `known_errors()`, and adds the names and groups of the countries.
 #' @param raw Data frame from [eurostat::get_eurostat()].
+#' @param id The `id` of the indicator, for `known_errors()`.
 #' @return A data frame with `geo`, `country`, `group`, `year` and `value`.
 #' @noRd
-tidy_countries <- function(raw) {
+tidy_countries <- function(raw, id = NULL) {
   known <- countries()
   raw <- raw[!is.na(raw$values) & raw$geo %in% known$code, ]
   # a value more than 1,000 times the median of the countries of its year, and of the years of
@@ -225,13 +276,13 @@ tidy_countries <- function(raw) {
     raw <- raw[!wrong, ]
   }
   row <- match(raw$geo, known$code)
-  data.frame(
+  drop_known_errors(data.frame(
     geo = raw$geo,
     country = known$name[row],
     group = known$group[row],
     year = as.integer(raw$time),
     value = raw$values
-  )
+  ), id)
 }
 ##########################################################################################
 #
@@ -239,7 +290,10 @@ tidy_countries <- function(raw) {
 #' @title Get an indicator for the countries
 #' @description Downloads one indicator of [indicators()] from Eurostat, or takes
 #' it from the disk cache when it was downloaded less than a day ago, for the
-#' countries of [countries()] and the EU-27 average.
+#' countries of [countries()] and the EU-27 average. A value in the wrong units,
+#' more than 1,000 times the median of its year and of its country, is left
+#' out, and so is a value of `inst/extdata/errors.csv`, plainly wrong in the
+#' data of Eurostat, such as a share of 933.2% for 93.32%.
 #' @param id The `id` of the indicator in [indicators()], such as
 #'   "unemployment".
 #' @return A data frame with `geo` (the Eurostat code), `country`, `group`,
@@ -254,7 +308,7 @@ get_indicator <- function(id) {
   info <- indicator_info(id)
   cached(paste0("country_", id), function() {
     raw <- download_eurostat(info$dataset, parse_filters(info$filters))
-    if (is.null(raw)) NULL else tidy_countries(raw)
+    if (is.null(raw)) NULL else tidy_countries(raw, id)
   })
 }
 ##########################################################################################
@@ -314,22 +368,24 @@ saved_indicator <- function(id) {
 ##########################################################################################
 #' @title Keep the regions that are on the map
 #' @description Leaves out the regions that are not in the outlines of the map,
-#' such as those of older versions of the classification, and the missing
-#' values, and adds the names of the regions and of their countries.
+#' such as those of older versions of the classification, the missing values
+#' and those of `known_errors()`, and adds the names of the regions and of
+#' their countries.
 #' @param raw Data frame from [eurostat::get_eurostat()].
 #' @param names Names of the regions by their code, from `nuts_names(2)`.
+#' @param id The `id` of the indicator, for `known_errors()`.
 #' @return A data frame with `geo`, `region`, `country`, `year` and `value`.
 #' @noRd
-tidy_regions <- function(raw, names) {
+tidy_regions <- function(raw, names, id = NULL) {
   raw <- raw[!is.na(raw$values) & raw$geo %in% names(names), ]
   known <- countries()
-  data.frame(
+  drop_known_errors(data.frame(
     geo = raw$geo,
     region = unname(names[raw$geo]),
     country = known$name[match(substr(raw$geo, 1, 2), known$code)],
     year = as.integer(raw$time),
     value = raw$values
-  )
+  ), id)
 }
 ##########################################################################################
 #
@@ -337,7 +393,9 @@ tidy_regions <- function(raw, names) {
 #' @title Get an indicator for the regions
 #' @description Downloads one regional indicator of [indicators()] from
 #' Eurostat, or takes it from the disk cache when it was downloaded less than a
-#' day ago, for the regions of the NUTS 2024 classification at level 2.
+#' day ago, for the regions of the NUTS 2024 classification at level 2, without
+#' the values of `inst/extdata/errors.csv`, plainly wrong in the data of
+#' Eurostat.
 #' @param id The `id` of a regional indicator in [indicators()], such as
 #'   "r_unemployment".
 #' @return A data frame with `geo` (the NUTS code), `region`, `country`, `year`
@@ -353,7 +411,7 @@ get_regional <- function(id) {
   cached(paste0("region_", id), function() {
     names <- nuts_names(2)
     raw <- if (!is.null(names)) download_eurostat(info$dataset, parse_filters(info$filters))
-    if (is.null(raw)) NULL else tidy_regions(raw, names)
+    if (is.null(raw)) NULL else tidy_regions(raw, names, id)
   })
 }
 ##########################################################################################
@@ -552,11 +610,64 @@ nuts_file <- function(level) {
 ##########################################################################################
 #
 ##########################################################################################
+#' @title The file of the outlines of the countries of the map
+#' @description GISCO's outlines of the NUTS 2024 classification at level 0,
+#' with those of the countries of the app that the classification leaves out,
+#' Moldova and Georgia, from GISCO's outlines of the countries at the same
+#' scale (see `add_outlines()`). `data-raw/build_values.R` writes it into
+#' `inst/app/www`, which the app serves under `www/`.
+#' @noRd
+country_outlines <- "countries_RG_20M_2024_4326.geojson"
+##########################################################################################
+#
+##########################################################################################
+#' @title Add the outlines of countries to those of the NUTS classification
+#' @description For the countries of the app that the NUTS classification
+#' leaves out, Moldova and Georgia: their outlines from GISCO's countries, with
+#' the properties the maps and `nuts_names()` read, their Eurostat code as
+#' `NUTS_ID` and their name as `NAME_LATN`.
+#' @param nuts The outlines of the NUTS classification at level 0, as
+#'   [jsonlite::read_json()] reads them.
+#' @param extra GISCO's outlines of single countries (its files
+#'   `countries/distribution/XX-region-20m-4326-2024.geojson`), read the same way.
+#' @return `nuts` with the features of `extra` added.
+#' @noRd
+add_outlines <- function(nuts, extra) {
+  for (country in extra) {
+    for (feature in country$features) {
+      p <- feature$properties
+      feature$properties <- list(NUTS_ID = p$CNTR_ID, LEVL_CODE = 0L, CNTR_CODE = p$CNTR_ID, NAME_LATN = p$NAME_ENGL, NAME_ENGL = p$NAME_ENGL)
+      nuts$features[[length(nuts$features) + 1]] <- feature
+    }
+  }
+  nuts
+}
+##########################################################################################
+#
+##########################################################################################
 #' @title Where the browser finds the outlines
+#' @description For the countries, the outlines saved in the package
+#' (`country_outlines`): served by the app, and outside it, in the R console and
+#' on the website, where nothing serves them, the outlines themselves, which
+#' go into the chart. For the regions, the outlines the app downloaded, or
+#' outside the app those of GISCO, which lets any page fetch them.
 #' @param level 0 or 2.
+#' @return A URL, or the outlines of the countries as [jsonlite::read_json()]
+#'   reads them.
 #' @noRd
 nuts_url <- function(level) {
-  if ("nuts" %in% names(shiny::resourcePaths())) {
+  in_app <- "nuts" %in% names(shiny::resourcePaths())
+  if (level == 0) {
+    path <- app_sys("app/www", country_outlines)
+    if (in_app && nzchar(path)) {
+      return(paste0("www/", country_outlines))
+    }
+    if (nzchar(path)) {
+      if (is.null(memory$outlines)) memory$outlines <- jsonlite::read_json(path)
+      return(memory$outlines)
+    }
+  }
+  if (in_app) {
     # the app serves the files it downloaded
     paste0("nuts/", nuts_file_name(level))
   } else {
@@ -604,8 +715,8 @@ nuts_names <- function(level) {
 #'   by hand.
 #' @return A data frame with one row per indicator: `id`, `ok`, `areas` (the
 #'   countries or regions with values), `first` and `last` (years), `problem`
-#'   and `note` (values left out as errors of units, see
-#'   [get_indicator()]).
+#'   and `note` (values left out as errors of units or as known errors of
+#'   Eurostat, see [get_indicator()]).
 #' @export
 #' @examples
 #' \dontrun{
@@ -622,9 +733,9 @@ check_indicators <- function(ids = indicators()$id[!indicators()$generated]) {
       return(result)
     }
     data <- withCallingHandlers(
-      if (info$level == "region") tidy_regions(raw, nuts_names(2)) else tidy_countries(raw),
+      if (info$level == "region") tidy_regions(raw, nuts_names(2), id) else tidy_countries(raw, id),
       message = function(m) {
-        result$note <<- trimws(conditionMessage(m))
+        result$note <<- paste(c(if (nzchar(result$note)) result$note, trimws(conditionMessage(m))), collapse = "; ")
         invokeRestart("muffleMessage")
       }
     )

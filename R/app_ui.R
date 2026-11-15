@@ -106,8 +106,9 @@ app_meta <- list(
 #' @description The description and Open Graph tags of `app_meta`, the favicon,
 #' any CSS and JavaScript file of `inst/app/www`, the stylesheet, the layout and
 #' the dark mode that the apps share on sedzinfo.github.io (`shared_css()`,
-#' `shared_layout()`, `shared_url`), and the outlines of the countries and
-#' regions of the maps, downloaded once and served under `nuts/`.
+#' `shared_layout()`, `shared_url`), and the outlines of the regions of the
+#' map, downloaded once and served under `nuts/`; those of the countries are in
+#' `inst/app/www`, served under `www/`.
 #' @import shiny
 #' @importFrom golem add_resource_path favicon bundle_resources
 #' @noRd
@@ -118,8 +119,8 @@ app_meta <- list(
 #' }
 golem_add_external_resources <- function() {
   add_resource_path("www", app_sys("app/www"))
-  # the maps ask the browser for the outlines; downloaded the first time only
-  nuts_file(0)
+  # the maps ask the browser for the outlines: those of the countries are in www, and those of
+  # the regions are downloaded the first time only
   nuts_file(2)
   addResourcePath("nuts", nuts_dir())
   tags$head(

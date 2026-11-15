@@ -417,9 +417,14 @@ choropleth <- function(data, info, level, label) {
   data <- data[order(data$year), ]
   data$year <- factor(data$year)
   limits <- range(data$value, na.rm = TRUE)
-  plotly::plot_ly(data,
+  geojson <- nuts_url(level)
+  # outlines that go into the chart itself, rather than at an address, plotly would copy into every
+  # frame, and work through each copy, taking seconds: the chart is built with an address, and
+  # takes the outlines once it is built
+  outlines <- if (is.character(geojson)) NULL else geojson
+  p <- plotly::plot_ly(data,
     type = "choropleth",
-    geojson = nuts_url(level),
+    geojson = if (is.null(outlines)) geojson else "",
     featureidkey = "properties.NUTS_ID",
     locations = ~geo,
     z = ~value,
@@ -454,6 +459,20 @@ choropleth <- function(data, info, level, label) {
     plotly::layout(updatemenus = animation_buttons(levels(data$year)[1])) %>%
     year_slider() %>%
     plotly::config(responsive = TRUE)
+  if (!is.null(outlines)) {
+    p$x$data <- lapply(p$x$data, function(trace) {
+      trace$geojson <- outlines
+      trace
+    })
+    # a frame changes the values only, and keeps the outlines of the chart
+    for (k in seq_along(p$x$frames)) {
+      p$x$frames[[k]]$data <- lapply(p$x$frames[[k]]$data, function(trace) {
+        trace$geojson <- NULL
+        trace
+      })
+    }
+  }
+  p
 }
 ##########################################################################################
 #

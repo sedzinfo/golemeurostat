@@ -61,6 +61,51 @@ test_that("tidy_countries() leaves out values in the wrong units, a million time
   expect_equal(data$year[data$geo == "TR"], 2023:2024)
 })
 
+test_that("the values of errors.csv, plainly wrong at Eurostat, are left out while Eurostat gives them", {
+  # a share of the population of 933.2% between two of about 94%
+  raw <- data.frame(geo = "AT", time = 2010:2012, values = c(93.9, 933.2, 94.5))
+  expect_message(data <- tidy_countries(raw, "sdg_06_20"), "AT 2011")
+  expect_equal(data$year, c(2010L, 2012L))
+  # once Eurostat corrects it, the value is kept, and another indicator keeps it anyway
+  expect_no_message(data <- tidy_countries(transform(raw, values = c(93.9, 94.2, 94.5)), "sdg_06_20"))
+  expect_equal(nrow(data), 3)
+  expect_equal(nrow(tidy_countries(raw, "unemployment")), 3)
+  expect_equal(nrow(tidy_countries(raw)), 3)
+  # every row of the list is an indicator of the app, and none of them is in the values saved in the package
+  errors <- known_errors()
+  expect_true(all(errors$id %in% indicators()$id))
+  values <- all_values()
+  expect_false(any(paste(values$id, values$geo, values$year) %in% paste(errors$id, errors$geo, errors$year)))
+})
+
+test_that("the units of the catalogue describe their series, also where the labels of Eurostat do not", {
+  unit <- function(id) indicator_info(id)$unit
+  # amounts that Eurostat labels Percentage, differences of rates that it labels Number, and a title in tonnes for kilograms
+  expect_equal(unit("sdg_10_10_exp_pps_eu27_2020_hab"), "Purchasing power standard (PPS, EU27 from 2020) per inhabitant")
+  expect_equal(unit("tespn240_y_ge65"), "Percentage points")
+  expect_equal(unit("tai04"), "Kilograms of oil equivalent per hectare")
+  expect_no_match(indicator_info("tai04")$name, "tonne")
+  # percentages that Eurostat labels Rate or leaves without a unit are compared in percentage points
+  info <- indicators()[indicators()$id %in% c("cei_wm020_w1501", "tps00010_pc_y0_14", "tipsun10", "tesem220"), ]
+  expect_equal(nrow(info), 4)
+  expect_true(all(is_percentage(info$unit, info$name)))
+  # an index, whose table names the percentage change of its other series, is not a rate of change
+  expect_no_match(indicator_info("tipslm20_i15")$name, "change")
+})
+
+test_that("the outlines of the map have every country of the app, Moldova and Georgia too", {
+  outlines <- jsonlite::read_json(app_sys("app/www", country_outlines))
+  ids <- vapply(outlines$features, function(f) f$properties$NUTS_ID, "")
+  expect_true(all(setdiff(countries()$code, eu_average) %in% ids))
+  expect_false(anyDuplicated(ids) > 0)
+  # added from GISCO's outlines of the countries, under their Eurostat code
+  nuts <- list(type = "FeatureCollection", features = list(list(type = "Feature", properties = list(NUTS_ID = "EL"), geometry = list())))
+  moldova <- list(type = "FeatureCollection", features = list(list(type = "Feature", properties = list(CNTR_ID = "MD", NAME_ENGL = "Moldova"), geometry = list())))
+  added <- add_outlines(nuts, list(moldova))
+  expect_equal(vapply(added$features, function(f) f$properties$NUTS_ID, ""), c("EL", "MD"))
+  expect_equal(added$features[[2]]$properties$NAME_LATN, "Moldova")
+})
+
 test_that("tidy_countries() keeps a country far larger than the others every year", {
   raw <- data.frame(geo = rep(c("DE", "MT", "CY", "LU"), each = 2), time = 2023:2024, values = c(3e5, 3.2e5, 10, 12, 50, 40, 30, 20))
   expect_no_message(data <- tidy_countries(raw))

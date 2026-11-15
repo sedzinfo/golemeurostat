@@ -10,7 +10,9 @@
 # combination of its dimensions (other than the country or region and the year), a series,
 # that has values for enough countries or regions and recent years. Each series kept is a
 # row, with the same columns as indicators.csv, so the app reads both files the same way.
-# The names come from the titles of the tables and the labels of the codes.
+# The names come from the titles of the tables and the labels of the codes, and the units from
+# the labels of the units; data-raw/corrections.csv corrects those that do not describe their
+# series, such as a unit of "Percentage" for amounts, and gives the units that Eurostat leaves out.
 #
 # Run it from the package folder, with internet, now and then, as Eurostat adds, renames
 # and retires tables:
@@ -193,6 +195,25 @@ label_of <- function(dim, code) {
   ifelse(is.na(label), code, label)
 }
 ##########################################################################################
+# THE CORRECTIONS of the labels of Eurostat that do not describe their series, or leave out their
+# unit: data-raw/corrections.csv, one row for the series of a table (`table`), or for those of
+# them with the codes of `filter` (such as unit=RT), with the unit to show (`unit`), and the name
+# and the definition when they are wrong too; `reason` says what is wrong. A unit that is a
+# dimension of the table changes in the name and the definition too.
+##########################################################################################
+corrections <- utils::read.csv(file.path("data-raw", "corrections.csv"), stringsAsFactors = FALSE, encoding = "UTF-8", colClasses = "character", na.strings = character(0))
+used <- rep(FALSE, nrow(corrections))
+correction_of <- function(table, codes) {
+  for (k in which(corrections$table == table)) {
+    wanted <- if (nzchar(corrections$filter[k])) parse_filters(corrections$filter[k]) else list()
+    if (all(vapply(names(wanted), function(d) identical(unname(codes[d]), wanted[[d]]), TRUE))) {
+      used[k] <<- TRUE
+      return(corrections[k, ])
+    }
+  }
+  NULL
+}
+##########################################################################################
 # THE ROWS
 ##########################################################################################
 rows <- do.call(rbind, lapply(found, function(f) {
@@ -205,22 +226,32 @@ rows <- do.call(rbind, lapply(found, function(f) {
   do.call(rbind, lapply(seq_len(nrow(series)), function(s) {
     codes <- unlist(series[s, , drop = FALSE])
     named <- vapply(dims, function(d) label_of(d, codes[[d]]), "")
+    fix <- correction_of(f$code, codes)
+    corrected <- function(field) !is.null(fix) && nzchar(fix[[field]])
+    unit_dim <- intersect(c("unit", "currency"), dims)[1]
+    if (corrected("unit") && !is.na(unit_dim)) named[[unit_dim]] <- fix$unit
     id <- tolower(paste(c(if (f$level == "region") "r", f$code, codes[open]), collapse = "_"))
-    unit <- if ("unit" %in% dims) named[["unit"]] else if ("currency" %in% dims) named[["currency"]] else ""
+    unit <- if (corrected("unit")) fix$unit else if (!is.na(unit_dim)) named[[unit_dim]] else ""
+    name <- if (length(open) > 0) paste0(info$title, ": ", paste(named[open], collapse = ", ")) else info$title
+    definition <- if (length(dims) > 0) paste0(info$title, " (", paste(named, collapse = "; "), ").") else paste0(info$title, ".")
     data.frame(
       id = gsub("_+$", "", gsub("[^a-z0-9]+", "_", id)),
       level = f$level,
       topic = info$topic,
-      name = if (length(open) > 0) paste0(info$title, ": ", paste(named[open], collapse = ", ")) else info$title,
+      name = if (corrected("name")) fix$name else name,
       unit = unit,
       dataset = f$code,
       # all the dimensions, fixed and open, so that a code Eurostat adds later to a table
       # cannot give a second value for a country and year
       filters = paste(c(if (f$has_freq) "freq=A", if (length(dims) > 0) paste0(dims, "=", codes)), collapse = ";"),
-      definition = if (length(dims) > 0) paste0(info$title, " (", paste(named, collapse = "; "), ").") else paste0(info$title, ".")
+      definition = if (corrected("definition")) fix$definition else definition
     )
   }))
 }))
+# a correction no series takes any more, as Eurostat changed or retired its table, is to be removed
+if (!all(used)) {
+  message("Corrections that no series takes: ", paste(corrections$table[!used], corrections$filter[!used], collapse = ", "))
+}
 # in the order of the tables: those of the themes, in the order of the table of contents, so
 # that the topics follow the themes of Eurostat, then those only among the cross-cutting topics
 rows <- rows[order(match(rows$dataset, tables$code), rows$level, rows$id), ]

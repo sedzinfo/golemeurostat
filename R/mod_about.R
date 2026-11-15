@@ -38,8 +38,15 @@ mod_about_ui <- function(id) {
       link("https://ec.europa.eu/eurostat/about-us/policies/copyright", "copyright notice"), ").",
       " Each indicator is downloaded from Eurostat's API when a chart first needs it, and kept",
       " for a day; the Change (%) tab compares values taken when the app was built. Values",
-      " missing from Eurostat's data are missing from the charts too. The names and definitions",
-      " in the Indicators tab are Eurostat's own, with a link to each dataset."
+      " missing from Eurostat's data are missing from the charts too, except in the Barplot,",
+      " which fills a gap in the years of a country with a straight line between the values",
+      " around it, so that the country stays in the race, and in the Scatterplot, whose bubbles",
+      " take the population of the nearest years when a year has none. A few values that are",
+      " plainly wrong in Eurostat's data, such as a share of the population of 933.2% in a year",
+      " between two of about 94%, are left out. The names, units and definitions in the",
+      " Indicators tab are Eurostat's own, except for the indicators chosen by hand and a few",
+      " labels that do not describe their series, such as a unit of \"Percentage\" for amounts,",
+      " which are corrected; each has a link to its dataset."
     ),
     h3("Acknowledgments"),
     p(

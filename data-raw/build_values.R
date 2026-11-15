@@ -10,7 +10,11 @@
 # Then, for the examples of the charts and to work offline, as saved_indicator() does with
 # values.rds: inst/extdata/regions.rds, every value of every indicator of the regions, with
 # the names of the regions (saved_regional()), and inst/extdata/pyramids.rds, the population
-# by sex and five-year age group of every country and the EU-27 (saved_pyramid()).
+# by sex and five-year age group of every country and the EU-27 (saved_pyramid()). Last, the
+# outlines of the countries of the Map tab, in inst/app/www.
+#
+# The values of inst/extdata/errors.csv, plainly wrong in the data of Eurostat, are left out,
+# as the app leaves them out of its downloads.
 #
 # build_indicators.R runs it at its end, after writing the catalogue; it can also be run
 # alone, from the package folder:
@@ -68,7 +72,7 @@ values <- lapply(seq_len(nrow(table)), function(i) {
   if (is.null(raw) || nrow(raw) == 0) {
     return(NULL)
   }
-  data <- suppressMessages(tidy_countries(raw))
+  data <- suppressMessages(tidy_countries(raw, info$id))
   if (anyDuplicated(data[c("geo", "year")]) > 0) {
     message("Left out ", info$id, ": more than one value for a country and year")
     return(NULL)
@@ -103,7 +107,7 @@ regional <- lapply(seq_len(nrow(table)), function(i) {
   if (is.null(raw) || nrow(raw) == 0) {
     return(NULL)
   }
-  data <- tidy_regions(raw, region_names)
+  data <- suppressMessages(tidy_regions(raw, region_names, info$id))
   if (anyDuplicated(data[c("geo", "year")]) > 0) {
     message("Left out ", info$id, ": more than one value for a region and year")
     return(NULL)
@@ -146,4 +150,26 @@ saveRDS(pyramids, output, compress = "xz", version = 2)
 message(
   "Wrote the population pyramids of ", length(unique(pyramids$geo)), " countries to ", output,
   " (", round(file.size(output) / 1024^2, 1), " MB)"
+)
+##########################################################################################
+# The outlines of the countries for the Map tab: GISCO's outlines of the NUTS 2024 classification
+# at level 0, with those of the countries of the app that it leaves out, Moldova and Georgia, from
+# GISCO's outlines of the countries at the same scale, 1:20 million (add_outlines()). The app
+# serves them from inst/app/www; the regions are downloaded by the app itself (nuts_file(2)).
+##########################################################################################
+output <- file.path("inst", "app", "www", country_outlines)
+dir.create(file.path(cache, "outlines"), recursive = TRUE, showWarnings = FALSE)
+gisco <- function(file) {
+  path <- file.path(cache, "outlines", basename(file))
+  if (!fresh(path)) utils::download.file(paste0("https://gisco-services.ec.europa.eu/distribution/v2/", file), path, quiet = TRUE, mode = "wb")
+  jsonlite::read_json(path)
+}
+nuts <- gisco(paste0("nuts/geojson/", nuts_file_name(0)))
+outlined <- vapply(nuts$features, function(f) f$properties$NUTS_ID, "")
+missing <- setdiff(countries()$code, c(outlined, eu_average))
+extra <- lapply(missing, function(code) gisco(sprintf("countries/distribution/%s-region-20m-4326-2024.geojson", code)))
+jsonlite::write_json(add_outlines(nuts, extra), output, auto_unbox = TRUE, digits = NA, null = "null")
+message(
+  "Wrote ", length(outlined) + length(missing), " outlines, those of ", paste(missing, collapse = " and "),
+  " from GISCO's countries, to ", output, " (", round(file.size(output) / 1024^2, 1), " MB)"
 )

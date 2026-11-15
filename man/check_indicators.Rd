@@ -13,8 +13,8 @@ by hand.}
 \value{
 A data frame with one row per indicator: \code{id}, \code{ok}, \code{areas} (the
 countries or regions with values), \code{first} and \code{last} (years), \code{problem}
-and \code{note} (values left out as errors of units, see
-\code{\link[=get_indicator]{get_indicator()}}).
+and \code{note} (values left out as errors of units or as known errors of
+Eurostat, see \code{\link[=get_indicator]{get_indicator()}}).
 }
 \description{
 Downloads each indicator of \code{\link[=indicators]{indicators()}} from Eurostat, past

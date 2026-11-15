@@ -18,7 +18,9 @@ the regions cannot be reached.
 \description{
 Downloads one regional indicator of \code{\link[=indicators]{indicators()}} from
 Eurostat, or takes it from the disk cache when it was downloaded less than a
-day ago, for the regions of the NUTS 2024 classification at level 2.
+day ago, for the regions of the NUTS 2024 classification at level 2, without
+the values of \code{inst/extdata/errors.csv}, plainly wrong in the data of
+Eurostat.
 }
 \examples{
 \dontrun{

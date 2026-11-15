@@ -39,9 +39,15 @@ test_that("the maps color the outlines (from GISCO, or served by the app), on on
   built <- plotly::plotly_build(plot_regions(regions, "r_gdp_pps"))$x
   expect_equal(built$data[[1]]$geojson, "https://gisco-services.ec.europa.eu/distribution/v2/nuts/geojson/NUTS_RG_20M_2024_4326_LEVL_2.geojson")
   expect_equal(c(built$data[[1]]$zmin, built$data[[1]]$zmax), c(57, 105))
+  # the countries: outside the app, the outlines saved in the package are in the chart, once, not in every frame
+  map <- plotly::plotly_build(plot_map(tidy_countries(raw_unemployment), "unemployment"))$x
+  expect_type(map$data[[1]]$geojson, "list")
+  expect_length(map$frames, 3)
+  expect_true(all(vapply(map$frames, function(f) is.null(f$data[[1]]$geojson), TRUE)))
   # inside the app, the outlines it serves
   shiny::addResourcePath("nuts", tempdir())
   expect_equal(nuts_url(2), "nuts/NUTS_RG_20M_2024_4326_LEVL_2.geojson")
+  expect_equal(nuts_url(0), "www/countries_RG_20M_2024_4326.geojson")
   shiny::removeResourcePath("nuts")
 })
 
