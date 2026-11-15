@@ -167,7 +167,11 @@ plot_country_comp <- function(data, countries, indicator) {
       margin = list(l = 50, r = 50, b = 0, t = heading$top, pad = 0),
       legend = list(orientation = "h", xanchor = "center", x = 0.5, y = 1),
       xaxis = list(title = "", tickangle = -90),
-      yaxis = list(title = info$unit),
+      # with a standoff, plotly puts the title of the axis beside its tick labels and widens the
+      # margin for it, though about 12px short of a title in this font, which it then keeps at the
+      # left edge of the chart, 8px from the labels; without one, at a set distance, and over wide
+      # labels (100)
+      yaxis = list(title = list(text = info$unit, standoff = 20), automargin = TRUE),
       font = font_style
     ) %>%
     plotly::config(responsive = TRUE)
@@ -227,7 +231,8 @@ plot_indicator_comp <- function(data, country, indicators) {
       # the names of Eurostat's indicators are long, so the legend is smaller than the chart's font
       legend = list(orientation = "h", xanchor = "center", x = 0.5, y = 1, font = list(size = 14)),
       xaxis = list(title = "", tickangle = -90),
-      yaxis = list(title = if (length(unique(units)) == 1) units[1] else ""),
+      # beside the tick labels, as in the Country Comparison
+      yaxis = list(title = list(text = if (length(unique(units)) == 1) units[1] else "", standoff = 20), automargin = TRUE),
       showlegend = TRUE,
       font = font_style
     ) %>%
@@ -627,9 +632,11 @@ plot_scatter <- function(x_data, y_data, x_indicator, y_indicator, population = 
         margin = list(l = 50, r = 50, b = 100, t = 100, pad = 0),
         # EU, EFTA, Candidate, as plotly lists the groups the other way round
         legend = list(traceorder = "reversed"),
-        # the left margin grows to fit a vertical title on several lines
+        # the left margin grows to fit a vertical title on several lines, beside the tick labels (a
+        # smaller standoff than the Country Comparison's, as the Play, Pause and Stop buttons already
+        # widen the margin, and the title is not kept at its edge)
         xaxis = list(title = c(axis_title(x_info, 100), list(standoff = 3)), range = limits_x),
-        yaxis = list(title = axis_title(y_info, 45), range = limits_y, automargin = TRUE),
+        yaxis = list(title = c(axis_title(y_info, 45), list(standoff = 10)), range = limits_y, automargin = TRUE),
         font = font_style
       ) %>%
       # golemworldbank's pace, half a second a year

@@ -73,9 +73,26 @@ test_that("the indicator comparison draws a line per indicator with values for t
   built <- plotly::plotly_build(plot_indicator_comp(list(unemployment = data, gdp_eur = data[0, ]), "EL", c("unemployment", "gdp_eur")))$x
   expect_length(built$data, 1)
   expect_equal(built$data[[1]]$name, "Unemployment rate (% of the labour force)")
-  expect_equal(built$layout$yaxis$title, "% of the labour force")
+  expect_equal(built$layout$yaxis$title$text, "% of the labour force")
   expect_equal(built$layout$title, "Country: Greece")
   expect_null(plot_indicator_comp(list(unemployment = data), "DE", "unemployment"))
+})
+
+test_that("the titles of the y axes keep clear of the tick labels, however wide", {
+  # without a standoff, plotly puts the title at a set distance from the axis, and pushes it back
+  # over wide labels (100) when the margin is short of it; the line charts keep it at the left edge
+  # of the chart, about 12px short of the standoff
+  data <- tidy_countries(raw_unemployment)
+  y_axis <- function(p) plotly::plotly_build(p)$x$layout$yaxis
+  standoffs <- list(
+    `20` = y_axis(plot_country_comp(data, c("EL", "BG"), "unemployment")),
+    `20` = y_axis(plot_indicator_comp(list(unemployment = data), "EL", "unemployment")),
+    `10` = y_axis(plot_scatter(data, transform(data, value = value + 70), "unemployment", "life_expectancy"))
+  )
+  for (k in seq_along(standoffs)) {
+    expect_equal(standoffs[[k]]$title$standoff, as.numeric(names(standoffs)[k]))
+    expect_true(standoffs[[k]]$automargin)
+  }
 })
 
 test_that("the pyramid draws the men to the left, opens at the last year and keeps the legend clicks", {
