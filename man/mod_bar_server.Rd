@@ -15,7 +15,8 @@ None. Called for its side effect of registering the module server.
 }
 \description{
 Downloads the picked indicator, or takes it from the disk cache,
-and draws the race of the countries.
+offers as the country in red only those that have values of it (see
+\code{offer_countries()}), and draws the race of the countries.
 }
 \examples{
 \dontrun{

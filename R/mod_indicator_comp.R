@@ -24,7 +24,8 @@ mod_indicator_comp_ui <- function(id) {
 ##########################################################################################
 #' @title Indicator Comparison module - server
 #' @description Downloads the picked indicators, or takes them from the disk
-#' cache, and draws them for the picked country.
+#' cache, offers only the countries that have values of at least one of them
+#' (see `offer_countries()`), and draws them for the picked country.
 #' @param id Character. Module namespace id, must match the id used in
 #'   [mod_indicator_comp_ui()].
 #' @return None. Called for its side effect of registering the module server.
@@ -40,10 +41,14 @@ mod_indicator_comp_server <- function(id) {
       req(input$indicators)
       stats::setNames(lapply(input$indicators, get_indicator), input$indicators)
     })
+    geo <- reactive({
+      if (!any(vapply(data(), is.null, TRUE))) unlist(lapply(data(), `[[`, "geo"))
+    })
+    country <- offer_countries(session, "country", geo, "EL", average = TRUE)
     output$plot <- plotly::renderPlotly({
-      req(input$country)
+      req(country())
       validate(need(!any(vapply(data(), is.null, TRUE)), "Eurostat cannot be reached right now"))
-      p <- plot_indicator_comp(data(), input$country, input$indicators)
+      p <- plot_indicator_comp(data(), country(), input$indicators)
       validate(need(p, "No values of these indicators for this country"))
       p
     })

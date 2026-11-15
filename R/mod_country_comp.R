@@ -25,7 +25,8 @@ mod_country_comp_ui <- function(id) {
 ##########################################################################################
 #' @title Country Comparison module - server
 #' @description Downloads the picked indicator, or takes it from the disk cache,
-#' and draws the picked countries.
+#' offers only the countries that have values of it (see `offer_countries()`),
+#' and draws those picked.
 #' @param id Character. Module namespace id, must match the id used in
 #'   [mod_country_comp_ui()].
 #' @return None. Called for its side effect of registering the module server.
@@ -41,10 +42,11 @@ mod_country_comp_server <- function(id) {
       req(input$indicator)
       get_indicator(input$indicator)
     })
+    countries <- offer_countries(session, "countries", reactive(data()$geo), c("EL", "BG"), multiple = TRUE)
     output$plot <- plotly::renderPlotly({
       validate(need(data(), "Eurostat cannot be reached right now"))
-      req(input$countries)
-      plot_country_comp(data(), input$countries, input$indicator)
+      validate(need(countries(), "Pick one or more countries"))
+      plot_country_comp(data(), countries(), input$indicator)
     })
   })
 }

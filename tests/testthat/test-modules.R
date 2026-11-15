@@ -75,3 +75,64 @@ test_that("the tabs of one country say when Eurostat cannot be reached", {
     expect_error(output$plot, "Eurostat cannot be reached")
   })
 })
+
+test_that("the select boxes offer only the countries with values of the indicators, and keep those set aside", {
+  indicator_of <- function(geo) {
+    known <- countries()[match(geo, countries()$code), ]
+    data.frame(geo = geo, country = known$name, group = known$group, year = 2024L, value = seq_along(geo))
+  }
+  # Ukraine and the EU-27 without homicides, and youth unemployment for Bulgaria only
+  data <- list(
+    unemployment = indicator_of(c("EL", "BG", "UA", eu_average)),
+    homicides = indicator_of(c("EL", "BG")),
+    youth_unemployment = indicator_of("BG")
+  )
+  local_mocked_bindings(get_indicator = function(id) data[[id]])
+  # what the select box of the countries is sent; the browser shows it, and sends it back
+  sent <- NULL
+  local_mocked_bindings(updateSelectizeInput = function(session, inputId, choices = NULL, selected = NULL, ...) {
+    if (inputId %in% c("countries", "country")) sent <<- list(choices = choices, selected = selected)
+  })
+  testServer(mod_country_comp_server, {
+    session$setInputs(indicator = "unemployment", countries = c("EL", "BG"))
+    expect_equal(names(sent$choices), c("Bulgaria", "Greece", "Ukraine"))
+    session$setInputs(countries = c("EL", "BG", "UA"))
+    expect_equal(countries(), c("EL", "BG", "UA"))
+    # Ukraine leaves the select box and the chart, but is not forgotten
+    session$setInputs(indicator = "homicides")
+    expect_equal(names(sent$choices), c("Bulgaria", "Greece"))
+    expect_equal(sent$selected, c("EL", "BG"))
+    session$setInputs(countries = sent$selected)
+    expect_equal(countries(), c("EL", "BG"))
+    # a country taken out by the user is
+    session$setInputs(countries = "EL")
+    session$setInputs(indicator = "unemployment")
+    expect_equal(sent$selected, c("EL", "UA"))
+    expect_equal(countries(), c("EL", "UA"))
+    expect_match(output$plot, "Ukraine", fixed = TRUE)
+    expect_no_match(output$plot, "Bulgaria", fixed = TRUE)
+    session$setInputs(countries = character(0))
+    expect_error(output$plot, "Pick one or more countries")
+  })
+  testServer(mod_indicator_comp_server, {
+    session$setInputs(indicators = c("homicides", "unemployment"), country = "EL")
+    expect_equal(names(sent$choices), c("EU-27", "Bulgaria", "Greece", "Ukraine"))
+    session$setInputs(country = "UA")
+    # without unemployment, the country the tab opens with, until Ukraine has values again
+    session$setInputs(indicators = "homicides")
+    expect_equal(sent$selected, "EL")
+    session$setInputs(country = sent$selected)
+    expect_equal(country(), "EL")
+    session$setInputs(indicators = c("homicides", "unemployment"))
+    expect_equal(sent$selected, "UA")
+    expect_equal(country(), "UA")
+  })
+  testServer(mod_bar_server, {
+    session$setInputs(indicator = "homicides", country = "EL", top_n = "30")
+    expect_equal(names(sent$choices), c("Bulgaria", "Greece"))
+    # without values for Greece either, the first country with values
+    session$setInputs(indicator = "youth_unemployment")
+    expect_equal(sent$selected, "BG")
+    expect_equal(country(), "BG")
+  })
+})

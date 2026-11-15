@@ -29,12 +29,5 @@ does not drop out of the race for a year. As in golemworldbank, only the
 in the bottom right corner.
 }
 \examples{
-data <- data.frame(
-  geo = rep(c("EL", "BG", "DE"), each = 3),
-  country = rep(c("Greece", "Bulgaria", "Germany"), each = 3),
-  group = "EU",
-  year = rep(2022:2024, 3),
-  value = c(12.4, 11.1, 10.1, 4.3, 4.3, 4.2, 3.1, 3.0, 3.4)
-)
-plot_bar(data, "unemployment", "EL")
+plot_bar(saved_indicator("unemployment"), "unemployment", country = "EL", top_n = 10)
 }

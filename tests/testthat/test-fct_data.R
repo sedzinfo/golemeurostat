@@ -122,3 +122,12 @@ test_that("the pyramid gives each age group as a share of its sex, for the years
   expect_equal(as.vector(tapply(data$value, data$sex, sum)), c(100, 100))
   expect_equal(levels(data$age)[c(1, 2, 18)], c("0-4", "5-9", "85+"))
 })
+
+test_that("an indicator saved in the package has the columns of a download, with the names of the countries", {
+  data <- saved_indicator("unemployment")
+  expect_named(data, c("geo", "country", "group", "year", "value"))
+  expect_type(data$geo, "character")
+  expect_equal(unique(data$country[data$geo == "EL"]), "Greece")
+  expect_true(all(data$geo %in% countries()$code))
+  expect_error(saved_indicator("nonsense"), "No indicator has the id")
+})

@@ -41,7 +41,7 @@ reference:
       - run_app
 
   - title: "Data"
-    desc: "The catalogue of indicators and countries, downloading an indicator from Eurostat for the countries or the regions, or the population of a country by age and sex, checking the catalogue against Eurostat, and the values of all the indicators that the Change (%) tab compares"
+    desc: "The catalogue of indicators and countries, downloading an indicator from Eurostat for the countries or the regions, or the population of a country by age and sex, checking the catalogue against Eurostat, and the values of all the indicators that the Change (%) tab compares, also one indicator at a time, without internet"
     contents:
       - all_values
       - check_indicators
@@ -51,6 +51,7 @@ reference:
       - get_regional
       - indicator_change
       - indicators
+      - saved_indicator
 
   - title: "Plot"
     desc: "The plotly charts of the tabs: country and indicator comparisons, population pyramid, ranked bars, maps of the countries and of the regions, scatter plot"

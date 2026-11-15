@@ -29,7 +29,8 @@ mod_bar_ui <- function(id) {
 ##########################################################################################
 #' @title Barplot module - server
 #' @description Downloads the picked indicator, or takes it from the disk cache,
-#' and draws the race of the countries.
+#' offers as the country in red only those that have values of it (see
+#' `offer_countries()`), and draws the race of the countries.
 #' @param id Character. Module namespace id, must match the id used in
 #'   [mod_bar_ui()].
 #' @return None. Called for its side effect of registering the module server.
@@ -45,10 +46,11 @@ mod_bar_server <- function(id) {
       req(input$indicator)
       get_indicator(input$indicator)
     })
+    country <- offer_countries(session, "country", reactive(data()$geo), "EL")
     output$plot <- plotly::renderPlotly({
       validate(need(data(), "Eurostat cannot be reached right now"))
       req(input$top_n)
-      plot_bar(data(), input$indicator, input$country, as.numeric(input$top_n))
+      plot_bar(data(), input$indicator, country(), as.numeric(input$top_n))
     })
   })
 }

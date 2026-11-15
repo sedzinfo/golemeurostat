@@ -15,7 +15,8 @@ None. Called for its side effect of registering the module server.
 }
 \description{
 Downloads the picked indicators, or takes them from the disk
-cache, and draws them for the picked country.
+cache, offers only the countries that have values of at least one of them
+(see \code{offer_countries()}), and draws them for the picked country.
 }
 \examples{
 \dontrun{

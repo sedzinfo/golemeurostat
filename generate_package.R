@@ -4,6 +4,7 @@
 # R CMD check golemeurostat
 # R CMD Rd2pdf golemeurostat
 # R CMD build golemeurostat --resave-data
+# .rs.restartR()
 library(devtools)
 library(roxygen2)
 rm(list = ls())

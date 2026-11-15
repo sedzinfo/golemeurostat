@@ -106,6 +106,79 @@ country_choices <- function(average = FALSE) {
 ##########################################################################################
 #
 ##########################################################################################
+#' @title Offer only the countries that have values
+#' @description As golemworldbank offers only the indicators that have values for
+#' the countries picked, a select box of countries offers only those that have
+#' values of the indicator of its tab, or of one of its indicators, so that it is
+#' not cluttered with countries that give an empty chart: most indicators have none
+#' for Ukraine, Georgia, Moldova or Liechtenstein. A country picked that has no
+#' values is set aside, not forgotten, and is picked again with the next indicator
+#' that has values for it; meanwhile, a select box of one country shows `selected`,
+#' or, without values for it either, the first country with values.
+#'
+#' The select box follows the downloads of the tab, which wait, as its chart does,
+#' until the tab is shown, so that a tab nobody opens downloads nothing.
+#' @param session The session of the module.
+#' @param input_id The id of the select box, such as "countries".
+#' @param geo A reactive of the Eurostat codes that have values, such as
+#'   `data()$geo`: `NULL` when Eurostat cannot be reached, which leaves the select
+#'   box as it is.
+#' @param selected The countries the select box opens with, as in its UI.
+#' @param multiple Whether the select box takes several countries.
+#' @param average Whether it offers the EU-27 too, as `country_choices()`.
+#' @param output_id The id of the chart of the tab.
+#' @return A reactive of the countries to draw: those picked that have values.
+#' @noRd
+offer_countries <- function(session, input_id, geo, selected, multiple = FALSE, average = FALSE, output_id = "plot") {
+  input <- session$input
+  choices <- country_choices(average)
+  hidden <- paste0("output_", session$ns(output_id), "_hidden")
+  # the countries picked, those set aside too, and those in the select box
+  wanted <- selected
+  offered <- choices
+  shown <- reactiveVal(selected)
+  # a pick first, then the select box that follows from it, then the chart, which draws once
+  observeEvent(input[[input_id]], {
+    value <- as.character(input[[input_id]])
+    # the select box showing what it was sent
+    if (setequal(value, shown())) {
+      return()
+    }
+    wanted <<- if (multiple) {
+      kept <- wanted[wanted %in% value | !wanted %in% offered]
+      c(kept, setdiff(value, kept))
+    } else {
+      value
+    }
+    shown(value)
+  }, ignoreNULL = FALSE, ignoreInit = TRUE, priority = 2)
+  observe({
+    req(!isTRUE(session$clientData[[hidden]]))
+    # an error here would end the session
+    have <- tryCatch(geo(), error = function(e) NULL)
+    have <- choices[choices %in% have]
+    req(length(have) > 0)
+    show <- if (multiple) {
+      wanted[wanted %in% have]
+    } else if (isTRUE(wanted %in% have)) {
+      wanted
+    } else if (selected %in% have) {
+      selected
+    } else {
+      unname(have[1])
+    }
+    changed <- !setequal(show, isolate(shown()))
+    if (changed || !identical(have, offered)) {
+      updateSelectizeInput(session, input_id, choices = have, selected = show)
+    }
+    offered <<- have
+    if (changed) shown(show)
+  }, priority = 1)
+  shown
+}
+##########################################################################################
+#
+##########################################################################################
 #' @title Keep the legend clicks of an animated chart
 #' @description As in golemworldbank: plotly writes `visible` into every trace of
 #' every frame, so a trace hidden with a click on the legend comes back on the

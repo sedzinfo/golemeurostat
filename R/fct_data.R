@@ -11,6 +11,7 @@ memory <- new.env(parent = emptyenv())
 ##########################################################################################
 #' @title Eurostat code of the EU-27 average
 #' @description The charts show it next to the countries, for comparison.
+#' @export
 #' @noRd
 eu_average <- "EU27_2020"
 ##########################################################################################
@@ -78,6 +79,7 @@ series_key <- function(table) {
 #' @title One indicator of the catalogue
 #' @param id The `id` of the indicator in [indicators()].
 #' @return The row of the indicator, an error for an unknown id.
+#' @export
 #' @noRd
 indicator_info <- function(id) {
   table <- indicators()
@@ -256,6 +258,38 @@ get_indicator <- function(id) {
     raw <- download_eurostat(info$dataset, parse_filters(info$filters))
     if (is.null(raw)) NULL else tidy_countries(raw)
   })
+}
+##########################################################################################
+#
+##########################################################################################
+#' @title Get an indicator for the countries, as saved in the package
+#' @description The values of one indicator of [all_values()], in the shape of
+#' [get_indicator()], without internet: those of Eurostat on the day the package
+#' was built (the `built` attribute of [all_values()]), for the examples of the
+#' charts and to work offline.
+#' @param id The `id` of the indicator in [indicators()], such as
+#'   "unemployment".
+#' @return A data frame with `geo` (the Eurostat code), `country`, `group`,
+#'   `year` and `value`, or `NULL` when the package has no values.
+#' @export
+#' @examples
+#' head(saved_indicator("unemployment"))
+saved_indicator <- function(id) {
+  indicator_info(id)
+  values <- all_values()
+  if (is.null(values)) {
+    return(NULL)
+  }
+  values <- values[values$id == id, ]
+  known <- countries()
+  row <- match(values$geo, known$code)
+  data.frame(
+    geo = as.character(values$geo),
+    country = known$name[row],
+    group = known$group[row],
+    year = values$year,
+    value = values$value
+  )
 }
 ##########################################################################################
 #

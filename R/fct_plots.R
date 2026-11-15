@@ -87,6 +87,7 @@ label_frames <- function(p, labels, annotation) {
 #' the name of the column of the frames. A chart of one year has no slider.
 #' @param p A plotly object with frames.
 #' @return The plotly object, built.
+#' @export
 #' @noRd
 year_slider <- function(p) {
   p <- plotly::plotly_build(p)
@@ -341,14 +342,7 @@ plot_pyramid <- function(data, country) {
 #' @return A plotly object.
 #' @export
 #' @examples
-#' data <- data.frame(
-#'   geo = rep(c("EL", "BG", "DE"), each = 3),
-#'   country = rep(c("Greece", "Bulgaria", "Germany"), each = 3),
-#'   group = "EU",
-#'   year = rep(2022:2024, 3),
-#'   value = c(12.4, 11.1, 10.1, 4.3, 4.3, 4.2, 3.1, 3.0, 3.4)
-#' )
-#' plot_bar(data, "unemployment", "EL")
+#' plot_bar(saved_indicator("unemployment"), "unemployment", country = "EL", top_n = 10)
 plot_bar <- function(data, indicator, country = NULL, top_n = Inf) {
   info <- indicator_info(indicator)
   heading <- chart_title(info$name, 100)
