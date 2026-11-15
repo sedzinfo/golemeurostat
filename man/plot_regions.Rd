@@ -20,9 +20,5 @@ by the value of the indicator, as in golemworldbank: from red for the lowest
 through white to dark blue for the highest, on one scale for all the years.
 }
 \examples{
-data <- data.frame(
-  geo = c("EL30", "EL52"), region = c("Attiki", "Kentriki Makedonia"),
-  country = "Greece", year = 2024, value = c(105, 58)
-)
-plot_regions(data, "r_gdp_pps")
+plot_regions(saved_regional("r_gdp_pps"), "r_gdp_pps")
 }

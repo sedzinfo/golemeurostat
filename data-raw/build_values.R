@@ -1,11 +1,16 @@
 ##########################################################################################
-# THE VALUES OF THE INDICATORS, FOR THE CHANGE (%) TAB
+# THE VALUES SAVED IN THE PACKAGE
 ##########################################################################################
 # Writes inst/extdata/values.rds: every value of every indicator of the countries in
 # indicators(), hand-written and generated, for the countries of the app and the EU-27, as
 # the app tidies them (tidy_countries(), which also leaves out the errors of units). The
 # Change (%) tab compares all the indicators of a country between two years, which needs
 # them all at once; the other tabs download the indicator they show from Eurostat.
+#
+# Then, for the examples of the charts and to work offline, as saved_indicator() does with
+# values.rds: inst/extdata/regions.rds, every value of every indicator of the regions, with
+# the names of the regions (saved_regional()), and inst/extdata/pyramids.rds, the population
+# by sex and five-year age group of every country and the EU-27 (saved_pyramid()).
 #
 # build_indicators.R runs it at its end, after writing the catalogue; it can also be run
 # alone, from the package folder:
@@ -80,5 +85,65 @@ attr(values, "built") <- Sys.Date()
 saveRDS(values, output, compress = "xz", version = 2)
 message(
   "Wrote ", nrow(values), " values of ", length(unique(values$id)), " indicators to ", output,
+  " (", round(file.size(output) / 1024^2, 1), " MB)"
+)
+##########################################################################################
+# The values of the indicators of the regions, as the app tidies them (tidy_regions()), with
+# the names of the regions, from the outlines of the map
+##########################################################################################
+output <- file.path("inst", "extdata", "regions.rds")
+region_names <- nuts_names(2)
+if (is.null(region_names)) stop("The outlines of the regions cannot be downloaded from GISCO")
+table <- indicators()
+table <- table[table$level == "region", ]
+message("Collecting the values of ", nrow(table), " indicators of the regions")
+regional <- lapply(seq_len(nrow(table)), function(i) {
+  info <- table[i, ]
+  raw <- raw_series(info)
+  if (is.null(raw) || nrow(raw) == 0) {
+    return(NULL)
+  }
+  data <- tidy_regions(raw, region_names)
+  if (anyDuplicated(data[c("geo", "year")]) > 0) {
+    message("Left out ", info$id, ": more than one value for a region and year")
+    return(NULL)
+  }
+  if (nrow(data) == 0) NULL else data.frame(id = info$id, geo = data$geo, year = data$year, value = data$value)
+})
+regional <- do.call(rbind, regional)
+regional$id <- factor(regional$id, levels = table$id)
+regional$geo <- factor(regional$geo)
+regional <- regional[order(regional$id, regional$geo, regional$year), ]
+rownames(regional) <- NULL
+attr(regional, "regions") <- region_names[levels(regional$geo)]
+attr(regional, "built") <- Sys.Date()
+saveRDS(regional, output, compress = "xz", version = 2)
+message(
+  "Wrote ", nrow(regional), " values of ", length(unique(regional$id)), " indicators to ", output,
+  " (", round(file.size(output) / 1024^2, 1), " MB)"
+)
+##########################################################################################
+# The population pyramids: the population on 1 January by sex and five-year age group,
+# as Eurostat counts it (demo_pjangroup), which tidy_pyramid() turns into shares, as for
+# get_pyramid(); the counts take a third of the room of the shares
+##########################################################################################
+output <- file.path("inst", "extdata", "pyramids.rds")
+raw <- cached_rds(file.path(cache, "series", "pyramids.rds"), function() {
+  as.data.frame(fetch_eurostat("demo_pjangroup", list(sex = c("M", "F"), age = pyramid_ages, unit = "NR")))
+})
+raw <- raw[!is.na(raw$values) & raw$geo %in% countries()$code, ]
+pyramids <- data.frame(
+  geo = factor(raw$geo),
+  sex = factor(raw$sex),
+  age = factor(raw$age, levels = pyramid_ages),
+  time = as.integer(raw$time),
+  values = as.integer(raw$values)
+)
+pyramids <- pyramids[order(pyramids$geo, pyramids$time, pyramids$sex, pyramids$age), ]
+rownames(pyramids) <- NULL
+attr(pyramids, "built") <- Sys.Date()
+saveRDS(pyramids, output, compress = "xz", version = 2)
+message(
+  "Wrote the population pyramids of ", length(unique(pyramids$geo)), " countries to ", output,
   " (", round(file.size(output) / 1024^2, 1), " MB)"
 )

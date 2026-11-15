@@ -17,14 +17,7 @@
 #' attr(values, "built")
 #' head(values)
 all_values <- function() {
-  if (is.null(memory$values)) {
-    path <- app_sys("extdata", "values.rds")
-    if (!nzchar(path)) {
-      return(NULL)
-    }
-    memory$values <- readRDS(path)
-  }
-  memory$values
+  saved_file("values")
 }
 ##########################################################################################
 #

@@ -21,9 +21,5 @@ indicator, as in golemworldbank: from red for the lowest through white to
 dark blue for the highest, on one scale for all the years.
 }
 \examples{
-data <- data.frame(
-  geo = rep(c("EL", "BG", "DE"), each = 2), country = rep(c("Greece", "Bulgaria", "Germany"), each = 2),
-  group = "EU", year = rep(2023:2024, 3), value = c(11.1, 10.1, 4.3, 4.2, 3.0, 3.4)
-)
-plot_map(data, "unemployment")
+plot_map(saved_indicator("unemployment"), "unemployment")
 }

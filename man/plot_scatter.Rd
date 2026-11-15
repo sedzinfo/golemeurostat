@@ -28,11 +28,8 @@ bubble, and the correlation of the two indicators across the countries of
 each year.
 }
 \examples{
-x <- data.frame(
-  geo = c("EL", "BG", "DE", "NO"), country = c("Greece", "Bulgaria", "Germany", "Norway"),
-  group = c("EU", "EU", "EU", "EFTA"), year = 2024, value = c(70, 66, 116, 130)
+plot_scatter(
+  saved_indicator("gdp_pps"), saved_indicator("life_expectancy"), "gdp_pps", "life_expectancy",
+  population = saved_indicator("population")
 )
-y <- transform(x, value = c(81.9, 75.9, 81.2, 83.4))
-population <- transform(x, value = c(10.4e6, 6.4e6, 83.6e6, 5.6e6))
-plot_scatter(x, y, "gdp_pps", "life_expectancy", population)
 }

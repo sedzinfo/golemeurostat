@@ -87,7 +87,6 @@ label_frames <- function(p, labels, annotation) {
 #' the name of the column of the frames. A chart of one year has no slider.
 #' @param p A plotly object with frames.
 #' @return The plotly object, built.
-#' @export
 #' @noRd
 year_slider <- function(p) {
   p <- plotly::plotly_build(p)
@@ -140,14 +139,7 @@ start_at_last_year <- function(p) {
 #' @return A plotly object.
 #' @export
 #' @examples
-#' data <- data.frame(
-#'   geo = rep(c("EL", "BG", "EU27_2020"), each = 3),
-#'   country = rep(c("Greece", "Bulgaria", "EU-27"), each = 3),
-#'   group = rep(c("EU", "EU", "EU-27"), each = 3),
-#'   year = rep(2022:2024, 3),
-#'   value = c(12.4, 11.1, 10.1, 4.3, 4.3, 4.2, 6.2, 6.1, 5.9)
-#' )
-#' plot_country_comp(data, c("EL", "BG"), "unemployment")
+#' plot_country_comp(saved_indicator("unemployment"), c("EL", "BG"), "unemployment")
 plot_country_comp <- function(data, countries, indicator) {
   info <- indicator_info(indicator)
   hover <- function(d) paste0(d$country, "<br>", d$year, ": ", format_value(d$value), " ", info$unit)
@@ -196,14 +188,11 @@ plot_country_comp <- function(data, countries, indicator) {
 #'   the country.
 #' @export
 #' @examples
-#' unemployment <- data.frame(
-#'   geo = "EL", country = "Greece", group = "EU", year = 2022:2024, value = c(12.4, 11.1, 10.1)
+#' data <- list(
+#'   unemployment = saved_indicator("unemployment"),
+#'   youth_unemployment = saved_indicator("youth_unemployment")
 #' )
-#' youth <- transform(unemployment, value = c(31.4, 26.7, 22.4))
-#' plot_indicator_comp(
-#'   list(unemployment = unemployment, youth_unemployment = youth), "EL",
-#'   c("unemployment", "youth_unemployment")
-#' )
+#' plot_indicator_comp(data, "EL", names(data))
 plot_indicator_comp <- function(data, country, indicators) {
   lines <- list()
   units <- character(0)
@@ -262,13 +251,7 @@ plot_indicator_comp <- function(data, country, indicators) {
 #' @return A plotly object.
 #' @export
 #' @examples
-#' data <- data.frame(
-#'   sex = rep(c("Male", "Female"), each = 4),
-#'   age = factor(rep(c("0-4", "5-9"), 4), levels = c("0-4", "5-9")),
-#'   year = rep(c(2024, 2024, 2025, 2025), 2),
-#'   value = c(48, 52, 47, 53, 49, 51, 48, 52)
-#' )
-#' plot_pyramid(data, "EL")
+#' plot_pyramid(saved_pyramid("EL"), "EL")
 plot_pyramid <- function(data, country) {
   # the years whose figures jump back and forth, as Greece's of the 1960s, are left out, and named
   left_out <- jumping_years(data)
@@ -504,11 +487,7 @@ choropleth <- function(data, info, level, label) {
 #' @return A plotly object.
 #' @export
 #' @examples
-#' data <- data.frame(
-#'   geo = rep(c("EL", "BG", "DE"), each = 2), country = rep(c("Greece", "Bulgaria", "Germany"), each = 2),
-#'   group = "EU", year = rep(2023:2024, 3), value = c(11.1, 10.1, 4.3, 4.2, 3.0, 3.4)
-#' )
-#' plot_map(data, "unemployment")
+#' plot_map(saved_indicator("unemployment"), "unemployment")
 plot_map <- function(data, indicator) {
   data <- data[data$geo != eu_average, ]
   choropleth(data, indicator_info(indicator), 0, data$country)
@@ -525,11 +504,7 @@ plot_map <- function(data, indicator) {
 #' @return A plotly object.
 #' @export
 #' @examples
-#' data <- data.frame(
-#'   geo = c("EL30", "EL52"), region = c("Attiki", "Kentriki Makedonia"),
-#'   country = "Greece", year = 2024, value = c(105, 58)
-#' )
-#' plot_regions(data, "r_gdp_pps")
+#' plot_regions(saved_regional("r_gdp_pps"), "r_gdp_pps")
 plot_regions <- function(data, indicator) {
   choropleth(data, indicator_info(indicator), 2, paste0(data$region, " (", data$country, ")"))
 }
@@ -580,13 +555,10 @@ population_of <- function(rows, population) {
 #'   common.
 #' @export
 #' @examples
-#' x <- data.frame(
-#'   geo = c("EL", "BG", "DE", "NO"), country = c("Greece", "Bulgaria", "Germany", "Norway"),
-#'   group = c("EU", "EU", "EU", "EFTA"), year = 2024, value = c(70, 66, 116, 130)
+#' plot_scatter(
+#'   saved_indicator("gdp_pps"), saved_indicator("life_expectancy"), "gdp_pps", "life_expectancy",
+#'   population = saved_indicator("population")
 #' )
-#' y <- transform(x, value = c(81.9, 75.9, 81.2, 83.4))
-#' population <- transform(x, value = c(10.4e6, 6.4e6, 83.6e6, 5.6e6))
-#' plot_scatter(x, y, "gdp_pps", "life_expectancy", population)
 plot_scatter <- function(x_data, y_data, x_indicator, y_indicator, population = NULL) {
   x_info <- indicator_info(x_indicator)
   y_info <- indicator_info(y_indicator)

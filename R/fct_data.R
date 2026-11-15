@@ -11,7 +11,6 @@ memory <- new.env(parent = emptyenv())
 ##########################################################################################
 #' @title Eurostat code of the EU-27 average
 #' @description The charts show it next to the countries, for comparison.
-#' @export
 #' @noRd
 eu_average <- "EU27_2020"
 ##########################################################################################
@@ -79,7 +78,6 @@ series_key <- function(table) {
 #' @title One indicator of the catalogue
 #' @param id The `id` of the indicator in [indicators()].
 #' @return The row of the indicator, an error for an unknown id.
-#' @export
 #' @noRd
 indicator_info <- function(id) {
   table <- indicators()
@@ -262,6 +260,26 @@ get_indicator <- function(id) {
 ##########################################################################################
 #
 ##########################################################################################
+#' @title A file of the values saved in the package
+#' @description Read once from `inst/extdata`, where `data-raw/build_values.R`
+#' writes it, and kept in memory.
+#' @param name "values", "regions" or "pyramids".
+#' @return The data frame of the file, or `NULL` when the package does not have
+#'   it.
+#' @noRd
+saved_file <- function(name) {
+  if (is.null(memory[[name]])) {
+    path <- app_sys("extdata", paste0(name, ".rds"))
+    if (!nzchar(path)) {
+      return(NULL)
+    }
+    memory[[name]] <- readRDS(path)
+  }
+  memory[[name]]
+}
+##########################################################################################
+#
+##########################################################################################
 #' @title Get an indicator for the countries, as saved in the package
 #' @description The values of one indicator of [all_values()], in the shape of
 #' [get_indicator()], without internet: those of Eurostat on the day the package
@@ -337,6 +355,38 @@ get_regional <- function(id) {
     raw <- if (!is.null(names)) download_eurostat(info$dataset, parse_filters(info$filters))
     if (is.null(raw)) NULL else tidy_regions(raw, names)
   })
+}
+##########################################################################################
+#
+##########################################################################################
+#' @title Get an indicator for the regions, as saved in the package
+#' @description The values of one regional indicator, in the shape of
+#' [get_regional()], without internet: those of Eurostat on the day the package
+#' was built, for the examples of the charts and to work offline.
+#' @param id The `id` of a regional indicator in [indicators()], such as
+#'   "r_gdp_pps".
+#' @return A data frame with `geo` (the NUTS code), `region`, `country`, `year`
+#'   and `value`, or `NULL` when the package has no values of the regions.
+#' @export
+#' @examples
+#' head(saved_regional("r_gdp_pps"))
+saved_regional <- function(id) {
+  indicator_info(id)
+  regional <- saved_file("regions")
+  if (is.null(regional)) {
+    return(NULL)
+  }
+  names <- attr(regional, "regions")
+  regional <- regional[regional$id == id, ]
+  geo <- as.character(regional$geo)
+  known <- countries()
+  data.frame(
+    geo = geo,
+    region = unname(names[geo]),
+    country = known$name[match(substr(geo, 1, 2), known$code)],
+    year = regional$year,
+    value = regional$value
+  )
 }
 ##########################################################################################
 #
@@ -431,6 +481,28 @@ get_pyramid <- function(country) {
     raw <- download_eurostat("demo_pjangroup", list(geo = country, sex = c("M", "F"), age = pyramid_ages, unit = "NR"))
     if (is.null(raw)) NULL else tidy_pyramid(raw)
   })
+}
+##########################################################################################
+#
+##########################################################################################
+#' @title Get the population of a country by age group and sex, as saved in the package
+#' @description The population pyramid of [get_pyramid()] without internet:
+#' Eurostat's population on 1 January by five-year age group and sex
+#' (`demo_pjangroup`) on the day the package was built, for the examples of the
+#' charts and to work offline.
+#' @param country Eurostat code of the country, such as "EL", or "EU27_2020".
+#' @return A data frame with `sex`, `age`, `year` and `value`, the share of the
+#'   age group in the population of its sex, in percent, or `NULL` when the
+#'   package has no population pyramids.
+#' @export
+#' @examples
+#' head(saved_pyramid("EL"))
+saved_pyramid <- function(country) {
+  pyramids <- saved_file("pyramids")
+  if (is.null(pyramids)) {
+    return(NULL)
+  }
+  tidy_pyramid(pyramids[pyramids$geo == country, ])
 }
 ##########################################################################################
 #

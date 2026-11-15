@@ -131,3 +131,16 @@ test_that("an indicator saved in the package has the columns of a download, with
   expect_true(all(data$geo %in% countries()$code))
   expect_error(saved_indicator("nonsense"), "No indicator has the id")
 })
+
+test_that("the regional indicators and the pyramids saved in the package have the columns of a download", {
+  regional <- saved_regional("r_gdp_pps")
+  expect_named(regional, c("geo", "region", "country", "year", "value"))
+  expect_type(regional$geo, "character")
+  expect_false(anyNA(regional$region))
+  expect_equal(unique(regional$country[startsWith(regional$geo, "EL")]), "Greece")
+  expect_error(saved_regional("nonsense"), "No indicator has the id")
+  pyramid <- saved_pyramid("EL")
+  expect_named(pyramid, c("sex", "age", "year", "value"))
+  # the shares of the age groups of each sex add up to 100 in every year
+  expect_true(all(abs(tapply(pyramid$value, list(pyramid$year, pyramid$sex), sum) - 100) < 1e-6))
+})

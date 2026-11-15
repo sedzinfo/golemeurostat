@@ -22,12 +22,5 @@ One line per country, and the EU-27 average as a dashed gray
 line, for comparison. Titled "Indicator: " and its name, as in golemworldbank.
 }
 \examples{
-data <- data.frame(
-  geo = rep(c("EL", "BG", "EU27_2020"), each = 3),
-  country = rep(c("Greece", "Bulgaria", "EU-27"), each = 3),
-  group = rep(c("EU", "EU", "EU-27"), each = 3),
-  year = rep(2022:2024, 3),
-  value = c(12.4, 11.1, 10.1, 4.3, 4.3, 4.2, 6.2, 6.1, 5.9)
-)
-plot_country_comp(data, c("EL", "BG"), "unemployment")
+plot_country_comp(saved_indicator("unemployment"), c("EL", "BG"), "unemployment")
 }

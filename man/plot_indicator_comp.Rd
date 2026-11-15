@@ -25,12 +25,9 @@ plot. The axis takes the unit when all the indicators share it. An indicator
 without values for the country is left out.
 }
 \examples{
-unemployment <- data.frame(
-  geo = "EL", country = "Greece", group = "EU", year = 2022:2024, value = c(12.4, 11.1, 10.1)
+data <- list(
+  unemployment = saved_indicator("unemployment"),
+  youth_unemployment = saved_indicator("youth_unemployment")
 )
-youth <- transform(unemployment, value = c(31.4, 26.7, 22.4))
-plot_indicator_comp(
-  list(unemployment = unemployment, youth_unemployment = youth), "EL",
-  c("unemployment", "youth_unemployment")
-)
+plot_indicator_comp(data, "EL", names(data))
 }

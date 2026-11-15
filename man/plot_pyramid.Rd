@@ -26,11 +26,5 @@ for Greece from 1961 to 1969 do, are left out, and named at the top of the
 chart.
 }
 \examples{
-data <- data.frame(
-  sex = rep(c("Male", "Female"), each = 4),
-  age = factor(rep(c("0-4", "5-9"), 4), levels = c("0-4", "5-9")),
-  year = rep(c(2024, 2024, 2025, 2025), 2),
-  value = c(48, 52, 47, 53, 49, 51, 48, 52)
-)
-plot_pyramid(data, "EL")
+plot_pyramid(saved_pyramid("EL"), "EL")
 }
