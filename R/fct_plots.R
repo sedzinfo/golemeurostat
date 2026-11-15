@@ -662,6 +662,9 @@ render_index_table <- function() {
   DT::datatable(shown,
     rownames = FALSE,
     escape = setdiff(names(shown), "Dataset"),
-    options = list(paging = FALSE, autoWidth = TRUE)
+    # with autoWidth, DataTables set the widths of the columns itself, a little wider each time,
+    # and the new height of the wrapped text had Shiny resize the table again: it crept wider than
+    # the page after it opened, until a scrollbar appeared. Without it, the browser fits the table
+    options = list(paging = FALSE, autoWidth = FALSE)
   )
 }

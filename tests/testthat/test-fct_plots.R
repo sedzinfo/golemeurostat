@@ -202,6 +202,8 @@ test_that("the population of a year between two of Eurostat's is in a straight l
   expect_equal(population_of(rows, NULL), rep(NA_real_, 4))
 })
 
-test_that("the table of the indicators is one long page, as in golemworldbank", {
+test_that("the table of the indicators is one long page, as in golemworldbank, that the browser fits to the page", {
   expect_false(render_index_table()$x$options$paging)
+  # autoWidth made the table creep wider than the page after it opened
+  expect_false(render_index_table()$x$options$autoWidth)
 })
