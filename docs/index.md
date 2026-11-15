@@ -33,6 +33,12 @@ app, with its unit, definition and a link to its dataset at Eurostat -
 **About**: where the data comes from, the acknowledgments and the
 license
 
+The lists of countries of Country Comparison, Indicator Comparison and
+Barplot offer only the countries that have values of the indicator, or
+indicators, picked, as most indicators have none for Ukraine, Georgia,
+Moldova or Liechtenstein. A country picked that has none is set aside,
+and comes back with the next indicator that has values for it.
+
 The indicators are the 62 chosen by hand and, after them, the series of
 Eurostat’s main tables, about 1,500 more, in the groups of Eurostat’s
 themes. Type in a list of indicators to search their names, or the code
