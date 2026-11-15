@@ -8,6 +8,7 @@
 ^manifest\.json$
 ^\.rscignore$
 ^screenshots$
+^man/figures/eurostat[0-9]+\.png$
 ^\.github$
 ^LICENSE$
 ^_pkgdown\.yml$

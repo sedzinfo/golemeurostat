@@ -1,3 +1,7 @@
+# app_ui() serves the outlines of the maps under nuts/, as the app does; outside the app, as in the
+# tests of the other files, the maps take them from GISCO
+withr::defer(if ("nuts" %in% names(shiny::resourcePaths())) shiny::removeResourcePath("nuts"))
+
 test_that("the files shared by the apps (dark_mode.js, layout.css, layout.js) come from sedzinfo.github.io, not from inst/app/www", {
   head <- htmltools::renderTags(app_ui(NULL))$head
   for (file in c("dark_mode.js", "layout.css", "layout.js")) {

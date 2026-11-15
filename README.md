@@ -6,6 +6,7 @@ A Shiny app, built as a golem package, for exploring indicators of [Eurostat](ht
 
 # Tabs
 The tabs of golemworldbank, with two maps:
+
 - **Country Comparison**: an indicator over the years for the countries you pick, with the EU-27 average as a dashed line
 - **Indicator Comparison**: several indicators over the years for one country, or the EU-27
 - **Pyramid**: the population of a country by five-year age group and sex, animated by year
@@ -88,3 +89,23 @@ Source of the data: Eurostat. Administrative boundaries: © EuroGeographics.
 
 # Development
 Run the tests with `devtools::test()`, which use saved Eurostat answers and need no internet, and the full package check with `devtools::check()`.
+
+# Screenshots
+
+![Country Comparison tab: GDP per inhabitant in PPS of Greece and Bulgaria, with the EU-27 average](man/figures/eurostat1.png)
+
+![Indicator Comparison tab: the unemployment and youth unemployment rates of Greece](man/figures/eurostat2.png)
+
+![Pyramid tab: the population of Greece by age group and sex in 2025](man/figures/eurostat3.png)
+
+![Barplot tab: the countries ranked by the net earnings of a single worker in 2025, Greece in red](man/figures/eurostat4.png)
+
+![Scatterplot tab: GDP per inhabitant in PPS and life expectancy at birth of the countries in 2024, the bubbles as large as their population](man/figures/eurostat5.png)
+
+![Map tab: the unemployment rate of the countries in 2025](man/figures/eurostat6.png)
+
+![Regions tab: GDP per inhabitant in PPS of the regions in 2024](man/figures/eurostat7.png)
+
+![Change (%) tab: the indicators of Greece that rose from 2024 to 2025](man/figures/eurostat8.png)
+
+![Indicators tab: the indicators with their unit, dataset and definition](man/figures/eurostat9.png)
