@@ -10,8 +10,10 @@
 The catalogue of indicators and countries, downloading an indicator from
 Eurostat for the countries or the regions, or the population of a
 country by age and sex, checking the catalogue against Eurostat, and the
-values of all the indicators that the Change (%) tab compares, also one
-indicator at a time, without internet
+values of all the indicators that the Change (%) tab compares; the
+values of an indicator of the countries or the regions, or the
+population of a country by age and sex, as saved in the package, without
+internet, which the examples of the charts use
 
 - [`all_values()`](https://sedzinfo.github.io/golemeurostat/reference/all_values.md)
   : The values of all the indicators
@@ -31,6 +33,11 @@ indicator at a time, without internet
   : The indicators of the app
 - [`saved_indicator()`](https://sedzinfo.github.io/golemeurostat/reference/saved_indicator.md)
   : Get an indicator for the countries, as saved in the package
+- [`saved_pyramid()`](https://sedzinfo.github.io/golemeurostat/reference/saved_pyramid.md)
+  : Get the population of a country by age group and sex, as saved in
+  the package
+- [`saved_regional()`](https://sedzinfo.github.io/golemeurostat/reference/saved_regional.md)
+  : Get an indicator for the regions, as saved in the package
 
 ## Plot
 
