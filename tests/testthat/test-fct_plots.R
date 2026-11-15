@@ -21,6 +21,15 @@ test_that("the bar race ranks the countries of each year, without the EU-27 aver
   expect_equal(as.vector(built$data[[1]]$x), c(12.4, 4.3))
 })
 
+test_that("the bars of the race start at 0, also when the values are close", {
+  # plotly fixes the axis of an animation at the span of the values, which cut off the start of
+  # every bar, and the names inside the bars ran over the ranks
+  data <- transform(tidy_countries(raw_unemployment), value = value + 100)
+  built <- plotly::plotly_build(plot_bar(data, "unemployment", "EL"))$x
+  expect_equal(built$layout$xaxis$range[1], 0)
+  expect_gt(built$layout$xaxis$range[2], max(data$value[data$geo != eu_average]))
+})
+
 test_that("the bar race shows the top_n largest countries of each year", {
   built <- plotly::plotly_build(plot_bar(tidy_countries(raw_unemployment), "unemployment", "EL", top_n = 1))$x
   expect_true(all(vapply(built$frames, function(f) length(f$data[[1]]$y) == 1, TRUE)))

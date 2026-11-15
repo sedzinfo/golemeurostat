@@ -318,6 +318,12 @@ plot_bar <- function(data, indicator, country = NULL, top_n = Inf) {
   data$label <- paste0(data$country, "  ", format_value(data$value))
   data$color <- ifelse(data$geo %in% country, "#d62728", "#1f77b4")
   data$year <- factor(data$year)
+  # the axis starts at 0: plotly fixes the axis of an animation at the span of the values, which
+  # cut off the start of every bar when the values are close (such as 17.6 to 21.7), so that the
+  # bars were out of proportion and the names inside them ran over the ranks
+  span <- range(0, data$value, na.rm = TRUE)
+  pad <- 0.05 * diff(span)
+  xrange <- if (pad > 0) c(if (span[1] < 0) span[1] - pad else 0, if (span[2] > 0) span[2] + pad else 0)
   p <- plotly::plot_ly(data,
     x = ~value,
     y = ~rank,
@@ -337,7 +343,7 @@ plot_bar <- function(data, indicator, country = NULL, top_n = Inf) {
       margin = list(l = 50, r = 50, b = 100, t = heading$top, pad = 0),
       # rank 1 at the top; the names are on the bars
       yaxis = list(title = "", autorange = "reversed", dtick = 1, zeroline = FALSE),
-      xaxis = list(title = info$unit, showticklabels = FALSE, zeroline = TRUE, showgrid = FALSE),
+      xaxis = list(title = info$unit, showticklabels = FALSE, zeroline = TRUE, showgrid = FALSE, range = xrange),
       font = font_style,
       showlegend = FALSE
     ) %>%
