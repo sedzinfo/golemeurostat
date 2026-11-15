@@ -98,37 +98,6 @@ year_slider <- function(p) {
 ##########################################################################################
 #
 ##########################################################################################
-#' @title Open an animated chart at its last year
-#' @description An animated chart opens at its first frame, the first year; this
-#' gives it the data of its last frame instead, and moves the slider there, so
-#' that it opens at the latest year, and Play still runs through the years from
-#' the first. Done before the chart reaches the browser, where moving it after
-#' it is drawn left plotly with a wrong range on the axis of the bars.
-#' @param p A plotly object with frames.
-#' @return The plotly object, built.
-#' @noRd
-start_at_last_year <- function(p) {
-  p <- plotly::plotly_build(p)
-  frames <- p$x$frames
-  if (length(frames) < 2) {
-    return(p)
-  }
-  last <- frames[[length(frames)]]
-  traces <- if (is.null(last$traces)) seq_along(last$data) else unlist(last$traces) + 1
-  for (i in seq_along(last$data)) {
-    p$x$data[[traces[i]]] <- utils::modifyList(p$x$data[[traces[i]]], last$data[[i]])
-  }
-  if (length(p$x$layout$sliders) > 0) {
-    p$x$layout$sliders[[1]]$active <- length(frames) - 1
-  }
-  if (!is.null(last$layout$annotations)) {
-    p$x$layout$annotations <- last$layout$annotations
-  }
-  p
-}
-##########################################################################################
-#
-##########################################################################################
 #' @title Line chart of an indicator for several countries
 #' @description One line per country, and the EU-27 average as a dashed gray
 #' line, for comparison. Titled "Indicator: " and its name, as in golemworldbank.
@@ -310,8 +279,9 @@ plot_pyramid <- function(data, country) {
     plotly::layout(updatemenus = animation_buttons(levels(data$year)[1])) %>%
     year_slider() %>%
     plotly::config(responsive = TRUE) %>%
-    keep_legend_clicks() %>%
-    start_at_last_year()
+    keep_legend_clicks()
+  # returned visibly, so that the example and the console draw it
+  p
 }
 ##########################################################################################
 #
@@ -381,8 +351,7 @@ plot_bar <- function(data, indicator, country = NULL, top_n = Inf) {
     xref = "paper", yref = "paper", x = 1, y = 0, xanchor = "right", yanchor = "bottom",
     showarrow = FALSE, font = list(size = 480, color = "rgba(128,128,128,0.35)")
   )) %>%
-    fit_year() %>%
-    start_at_last_year()
+    fit_year()
 }
 ##########################################################################################
 #
@@ -478,8 +447,7 @@ choropleth <- function(data, info, level, label) {
     plotly::animation_opts(frame = 500, transition = 0, easing = "linear", redraw = TRUE, mode = "afterall") %>%
     plotly::layout(updatemenus = animation_buttons(levels(data$year)[1])) %>%
     year_slider() %>%
-    plotly::config(responsive = TRUE) %>%
-    start_at_last_year()
+    plotly::config(responsive = TRUE)
 }
 ##########################################################################################
 #
@@ -664,8 +632,7 @@ plot_scatter <- function(x_data, y_data, x_indicator, y_indicator, population = 
   label_frames(p, correlation, list(
     xref = "paper", yref = "paper", x = 0, y = 1, xanchor = "left", yanchor = "bottom",
     showarrow = FALSE, font = list(size = 14)
-  )) %>%
-    start_at_last_year()
+  ))
 }
 ##########################################################################################
 #

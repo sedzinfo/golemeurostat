@@ -14,11 +14,11 @@ test_that("the bar race ranks the countries of each year, without the EU-27 aver
   bars <- built$frames[[1]]$data[[1]]
   expect_equal(as.vector(bars$y), c(1, 2))
   expect_equal(as.vector(bars$marker$color), c("#d62728", "#1f77b4"))
-  # it opens at the last year, with that year's bars
-  expect_equal(built$layout$annotations[[1]]$text, "2024")
-  expect_equal(built$layout$sliders[[1]]$active, 2)
+  # it opens at the first year, with that year's bars, as golemworldbank
+  expect_equal(built$layout$annotations[[1]]$text, "2022")
+  expect_null(built$layout$sliders[[1]]$active)
   expect_equal(built$layout$sliders[[1]]$currentvalue$prefix, "Year: ")
-  expect_equal(as.vector(built$data[[1]]$x), c(10.1, 4.2))
+  expect_equal(as.vector(built$data[[1]]$x), c(12.4, 4.3))
 })
 
 test_that("the bar race shows the top_n largest countries of each year", {
@@ -95,7 +95,7 @@ test_that("the titles of the y axes keep clear of the tick labels, however wide"
   }
 })
 
-test_that("the pyramid draws the men to the left, opens at the last year and keeps the legend clicks", {
+test_that("the pyramid draws the men to the left, opens at the first year and keeps the legend clicks", {
   data <- data.frame(
     sex = rep(c("Male", "Female"), each = 4),
     age = factor(rep(c("0-4", "5-9"), 4), levels = c("0-4", "5-9")),
@@ -107,8 +107,10 @@ test_that("the pyramid draws the men to the left, opens at the last year and kee
   # as in golemworldbank
   expect_equal(built$layout$title, "Country: Greece")
   male <- built$data[[which(vapply(built$data, `[[`, "", "name") == "Male")]]
-  expect_equal(as.vector(male$x), c(-47, -53))
-  expect_equal(built$layout$sliders[[1]]$active, 1)
+  expect_equal(as.vector(male$x), c(-48, -52))
+  expect_null(built$layout$sliders[[1]]$active)
+  # returned visibly, as the example and the console draw only a visible result
+  expect_true(withVisible(plot_pyramid(data, "EL"))$visible)
   expect_null(built$frames[[1]]$data[[1]]$visible)
 })
 
