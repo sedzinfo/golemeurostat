@@ -1,7 +1,8 @@
 # Indicator Comparison module - server
 
-Downloads the picked indicators, or takes them from the disk cache, and
-draws them for the picked country.
+Downloads the picked indicators, or takes them from the disk cache,
+offers only the countries that have values of at least one of them (see
+`offer_countries()`), and draws them for the picked country.
 
 ## Usage
 

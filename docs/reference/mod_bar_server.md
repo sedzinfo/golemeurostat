@@ -1,7 +1,8 @@
 # Barplot module - server
 
-Downloads the picked indicator, or takes it from the disk cache, and
-draws the race of the countries.
+Downloads the picked indicator, or takes it from the disk cache, offers
+as the country in red only those that have values of it (see
+`offer_countries()`), and draws the race of the countries.
 
 ## Usage
 
