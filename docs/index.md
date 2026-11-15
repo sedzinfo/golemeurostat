@@ -33,7 +33,9 @@ The tabs of golemworldbank, with two maps:
   an indicator, such as GDP per inhabitant or unemployment, animated by
   year
 - **Change (%)**: the indicators of a country that rose and fell between
-  two years, by how much
+  two years, by how much: by percent, and those that are percentages,
+  such as the unemployment rate, by percentage points, in tabs of their
+  own
 - **Indicators**: every indicator of the app, with its unit, definition
   and a link to its dataset at Eurostat
 - **About**: where the data comes from, the acknowledgments and the

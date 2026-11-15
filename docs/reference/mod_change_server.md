@@ -3,7 +3,8 @@
 Runs
 [`indicator_change()`](https://sedzinfo.github.io/golemeurostat/reference/indicator_change.md)
 for the picked country, years and checkboxes, and shows how many
-indicators increased and decreased, and its two tables with
+indicators increased and decreased, how many of them percentages, and
+its four tables with
 [`render_change_table()`](https://sedzinfo.github.io/golemeurostat/reference/render_change_table.md).
 Asks for two different years, and shows the error of
 [`indicator_change()`](https://sedzinfo.github.io/golemeurostat/reference/indicator_change.md)
