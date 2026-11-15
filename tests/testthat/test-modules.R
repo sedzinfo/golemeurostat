@@ -65,6 +65,20 @@ test_that("the new tabs of golemworldbank draw their charts and tables", {
   expect_match(as.character(mod_about_ui("about")), "Eurostat")
 })
 
+test_that("the indicators that the tabs show at first are in the catalogue", {
+  # some are generated indicators: one that a rebuild of the catalogue left out would leave its tab
+  # with nothing picked
+  picked <- character(0)
+  local_mocked_bindings(fill_indicators = function(session, input_id, selected, level = "country") {
+    picked <<- c(picked, selected)
+  })
+  for (server in list(mod_country_comp_server, mod_indicator_comp_server, mod_bar_server, mod_scatter_server, mod_map_server, mod_regions_server)) {
+    testServer(server, {})
+  }
+  expect_length(picked, 8)
+  expect_true(all(picked %in% indicators()$id))
+})
+
 test_that("the tabs of one country say when Eurostat cannot be reached", {
   local_mocked_bindings(get_indicator = function(id) NULL, get_pyramid = function(country) NULL)
   testServer(mod_indicator_comp_server, {

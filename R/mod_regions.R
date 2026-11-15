@@ -35,7 +35,7 @@ mod_regions_ui <- function(id) {
 #' }
 mod_regions_server <- function(id) {
   moduleServer(id, function(input, output, session) {
-    fill_indicators(session, "indicator", "r_gdp_pps", level = "region")
+    fill_indicators(session, "indicator", "r_unemployment", level = "region")
     data <- reactive({
       req(input$indicator)
       get_regional(input$indicator)

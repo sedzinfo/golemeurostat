@@ -37,7 +37,9 @@ mod_country_comp_ui <- function(id) {
 #' }
 mod_country_comp_server <- function(id) {
   moduleServer(id, function(input, output, session) {
-    fill_indicators(session, "indicator", "gdp_pps")
+    # the unemployment rate of Eurostat's social scoreboard, with nearly every country from 2005
+    # (une_rt_a, of "unemployment", has most only from 2009)
+    fill_indicators(session, "indicator", "tepsr_wc170_y15_74")
     data <- reactive({
       req(input$indicator)
       get_indicator(input$indicator)

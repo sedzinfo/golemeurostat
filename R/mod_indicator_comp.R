@@ -36,7 +36,9 @@ mod_indicator_comp_ui <- function(id) {
 #' }
 mod_indicator_comp_server <- function(id) {
   moduleServer(id, function(input, output, session) {
-    fill_indicators(session, "indicators", c("unemployment", "youth_unemployment"))
+    # the unemployment and youth unemployment rates of Eurostat's social scoreboard, from 2005
+    # (une_rt_a, of "unemployment" and "youth_unemployment", has most countries only from 2009)
+    fill_indicators(session, "indicators", c("tepsr_wc170_y15_74", "tepsr_wc170_y15_24"))
     data <- reactive({
       req(input$indicators)
       stats::setNames(lapply(input$indicators, get_indicator), input$indicators)
