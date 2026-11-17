@@ -21,6 +21,159 @@
 # in data-raw/cache, which git ignores, for a week, so a second run is quick; delete the
 # folder to download everything again. At its end, it runs build_values.R, which writes the
 # values of the indicators for the Change (%) tab, inst/extdata/values.rds.
+#
+# The functions come first, documented as those of R/ are (#' blocks, with examples), for
+# reading: roxygen2 reads only R/, so they have no help pages. The data wrangling follows,
+# in the order it runs. The functions use its settings (such as cache and min_last_year),
+# so their examples run once those are set.
+##########################################################################################
+# THE FUNCTIONS
+##########################################################################################
+#' @title A file of the cache, if it is there and young enough
+#' @description Whether a download kept in data-raw/cache can be used again: the file exists
+#' and is younger than `max_age_days` days.
+#' @param path The file, such as `file.path(cache, "toc.txt")`.
+#' @return `TRUE` or `FALSE`.
+#' @examples
+#' fresh(file.path(cache, "toc.txt"))  # TRUE within a week of a run
+#' fresh("no/such/file")               # FALSE
+fresh <- function(path) {
+  file.exists(path) && difftime(Sys.time(), file.mtime(path), units = "days") < max_age_days
+}
+##########################################################################################
+#
+##########################################################################################
+#' @title A download, from the cache when it is fresh
+#' @description Reads `path` when it is fresh (see `fresh()`); otherwise calls `get` and saves
+#' what it returns there, for the next runs. A failed download, `NULL`, is not saved, so the
+#' next run tries again.
+#' @param path The .rds file of the cache, such as `file.path(cache, "tables", "tps00001.rds")`.
+#' @param get A function without arguments that downloads the value, and returns `NULL` when
+#'   the download fails.
+#' @return The value, from the cache or from `get()`.
+#' @examples
+#' example_file <- file.path(tempdir(), "example.rds")
+#' cached_rds(example_file, function() data.frame(year = 2024, value = 1.5))  # gets and saves it
+#' cached_rds(example_file, function() stop("not called"))                  # reads the cache
+#' cached_rds(file.path(tempdir(), "failed.rds"), function() NULL)          # NULL, nothing saved
+cached_rds <- function(path, get) {
+  if (fresh(path)) {
+    return(readRDS(path))
+  }
+  value <- get()
+  if (!is.null(value)) saveRDS(value, path)
+  value
+}
+##########################################################################################
+#
+##########################################################################################
+#' @title A main table of Eurostat, downloaded once, whole
+#' @description With `eurostat::get_eurostat()`: all its countries, years and series, with the
+#' years as Eurostat writes them ("2024"). Kept in data-raw/cache/tables for `max_age_days`
+#' days (see `cached_rds()`).
+#' @param code The code of the table, such as "tps00001" (the population on 1 January).
+#' @return A data frame, one row per value: a column per dimension (such as `freq`, `unit` and
+#'   `geo`), the year (`TIME_PERIOD`) and `values`; `NULL`, with a message, when the download
+#'   fails.
+#' @examples
+#' \dontrun{
+#' # needs the internet the first time; then it reads data-raw/cache/tables/tps00001.rds
+#' population <- download_table("tps00001")
+#' head(population)
+#' }
+download_table <- function(code) {
+  cached_rds(file.path(cache, "tables", paste0(code, ".rds")), function() {
+    tryCatch(
+      as.data.frame(suppressMessages(eurostat::get_eurostat(code, time_format = "raw", cache = FALSE))),
+      error = function(e) {
+        message("Could not download ", code, ": ", conditionMessage(e))
+        NULL
+      }
+    )
+  })
+}
+##########################################################################################
+#
+##########################################################################################
+#' @title The series of a table worth a row, for the countries or the regions
+#' @description A series is a combination of the codes of the dimensions of a table other
+#' than the country or region and the year, such as unit=PC_ACT. It is kept when it has values
+#' for at least `least` of `areas`, and a value in `min_last_year` or later. A table with more
+#' than `max_series` such series is left out, as its rows would crowd the lists of the app.
+#' @param raw The table, as `get_eurostat()` gives it, with the year in `time` (THE TABLES,
+#'   below, renames `TIME_PERIOD` and keeps the yearly rows with values).
+#' @param areas The codes of the countries, or of the regions, such as `c("EL", "IT")`.
+#' @param least How many of `areas` a series needs values for.
+#' @return The codes of the dimensions of each series kept, one row per series, or `NULL` when
+#'   there is none or more than `max_series`.
+#' @examples
+#' toy <- data.frame(
+#'   freq = "A", unit = rep(c("PC", "NR"), each = 4), geo = c("EL", "IT"),
+#'   time = rep(c("2023", "2024"), each = 2), values = 1:8
+#' )
+#' series_of(toy, c("EL", "IT", "FR"), least = 2)  # both units, two series
+#' series_of(toy, c("EL", "IT", "FR"), least = 3)  # NULL: no unit has three countries
+series_of <- function(raw, areas, least) {
+  dims <- setdiff(names(raw), c("freq", "geo", "time", "values"))
+  raw <- raw[raw$geo %in% areas, ]
+  if (nrow(raw) == 0) {
+    return(NULL)
+  }
+  key <- if (length(dims) > 0) do.call(paste, c(raw[dims], sep = "\r")) else rep("", nrow(raw))
+  count <- tapply(raw$geo, key, function(g) length(unique(g)))
+  last <- tapply(as.integer(raw$time), key, max)
+  kept <- names(count)[count >= least & last >= min_last_year]
+  if (length(kept) == 0 || length(kept) > max_series) {
+    return(NULL)
+  }
+  unique(raw[key %in% kept, dims, drop = FALSE])
+}
+##########################################################################################
+#
+##########################################################################################
+#' @title The label of a code of a dimension
+#' @description From the labels Eurostat gives the codes of each dimension (`labels`, read in
+#' THE LABELS, below).
+#' @param dim The dimension, such as "unit".
+#' @param code The codes, one or more, such as "PC_ACT".
+#' @return The labels, such as "Percentage of population in the labour force"; the code itself
+#'   where Eurostat has no label for it.
+#' @examples
+#' label_of("unit", c("PC_ACT", "NO_SUCH_CODE"))
+label_of <- function(dim, code) {
+  label <- unname(labels[[dim]][code])
+  ifelse(is.na(label), code, label)
+}
+##########################################################################################
+#
+##########################################################################################
+#' @title The correction of a series, if data-raw/corrections.csv has one
+#' @description The first row of corrections.csv (`corrections`, read in THE CORRECTIONS,
+#' below) for the table whose `filter` matches the codes of the series (such as "unit=RT"; an
+#' empty filter is for every series of the table). The row is marked in `used`, so that the
+#' end of the script can list the corrections that no series takes any more.
+#' @param table The code of the table, such as "sdg_10_10".
+#' @param codes The codes of the dimensions of the series, named by dimension.
+#' @return The row of corrections.csv (`table`, `filter`, `unit`, `name`, `definition` and
+#'   `reason`), or `NULL` when it has none for this series.
+#' @examples
+#' # one series of sdg_10_10 is labelled Percentage, but its values are amounts in PPS
+#' correction_of("sdg_10_10", c(freq = "A", indic_ppp = "EXP_PPS_EU27_2020_HAB"))$unit
+#' correction_of("sdg_10_10", c(freq = "A", indic_ppp = "OTHER"))  # NULL
+correction_of <- function(table, codes) {
+  for (k in which(corrections$table == table)) {
+    wanted <- if (nzchar(corrections$filter[k])) parse_filters(corrections$filter[k]) else list()
+    if (all(vapply(names(wanted), function(d) identical(unname(codes[d]), wanted[[d]]), TRUE))) {
+      used[k] <<- TRUE
+      return(corrections[k, ])
+    }
+  }
+  NULL
+}
+##########################################################################################
+# THE DATA WRANGLING, in the order it runs
+##########################################################################################
+# THE SETTINGS
 ##########################################################################################
 # a table with more series than this is left out: its rows would crowd the lists of the app
 max_series <- 10
@@ -44,24 +197,6 @@ cache <- file.path("data-raw", "cache")
 dir.create(file.path(cache, "tables"), recursive = TRUE, showWarnings = FALSE)
 dir.create(file.path(cache, "labels"), recursive = TRUE, showWarnings = FALSE)
 output <- file.path("inst", "extdata", "indicators_generated.csv")
-##########################################################################################
-# A file of the cache, if it is there and younger than max_age_days
-##########################################################################################
-fresh <- function(path) {
-  file.exists(path) && difftime(Sys.time(), file.mtime(path), units = "days") < max_age_days
-}
-##########################################################################################
-# A download, from the cache when it is fresh; `get` returns NULL when it fails, which is
-# not kept
-##########################################################################################
-cached_rds <- function(path, get) {
-  if (fresh(path)) {
-    return(readRDS(path))
-  }
-  value <- get()
-  if (!is.null(value)) saveRDS(value, path)
-  value
-}
 ##########################################################################################
 # THE TABLE OF CONTENTS: the main tables, with their titles and topics
 ##########################################################################################
@@ -119,40 +254,8 @@ candidate <- vapply(split(metabase, metabase$dataset), function(d) {
 tables <- tables[tables$code %in% names(candidate)[candidate], ]
 message(nrow(tables), " of them with the countries or regions and few enough series: downloading them")
 ##########################################################################################
-# THE TABLES: each downloaded once, whole
-##########################################################################################
-download_table <- function(code) {
-  cached_rds(file.path(cache, "tables", paste0(code, ".rds")), function() {
-    tryCatch(
-      as.data.frame(suppressMessages(eurostat::get_eurostat(code, time_format = "raw", cache = FALSE))),
-      error = function(e) {
-        message("Could not download ", code, ": ", conditionMessage(e))
-        NULL
-      }
-    )
-  })
-}
-##########################################################################################
-# The series of a table worth a row, for the countries or the regions
-##########################################################################################
-# raw: the table, as get_eurostat() gives it; areas: the codes of the countries or regions;
-# least: how many of them a series needs. Returns the codes of the dimensions of each
-# series kept, one row per series, or NULL when there is none or more than max_series.
-series_of <- function(raw, areas, least) {
-  dims <- setdiff(names(raw), c("freq", "geo", "time", "values"))
-  raw <- raw[raw$geo %in% areas, ]
-  if (nrow(raw) == 0) {
-    return(NULL)
-  }
-  key <- if (length(dims) > 0) do.call(paste, c(raw[dims], sep = "\r")) else rep("", nrow(raw))
-  count <- tapply(raw$geo, key, function(g) length(unique(g)))
-  last <- tapply(as.integer(raw$time), key, max)
-  kept <- names(count)[count >= least & last >= min_last_year]
-  if (length(kept) == 0 || length(kept) > max_series) {
-    return(NULL)
-  }
-  unique(raw[key %in% kept, dims, drop = FALSE])
-}
+# THE TABLES: each downloaded once, whole (download_table()), and the series of each that
+# are worth a row (series_of())
 ##########################################################################################
 found <- list()
 for (i in seq_len(nrow(tables))) {
@@ -190,10 +293,6 @@ labels <- lapply(stats::setNames(dims, dims), function(dim) {
   })
   if (is.null(dic)) character(0) else stats::setNames(dic$full_name, dic$code_name)
 })
-label_of <- function(dim, code) {
-  label <- unname(labels[[dim]][code])
-  ifelse(is.na(label), code, label)
-}
 ##########################################################################################
 # THE CORRECTIONS of the labels of Eurostat that do not describe their series, or leave out their
 # unit: data-raw/corrections.csv, one row for the series of a table (`table`), or for those of
@@ -203,16 +302,6 @@ label_of <- function(dim, code) {
 ##########################################################################################
 corrections <- utils::read.csv(file.path("data-raw", "corrections.csv"), stringsAsFactors = FALSE, encoding = "UTF-8", colClasses = "character", na.strings = character(0))
 used <- rep(FALSE, nrow(corrections))
-correction_of <- function(table, codes) {
-  for (k in which(corrections$table == table)) {
-    wanted <- if (nzchar(corrections$filter[k])) parse_filters(corrections$filter[k]) else list()
-    if (all(vapply(names(wanted), function(d) identical(unname(codes[d]), wanted[[d]]), TRUE))) {
-      used[k] <<- TRUE
-      return(corrections[k, ])
-    }
-  }
-  NULL
-}
 ##########################################################################################
 # THE ROWS
 ##########################################################################################
