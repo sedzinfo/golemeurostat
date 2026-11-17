@@ -24,7 +24,7 @@ country), `year` and `value`, or `NULL` when the package has no values.
 ``` r
 values <- all_values()
 attr(values, "built")
-#> [1] "2026-11-14"
+#> [1] "2026-11-15"
 head(values)
 #>        id geo year value
 #> 1 gdp_pps  AL 1997  14.7

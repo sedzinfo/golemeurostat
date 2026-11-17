@@ -29,7 +29,8 @@ check_indicators(ids = indicators()$id[!indicators()$generated])
 
 A data frame with one row per indicator: `id`, `ok`, `areas` (the
 countries or regions with values), `first` and `last` (years), `problem`
-and `note` (values left out as errors of units, see
+and `note` (values left out as errors of units or as known errors of
+Eurostat, see
 [`get_indicator()`](https://sedzinfo.github.io/golemeurostat/reference/get_indicator.md)).
 
 ## Examples

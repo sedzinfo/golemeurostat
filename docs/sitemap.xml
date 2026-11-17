@@ -1,8 +1,8 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://sedzinfo.github.io/golemeurostat/404.html</loc></url>
+<url><loc>https://sedzinfo.github.io/golemeurostat/LICENSE-text.html</loc></url>
 <url><loc>https://sedzinfo.github.io/golemeurostat/authors.html</loc></url>
 <url><loc>https://sedzinfo.github.io/golemeurostat/index.html</loc></url>
-<url><loc>https://sedzinfo.github.io/golemeurostat/LICENSE-text.html</loc></url>
 <url><loc>https://sedzinfo.github.io/golemeurostat/reference/all_values.html</loc></url>
 <url><loc>https://sedzinfo.github.io/golemeurostat/reference/analytics_footer.html</loc></url>
 <url><loc>https://sedzinfo.github.io/golemeurostat/reference/analytics_resources.html</loc></url>
@@ -12,8 +12,8 @@
 <url><loc>https://sedzinfo.github.io/golemeurostat/reference/get_pyramid.html</loc></url>
 <url><loc>https://sedzinfo.github.io/golemeurostat/reference/get_regional.html</loc></url>
 <url><loc>https://sedzinfo.github.io/golemeurostat/reference/index.html</loc></url>
-<url><loc>https://sedzinfo.github.io/golemeurostat/reference/indicators.html</loc></url>
 <url><loc>https://sedzinfo.github.io/golemeurostat/reference/indicator_change.html</loc></url>
+<url><loc>https://sedzinfo.github.io/golemeurostat/reference/indicators.html</loc></url>
 <url><loc>https://sedzinfo.github.io/golemeurostat/reference/mod_about_ui.html</loc></url>
 <url><loc>https://sedzinfo.github.io/golemeurostat/reference/mod_bar_server.html</loc></url>
 <url><loc>https://sedzinfo.github.io/golemeurostat/reference/mod_bar_ui.html</loc></url>

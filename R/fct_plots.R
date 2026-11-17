@@ -85,6 +85,10 @@ label_frames <- function(p, labels, annotation) {
 #' @title The slider of the years of an animated chart
 #' @description Labelled "Year: 2024", as in golemworldbank, rather than with
 #' the name of the column of the frames. A chart of one year has no slider.
+#' Dragging the slider jumps straight to each year: plotly gives its steps the
+#' options of Play (frames of up to a second, played one after the other), so
+#' a drag across 30 years queued 30 frames and the chart lagged until they had
+#' all played. Play keeps its own speed.
 #' @param p A plotly object with frames.
 #' @return The plotly object, built.
 #' @noRd
@@ -93,7 +97,17 @@ year_slider <- function(p) {
   if (length(p$x$layout$sliders) == 0) {
     return(p)
   }
-  plotly::animation_slider(p, currentvalue = list(prefix = "Year: "))
+  p <- plotly::animation_slider(p, currentvalue = list(prefix = "Year: "))
+  p$x$layout$sliders[[1]]$steps <- lapply(p$x$layout$sliders[[1]]$steps, function(step) {
+    redraw <- step$args[[2]]$frame$redraw
+    step$args[[2]] <- list(
+      mode = "immediate",
+      frame = list(duration = 0, redraw = if (is.null(redraw)) TRUE else redraw),
+      transition = list(duration = 0)
+    )
+    step
+  })
+  p
 }
 ##########################################################################################
 #

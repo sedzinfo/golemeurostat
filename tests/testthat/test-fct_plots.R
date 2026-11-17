@@ -21,6 +21,22 @@ test_that("the bar race ranks the countries of each year, without the EU-27 aver
   expect_equal(as.vector(built$data[[1]]$x), c(12.4, 4.3))
 })
 
+test_that("dragging the year slider jumps to the year instead of queuing the frames", {
+  data <- tidy_countries(raw_unemployment)
+  for (chart in list(plot_bar(data, "unemployment", "EL"), plot_map(data, "unemployment"))) {
+    built <- plotly::plotly_build(chart)$x
+    for (step in built$layout$sliders[[1]]$steps) {
+      expect_equal(step$args[[2]]$mode, "immediate")
+      expect_equal(step$args[[2]]$frame$duration, 0)
+      expect_equal(step$args[[2]]$transition$duration, 0)
+    }
+    # Play keeps its own speed
+    buttons <- unlist(lapply(built$layout$updatemenus, `[[`, "buttons"), recursive = FALSE)
+    play <- buttons[[which(vapply(buttons, `[[`, "", "label") == "Play")]]
+    expect_gt(play$args[[2]]$frame$duration, 0)
+  }
+})
+
 test_that("the bars of the race start at 0, also when the values are close", {
   # plotly fixes the axis of an animation at the span of the values, which cut off the start of
   # every bar, and the names inside the bars ran over the ranks

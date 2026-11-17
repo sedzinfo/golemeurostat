@@ -82,19 +82,19 @@ head(res$increased)
 #> 5                                                                                       Residential building permits - annual data Square metres per 1000 inhabitants    46.4   347.1   300.7   648.06
 #> 6                                                         Asylum applicants by type - annual aggregated data: First time applicant                             Person 11370.0 68995.0 57625.0   506.82
 head(res$decreased)
-#>                                                                                         Indicator         Unit      2015      2024    Change Change %
-#> 1                             Current account transactions - credits, debits and balance: Balance Million euro  -1438.00 -17795.00 -16357.00 -1137.48
-#> 2 Extra-EU27 (from 2020) trade, by Member State, total product: Trade balance in million ECU/EURO               -7533.70 -18824.50 -11290.80  -149.87
-#> 3     Gender differences in the at-risk-of-poverty rate by age - EU-SILC survey: 65 years or over       Number     -4.92    -12.27     -7.35  -149.39
-#> 4   Gender differences in the at-risk-of-poverty rate by age - EU-SILC survey: Less than 65 years       Number     -1.38     -3.35     -1.97  -142.75
-#> 5     International trade, by reporting country, total product: Trade balance in million ECU/EURO Million euro -16457.70 -35598.80 -19141.10  -116.30
-#> 6                      Current account transactions - goods: credits, debits and balance: Balance Million euro -17666.00 -36449.00 -18783.00  -106.32
+#>                                                                                                                               Indicator         Unit     2015     2024   Change Change %
+#> 1                                                                   Current account transactions - credits, debits and balance: Balance Million euro  -1438.0 -17795.0 -16357.0 -1137.48
+#> 2                                       Extra-EU27 (from 2020) trade, by Member State, total product: Trade balance in million ECU/EURO               -7533.7 -18824.5 -11290.8  -149.87
+#> 3                                           International trade, by reporting country, total product: Trade balance in million ECU/EURO Million euro -16457.7 -35598.8 -19141.1  -116.30
+#> 4                                                            Current account transactions - goods: credits, debits and balance: Balance Million euro -17666.0 -36449.0 -18783.0  -106.32
+#> 5 First instance decisions on asylum applications by type of decision - annual aggregated data: Positive decision - humanitarian status       Person     10.0      0.0    -10.0  -100.00
+#> 6                     Final decisions on asylum applications by type of decision - annual data: Positive decision - humanitarian status       Person    140.0      0.0   -140.0  -100.00
 head(res$percentages_increased)
-#>                                                                                               Indicator                      Unit      2015      2024   Change
-#> 1              Purchasing power adjusted GDP per capita: Real expenditure per capita (in PPS_EU27_2020)                Percentage 19100.000 27400.000 8300.000
-#> 2                                                   Individuals using the internet for internet banking Percentage of individuals    13.870    54.150   40.280
-#> 3                                                         Employment rates of recent graduates: Females                Percentage    44.100    74.600   30.500
-#> 4 Share of renewable energy in gross final energy consumption by sector: Renewable energy - electricity                Percentage    22.089    51.248   29.159
-#> 5                                                           Employment rates of recent graduates: Total                Percentage    45.200    73.200   28.000
-#> 6                                                                                    Daily internet use % of people aged 16 to 74    54.590    82.530   27.940
+#>                                                                                               Indicator                      Unit   2015   2024 Change
+#> 1                                                   Individuals using the internet for internet banking Percentage of individuals 13.870 54.150 40.280
+#> 2                                                         Employment rates of recent graduates: Females                Percentage 44.100 74.600 30.500
+#> 3 Share of renewable energy in gross final energy consumption by sector: Renewable energy - electricity                Percentage 22.089 51.248 29.159
+#> 4                                                           Employment rates of recent graduates: Total                Percentage 45.200 73.200 28.000
+#> 5                                                                                    Daily internet use % of people aged 16 to 74 54.590 82.530 27.940
+#> 6                                                             Individuals frequently using the internet Percentage of individuals 54.590 82.530 27.940
 ```

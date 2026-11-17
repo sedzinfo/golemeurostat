@@ -56,20 +56,36 @@ of a dataset, such as `une_rt_a`.
 
 Open RStudio (or an R console) and run:
 
-`# Install devtools if you haven't already`` `[`install.packages`](https://rdrr.io/r/utils/install.packages.html)`(``"devtools"``)`` ``# Install golemeurostat from GitHub`` ``devtools``::`[`install_github`](https://devtools.r-lib.org/reference/install-deprecated.html)`(``"sedzinfo/golemeurostat"``)`
+``` r
+
+# Install devtools if you haven't already
+install.packages("devtools")
+# Install golemeurostat from GitHub
+devtools::install_github("sedzinfo/golemeurostat")
+```
 
 Without devtools, install the source tarball of the [latest
 release](https://github.com/sedzinfo/golemeurostat/releases/tag/latest),
 which is rebuilt from `main` on every change, together with the PDF
 manual:
 
-[`install.packages`](https://rdrr.io/r/utils/install.packages.html)`(`` `` ``"https://github.com/sedzinfo/golemeurostat/releases/download/latest/golemeurostat_0.0.0.9000.tar.gz"``,`` `` repos ``=`` ``NULL``, type ``=`` ``"source"`` ``)`
+``` r
+
+install.packages(
+  "https://github.com/sedzinfo/golemeurostat/releases/download/latest/golemeurostat_0.0.0.9000.tar.gz",
+  repos = NULL, type = "source"
+)
+```
 
 # Usage
 
 From the package folder:
 
-`pkgload``::`[`load_all`](https://pkgload.r-lib.org/reference/load_all.html)`(``)`` `[`run_app`](https://sedzinfo.github.io/golemeurostat/reference/run_app.md)`(``)`
+``` r
+
+pkgload::load_all()
+run_app()
+```
 
 `app.R`, which the deployment runs, starts it with
 `run_app(analytics = TRUE)`: Google Analytics, through the cookie banner
@@ -79,7 +95,13 @@ links, as in golemworldbank. Without it, the app sends nothing.
 
 The data and the charts can also be used from R:
 
-[`indicators`](https://sedzinfo.github.io/golemeurostat/reference/indicators.md)`(``)`` ``# the catalogue of indicators`` ``unemployment`` ``<-`` `[`get_indicator`](https://sedzinfo.github.io/golemeurostat/reference/get_indicator.md)`(``"unemployment"``)`` `[`plot_country_comp`](https://sedzinfo.github.io/golemeurostat/reference/plot_country_comp.md)`(``unemployment``, `[`c`](https://rdrr.io/r/base/c.html)`(``"EL"``, ``"BG"``, ``"PT"``)``, ``"unemployment"``)`` `[`plot_regions`](https://sedzinfo.github.io/golemeurostat/reference/plot_regions.md)`(`[`get_regional`](https://sedzinfo.github.io/golemeurostat/reference/get_regional.md)`(``"r_gdp_pps"``)``, ``"r_gdp_pps"``)`
+``` r
+
+indicators()                       # the catalogue of indicators
+unemployment <- get_indicator("unemployment")
+plot_country_comp(unemployment, c("EL", "BG", "PT"), "unemployment")
+plot_regions(get_regional("r_gdp_pps"), "r_gdp_pps")
+```
 
 Eurostat codes the countries with two letters, as ISO does, except
 Greece, which is `EL`.
@@ -123,7 +145,10 @@ Eurostat, its own selection of headline indicators with few breakdowns
 (codes such as `tps00001`, `tec00115` or `sdg_08_10`). To rebuild it, as
 Eurostat adds, renames and retires tables, run from the package folder:
 
-[`source`](https://rdrr.io/r/base/source.html)`(``"data-raw/build_indicators.R"``)`
+``` r
+
+source("data-raw/build_indicators.R")
+```
 
 The script reads Eurostat’s table of contents and the dimensions of
 every dataset, downloads each main table with yearly data once (about
@@ -135,13 +160,22 @@ up to 2015 or later. A table with more than 10 such series is left out,
 and so are amounts in national currency, which cannot be compared
 between countries, and a series that another table already has under the
 same name. The names come from the titles of the tables and the labels
-of the codes; the topic is the folder of the table in Eurostat’s themes.
-These limits are at the top of the script. At its end, it runs
+of the codes, and the units from the labels of the units; the topic is
+the folder of the table in Eurostat’s themes. These limits are at the
+top of the script. Some labels of Eurostat do not describe their series,
+such as a unit of “Percentage” for amounts or a title in tonnes for
+values in kilograms, and some tables have no unit at all:
+`data-raw/corrections.csv` gives the unit, and the name or definition
+when they are wrong too, for the series of a table or those with a code,
+such as `unit=RT`, with the reason, and the script says when a
+correction no longer finds its series. At its end, it runs
 `data-raw/build_values.R`, which writes `inst/extdata/values.rds`, the
 values of every indicator of the countries (about 750,000, 1 MB), for
-the Change (%) tab, and `regions.rds` and `pyramids.rds`, the values of
+the Change (%) tab, `regions.rds` and `pyramids.rds`, the values of
 every indicator of the regions and the population of each country by age
-group and sex (0.5 MB together).
+group and sex (0.5 MB together), and
+`inst/app/www/countries_RG_20M_2024_4326.geojson`, the outlines of the
+countries of the Map tab.
 
 A generated row that downloads the same as a hand-written one is left
 out, so to rename or describe a generated indicator better, copy its row
@@ -152,13 +186,21 @@ to `indicators.csv` and change it there.
 Each indicator is downloaded from the Eurostat API, which needs no key,
 the first time a tab shows it, and kept on disk for a day, in
 `tools::R_user_dir("golemeurostat", "cache")`; set
-`options(golemeurostat.cache_dir = )` to keep it elsewhere. The outlines
-of the countries and regions of the maps, the NUTS 2024 classification,
-come from [GISCO](https://ec.europa.eu/eurostat/web/gisco) and are
-downloaded once. The Change (%) tab, which compares all the indicators
-of a country at once, uses instead the values written into the package
-by `data-raw/build_values.R`, and says their date. The same saved values
-work without internet:
+`options(golemeurostat.cache_dir = )` to keep it elsewhere. A few values
+that are plainly wrong in Eurostat’s data, such as a share of the
+population of 933.2% in a year between two of about 94%, are listed in
+`inst/extdata/errors.csv`, with the reason, and left out for as long as
+Eurostat gives them; a value more than 1,000 times the median of its
+year and of its country, in the wrong units, is left out too. The
+outlines of the countries and regions of the maps, the NUTS 2024
+classification, come from
+[GISCO](https://ec.europa.eu/eurostat/web/gisco): those of the regions
+are downloaded once, and those of the countries are in the package, with
+Moldova and Georgia, which the classification leaves out, from GISCO’s
+outlines of the countries. The Change (%) tab, which compares all the
+indicators of a country at once, uses instead the values written into
+the package by `data-raw/build_values.R`, and says their date. The same
+saved values work without internet:
 [`saved_indicator()`](https://sedzinfo.github.io/golemeurostat/reference/saved_indicator.md),
 [`saved_regional()`](https://sedzinfo.github.io/golemeurostat/reference/saved_regional.md)
 and

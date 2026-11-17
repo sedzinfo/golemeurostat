@@ -4,7 +4,8 @@ Downloads one regional indicator of
 [`indicators()`](https://sedzinfo.github.io/golemeurostat/reference/indicators.md)
 from Eurostat, or takes it from the disk cache when it was downloaded
 less than a day ago, for the regions of the NUTS 2024 classification at
-level 2.
+level 2, without the values of `inst/extdata/errors.csv`, plainly wrong
+in the data of Eurostat.
 
 ## Usage
 

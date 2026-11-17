@@ -1741,7 +1741,7 @@ indicators()[, c("id", "level", "name", "unit")]
 #> 115                                                                                                                        Labour productivity per hour worked - annual data: Percentage change on previous period
 #> 116                                                                                           Labour productivity per person employed and hour worked (EU27_2020=100): Nominal labour productivity per hour worked
 #> 117                                                                                                Labour productivity per person employed and hour worked (EU27_2020=100): Nominal labour productivity per person
-#> 118                                                                                              Nominal unit labour cost per hour worked - annual data, percentage change and index (2015 = 100): Index, 2015=100
+#> 118                                                                                                                                        Nominal unit labour cost per hour worked - annual data: Index, 2015=100
 #> 119                                                                                   Nominal unit labour cost per hour worked - annual data, percentage change and index (2015 = 100): Percentage change (t/t-10)
 #> 120                                                                                    Nominal unit labour cost per hour worked - annual data, percentage change and index (2015 = 100): Percentage change (t/t-1)
 #> 121                                                                                    Nominal unit labour cost per hour worked - annual data, percentage change and index (2015 = 100): Percentage change (t/t-3)
@@ -1931,7 +1931,7 @@ indicators()[, c("id", "level", "name", "unit")]
 #> 305                                                                                                                                                                           All causes of death by NUTS 2 region
 #> 306                                                                                                                                                                        Death due to accidents by NUTS 2 region
 #> 307                                                                                                                                    Premature deaths due to exposure to fine particulate matter (PM2.5): Number
-#> 308                                                                                                                                      Premature deaths due to exposure to fine particulate matter (PM2.5): Rate
+#> 308                                                                                                                   Premature deaths due to exposure to fine particulate matter (PM2.5): Per 100,000 inhabitants
 #> 309                                                                                                                                       Beneficiaries of disability pensions by pension type: Disability pension
 #> 310                                                                                                                                Beneficiaries of disability pensions by pension type: Total disability pensions
 #> 311                                                                                                 Beneficiaries of disability pensions by pension type: Early retirement benefit due to reduced capacity to work
@@ -2236,7 +2236,7 @@ indicators()[, c("id", "level", "name", "unit")]
 #> 610                                                                                                                                                      Utilised agricultural area by categories: Kitchen gardens
 #> 611                                                                                                                                                      Utilised agricultural area by categories: Permanent crops
 #> 612                                                                                                                                           Utilised agricultural area by categories: Utilised agricultural area
-#> 613                                                                                                       Final energy consumption by agriculture and forestry sector – tonne of oil equivalent per hectare of UAA
+#> 613                                                                                                          Final energy consumption by agriculture and forestry sector per hectare of utilised agricultural area
 #> 614                                                                                                                Fresh vegetables and strawberries by area: Fresh vegetables (including melons) and strawberries
 #> 615                                                                                                                                                            Fresh vegetables and strawberries by area: Tomatoes
 #> 616                                                                                                                                                           Fresh vegetables and strawberries by area: Cucumbers
@@ -2779,15 +2779,15 @@ indicators()[, c("id", "level", "name", "unit")]
 #> 1153                                                                                                         Population living in households considering that they suffer from noise, by poverty status: Below 60%
 #> 1154                                                                                                             Population living in households considering that they suffer from noise, by poverty status: Total
 #> 1155                                                                                                                                                      Road traffic deaths, by type of roads: Motorways, Number
-#> 1156                                                                                                                                                        Road traffic deaths, by type of roads: Motorways, Rate
+#> 1156                                                                                                                                     Road traffic deaths, by type of roads: Motorways, Per 100,000 inhabitants
 #> 1157                                                                                                                                                    Road traffic deaths, by type of roads: Rural roads, Number
-#> 1158                                                                                                                                                      Road traffic deaths, by type of roads: Rural roads, Rate
+#> 1158                                                                                                                                   Road traffic deaths, by type of roads: Rural roads, Per 100,000 inhabitants
 #> 1159                                                                                                                                                    Road traffic deaths, by type of roads: Urban roads, Number
-#> 1160                                                                                                                                                      Road traffic deaths, by type of roads: Urban roads, Rate
+#> 1160                                                                                                                                   Road traffic deaths, by type of roads: Urban roads, Per 100,000 inhabitants
 #> 1161                                                                                                                                                          Road traffic deaths, by type of roads: Total, Number
-#> 1162                                                                                                                                                            Road traffic deaths, by type of roads: Total, Rate
+#> 1162                                                                                                                                         Road traffic deaths, by type of roads: Total, Per 100,000 inhabitants
 #> 1163                                                                                                                                                        Road traffic deaths, by type of roads: Unknown, Number
-#> 1164                                                                                                                                                          Road traffic deaths, by type of roads: Unknown, Rate
+#> 1164                                                                                                                                       Road traffic deaths, by type of roads: Unknown, Per 100,000 inhabitants
 #> 1165                                                                                                                                                     Early leavers from education and training by sex: Females
 #> 1166                                                                                                                                                       Early leavers from education and training by sex: Males
 #> 1167                                                                                                                                                       Early leavers from education and training by sex: Total
@@ -3359,14 +3359,14 @@ indicators()[, c("id", "level", "name", "unit")]
 #> 138                                                                     Percentage of gross domestic product (GDP)
 #> 139                                                                                                   Million euro
 #> 140                                                                     Percentage of gross domestic product (GDP)
-#> 141                                                                                                               
+#> 141                                                                                           Percentage per annum
 #> 142                                                                                  Annual average rate of change
 #> 143                                                                                           Annual average index
 #> 144                                 Core inflation differential vis-à-vis the euro area - 20 countries (2023-2025)
 #> 145                                 Core inflation differential vis-à-vis the euro area - 21 countries (from 2026)
-#> 146                                                                                                               
-#> 147                                                                                                               
-#> 148                                                                                                     Percentage
+#> 146                                                                                             Index, EU-27 = 100
+#> 147                                                                                             Index, EU-27 = 100
+#> 148                                                 Purchasing power standard (PPS, EU27 from 2020) per inhabitant
 #> 149                                                                                                     Percentage
 #> 150                                                                                                   Million euro
 #> 151                                                                                                   Million euro
@@ -3385,7 +3385,7 @@ indicators()[, c("id", "level", "name", "unit")]
 #> 164                                                                                                   Million euro
 #> 165                                                                                                               
 #> 166                                                                                                               
-#> 167                                                                                                               
+#> 167                                                                     Percentage of gross domestic product (GDP)
 #> 168                                                                                                               
 #> 169                                                                                                               
 #> 170                                                                                                               
@@ -3394,53 +3394,53 @@ indicators()[, c("id", "level", "name", "unit")]
 #> 173                                                                                                               
 #> 174                                                                                                               
 #> 175                                                                                                               
-#> 176                                                                                                               
-#> 177                                                                                                               
-#> 178                                                                                                               
+#> 176                                                                                              Per 1,000 persons
+#> 177                                                                                              Per 1,000 persons
+#> 178                                                                                              Per 1,000 persons
 #> 179                                                                                                               
 #> 180                                                                                                               
 #> 181                                                                                                               
 #> 182                                                                                                               
-#> 183                                                                                                               
-#> 184                                                                                                               
-#> 185                                                                                                               
-#> 186                                                                                                               
-#> 187                                                                                                               
-#> 188                                                                                                               
-#> 189                                                                                                               
-#> 190                                                                                                               
-#> 191                                                                                                               
-#> 192                                                                                                               
-#> 193                                                                                                               
-#> 194                                                                                                               
-#> 195                                                                                                               
-#> 196                                                                                                               
-#> 197                                                                                                               
-#> 198                                                                                                               
-#> 199                                                                                                               
-#> 200                                                                                                               
-#> 201                                                                                                               
-#> 202                                                                                                               
+#> 183                                                                                              Per 1,000 persons
+#> 184                                                                                              Per 1,000 persons
+#> 185                                                                                              Per 1,000 persons
+#> 186                                                                                 Percentage of total population
+#> 187                                                                                                          Years
+#> 188                                                                                                          Years
+#> 189                                                                                                          Years
+#> 190                                                                                 Percentage of total population
+#> 191                                                                                 Percentage of total population
+#> 192                                                                                 Percentage of total population
+#> 193                                                                                 Percentage of total population
+#> 194                                                                                 Percentage of total population
+#> 195                                                                                 Percentage of total population
+#> 196                                                                                 Percentage of total population
+#> 197                                                                                 Percentage of total population
+#> 198                                                                                 Percentage of total population
+#> 199                                                                                 Percentage of total population
+#> 200                                                                                 Percentage of total population
+#> 201                                                                                              Women per 100 men
+#> 202                                                                  People aged 65 and over per 100 aged 15 to 64
 #> 203                                                                                   Persons per square kilometre
 #> 204                                                                                   Persons per square kilometre
 #> 205                                                                                                         Number
 #> 206                                                                                                         Number
 #> 207                                                                                                         Number
-#> 208                                                                                                               
-#> 209                                                                                                               
-#> 210                                                                                                               
+#> 208                                                                                                          Years
+#> 209                                                                                                          Years
+#> 210                                                                                          Live births per woman
 #> 211                                                                                                         Number
 #> 212                                                                                                           Year
 #> 213                                                                                                           Year
 #> 214                                                                                                           Year
-#> 215                                                                                                           Rate
+#> 215                                                                                   Deaths per 1,000 live births
 #> 216                                                                                                           Year
 #> 217                                                                                                           Year
 #> 218                                                                                                           Year
-#> 219                                                                                                               
-#> 220                                                                                                               
-#> 221                                                                                                               
-#> 222                                                                                                               
+#> 219                                                                                              Per 1,000 persons
+#> 220                                                                                                          Years
+#> 221                                                                                                          Years
+#> 222                                                                                              Per 1,000 persons
 #> 223                                                                                                         Number
 #> 224                                                                                                         Number
 #> 225                                                                                                         Number
@@ -3499,34 +3499,34 @@ indicators()[, c("id", "level", "name", "unit")]
 #> 278                                                                               Per hundred thousand inhabitants
 #> 279                                                                               Per hundred thousand inhabitants
 #> 280                                                                               Per hundred thousand inhabitants
-#> 281                                                                                                           Rate
-#> 282                                                                                                           Rate
-#> 283                                                                                                           Rate
-#> 284                                                                                                           Rate
-#> 285                                                                                                           Rate
-#> 286                                                                                                           Rate
-#> 287                                                                                                           Rate
-#> 288                                                                                                           Rate
-#> 289                                                                                                           Rate
-#> 290                                                                                                           Rate
-#> 291                                                                                                           Rate
-#> 292                                                                                                           Rate
-#> 293                                                                                                           Rate
-#> 294                                                                                                           Rate
-#> 295                                                                                                           Rate
-#> 296                                                                                                           Rate
-#> 297                                                                                                           Rate
-#> 298                                                                                                           Rate
-#> 299                                                                                                           Rate
-#> 300                                                                                                           Rate
-#> 301                                                                                                           Rate
-#> 302                                                                                                           Rate
-#> 303                                                                                                           Rate
-#> 304                                                                                                           Rate
-#> 305                                                                                                           Rate
-#> 306                                                                                                           Rate
+#> 281                                                                                        Per 100,000 inhabitants
+#> 282                                                                                        Per 100,000 inhabitants
+#> 283                                                                                        Per 100,000 inhabitants
+#> 284                                                                                        Per 100,000 inhabitants
+#> 285                                                                                        Per 100,000 inhabitants
+#> 286                                                                                        Per 100,000 inhabitants
+#> 287                                                                                        Per 100,000 inhabitants
+#> 288                                                                                        Per 100,000 inhabitants
+#> 289                                                                                        Per 100,000 inhabitants
+#> 290                                                                                        Per 100,000 inhabitants
+#> 291                                                                                        Per 100,000 inhabitants
+#> 292                                                                                        Per 100,000 inhabitants
+#> 293                                                                                        Per 100,000 inhabitants
+#> 294                                                                                        Per 100,000 inhabitants
+#> 295                                                                                        Per 100,000 inhabitants
+#> 296                                                                                        Per 100,000 inhabitants
+#> 297                                                                                        Per 100,000 inhabitants
+#> 298                                                                                        Per 100,000 inhabitants
+#> 299                                                                                        Per 100,000 inhabitants
+#> 300                                                                                        Per 100,000 inhabitants
+#> 301                                                                                        Per 100,000 inhabitants
+#> 302                                                                                        Per 100,000 inhabitants
+#> 303                                                                                        Per 100,000 inhabitants
+#> 304                                                                                        Per 100,000 inhabitants
+#> 305                                                                                        Per 100,000 inhabitants
+#> 306                                                                                        Per 100,000 inhabitants
 #> 307                                                                                                         Number
-#> 308                                                                                                           Rate
+#> 308                                                                                        Per 100,000 inhabitants
 #> 309                                                                                                         Person
 #> 310                                                                                                         Person
 #> 311                                                                                                         Person
@@ -3613,7 +3613,7 @@ indicators()[, c("id", "level", "name", "unit")]
 #> 392                                                                                               Thousand persons
 #> 393                                                                                                          Ratio
 #> 394                                                                                                          Ratio
-#> 395                                                                                                               
+#> 395                                                                                   0 = equal, 100 = one has all
 #> 396                                                                                                     Percentage
 #> 397                                                                                                     Percentage
 #> 398                                                                                                     Percentage
@@ -3644,15 +3644,15 @@ indicators()[, c("id", "level", "name", "unit")]
 #> 423                                                                     Percentage of gross domestic product (GDP)
 #> 424                                                                 Purchasing power standard (PPS) per inhabitant
 #> 425                                                                     Percentage of gross domestic product (GDP)
-#> 426                                                                                                               
-#> 427                                                                                                               
-#> 428                                                                                                               
-#> 429                                                                                                               
-#> 430                                                                                                               
-#> 431                                                                                                               
-#> 432                                                                                                               
-#> 433                                                                                                               
-#> 434                                                                                                               
+#> 426                                                                                                   Million euro
+#> 427                                                                                                   Million euro
+#> 428                                                                                                   Million euro
+#> 429                                                                                                   Million euro
+#> 430                                                                                                   Million euro
+#> 431                                                                                                   Million euro
+#> 432                                                                                                   Million euro
+#> 433                                                                                                   Million euro
+#> 434                                                                                                   Million euro
 #> 435                                                                                                               
 #> 436                                                                                                               
 #> 437                                                                                                               
@@ -3811,8 +3811,8 @@ indicators()[, c("id", "level", "name", "unit")]
 #> 590                                                                                                Thousand tonnes
 #> 591                                                                                                Thousand tonnes
 #> 592                                                                                                Thousand tonnes
-#> 593                                                                                                               
-#> 594                                                                                                               
+#> 593                                                                                                Thousand tonnes
+#> 594                                                                                                Thousand tonnes
 #> 595                                                                                                Thousand tonnes
 #> 596                                                                                                Thousand tonnes
 #> 597                                                                                                Thousand tonnes
@@ -3826,33 +3826,33 @@ indicators()[, c("id", "level", "name", "unit")]
 #> 605                                                                                       Thousand heads (animals)
 #> 606                                                                                       Thousand heads (animals)
 #> 607                                                                                       Thousand heads (animals)
-#> 608                                                                                                               
-#> 609                                                                                                               
-#> 610                                                                                                               
-#> 611                                                                                                               
-#> 612                                                                                                               
-#> 613                                                                                                               
-#> 614                                                                                                               
-#> 615                                                                                                               
-#> 616                                                                                                               
-#> 617                                                                                                               
-#> 618                                                                                                               
-#> 619                                                                                                               
-#> 620                                                                                                               
-#> 621                                                                                                               
-#> 622                                                                                                               
-#> 623                                                                                                               
+#> 608                                                                                              Thousand hectares
+#> 609                                                                                              Thousand hectares
+#> 610                                                                                              Thousand hectares
+#> 611                                                                                              Thousand hectares
+#> 612                                                                                              Thousand hectares
+#> 613                                                                        Kilograms of oil equivalent per hectare
+#> 614                                                                                              Thousand hectares
+#> 615                                                                                              Thousand hectares
+#> 616                                                                                              Thousand hectares
+#> 617                                                                                              Thousand hectares
+#> 618                                                                                              Thousand hectares
+#> 619                                                                                              Thousand hectares
+#> 620                                                                                              Thousand hectares
+#> 621                                                                                              Thousand hectares
+#> 622                                                                                              Thousand hectares
+#> 623                                                                                              Thousand hectares
 #> 624                                                                                                               
 #> 625                                                                                                               
 #> 626                                                                                                               
-#> 627                                                                                                               
-#> 628                                                                                                               
-#> 629                                                                                                               
-#> 630                                                                                                               
-#> 631                                                                                                               
-#> 632                                                                                                               
-#> 633                                                                                                               
-#> 634                                                                                                               
+#> 627                                                                                              Thousand hectares
+#> 628                                                                                              Thousand hectares
+#> 629                                                                                              Thousand hectares
+#> 630                                                                                              Thousand hectares
+#> 631                                                                                              Thousand hectares
+#> 632                                                                                              Thousand hectares
+#> 633                                                                                              Thousand hectares
+#> 634                                                                                              Thousand hectares
 #> 635                                                                                                               
 #> 636                                                                                                               
 #> 637                                                                                                               
@@ -3868,15 +3868,15 @@ indicators()[, c("id", "level", "name", "unit")]
 #> 647                                                                                                               
 #> 648                                                                                                               
 #> 649                                                                                                               
-#> 650                                                                                                               
-#> 651                                                                                                               
-#> 652                                                                                                               
-#> 653                                                                                                               
+#> 650                                                                                                Thousand tonnes
+#> 651                                                                                                Thousand tonnes
+#> 652                                                                                                Thousand tonnes
+#> 653                                                                                                Thousand tonnes
 #> 654                                                                                                               
 #> 655                                                                                                               
 #> 656                                                                                                               
-#> 657                                                                                                               
-#> 658                                                                                                               
+#> 657                                                                                                Thousand tonnes
+#> 658                                                                                                Thousand tonnes
 #> 659                                                                                                               
 #> 660                                                                                                               
 #> 661                                                                                                               
@@ -3976,12 +3976,12 @@ indicators()[, c("id", "level", "name", "unit")]
 #> 755                                                                                                     Percentage
 #> 756                                                                                                     Percentage
 #> 757                                                                                                     Percentage
-#> 758                                                                                 Rate (2025 target and onwards)
-#> 759                                                                                 Rate (2025 target and onwards)
-#> 760                                                                                 Rate (2025 target and onwards)
-#> 761                                                                                 Rate (2025 target and onwards)
-#> 762                                                                                 Rate (2025 target and onwards)
-#> 763                                                                                 Rate (2025 target and onwards)
+#> 758                                                                           Percentage (2025 target and onwards)
+#> 759                                                                           Percentage (2025 target and onwards)
+#> 760                                                                           Percentage (2025 target and onwards)
+#> 761                                                                           Percentage (2025 target and onwards)
+#> 762                                                                           Percentage (2025 target and onwards)
+#> 763                                                                           Percentage (2025 target and onwards)
 #> 764                                                                                           Million cubic metres
 #> 765                                                                                           Million cubic metres
 #> 766                                                                                           Million cubic metres
@@ -4108,37 +4108,37 @@ indicators()[, c("id", "level", "name", "unit")]
 #> 887                                                                           Percentage change on previous period
 #> 888                                                                                                Index, 2020=100
 #> 889                                                                           Percentage change on previous period
-#> 890                                                                                                           Rate
-#> 891                                                                                                           Rate
-#> 892                                                                                                           Rate
-#> 893                                                                                                           Rate
-#> 894                                                                                                           Rate
-#> 895                                                                                                           Rate
-#> 896                                                                                                           Rate
-#> 897                                                                                                           Rate
-#> 898                                                                                                           Rate
-#> 899                                                                                                           Rate
-#> 900                                                                                                           Rate
-#> 901                                                                                                           Rate
-#> 902                                                                                                           Rate
-#> 903                                                                                                           Rate
-#> 904                                                                                                           Rate
-#> 905                                                                                                           Rate
-#> 906                                                                                                           Rate
-#> 907                                                                                                           Rate
-#> 908                                                                                                           Rate
-#> 909                                                                                                           Rate
-#> 910                                                                                                           Rate
-#> 911                                                                                                           Rate
-#> 912                                                                                                           Rate
-#> 913                                                                                                           Rate
-#> 914                                                                                                               
-#> 915                                                                                                               
-#> 916                                                                                                               
-#> 917                                                                                                               
-#> 918                                                                                                           Rate
-#> 919                                                                                                           Rate
-#> 920                                                                                                           Rate
+#> 890                                                                                        Per 100,000 inhabitants
+#> 891                                                                                        Per 100,000 inhabitants
+#> 892                                                                                        Per 100,000 inhabitants
+#> 893                                                                                        Per 100,000 inhabitants
+#> 894                                                                                        Per 100,000 inhabitants
+#> 895                                                                                        Per 100,000 inhabitants
+#> 896                                                                                        Per 100,000 inhabitants
+#> 897                                                                                        Per 100,000 inhabitants
+#> 898                                                                                        Per 100,000 inhabitants
+#> 899                                                                                        Per 100,000 inhabitants
+#> 900                                                                                        Per 100,000 inhabitants
+#> 901                                                                                        Per 100,000 inhabitants
+#> 902                                                                                        Per 100,000 inhabitants
+#> 903                                                                                        Per 100,000 inhabitants
+#> 904                                                                                        Per 100,000 inhabitants
+#> 905                                                                                        Per 100,000 inhabitants
+#> 906                                                                                        Per 100,000 inhabitants
+#> 907                                                                                        Per 100,000 inhabitants
+#> 908                                                                                        Per 100,000 inhabitants
+#> 909                                                                                        Per 100,000 inhabitants
+#> 910                                                                                        Per 100,000 inhabitants
+#> 911                                                                                        Per 100,000 inhabitants
+#> 912                                                                                        Per 100,000 inhabitants
+#> 913                                                                                        Per 100,000 inhabitants
+#> 914                                                                                        Per 100,000 inhabitants
+#> 915                                                                                        Per 100,000 inhabitants
+#> 916                                                                                        Per 100,000 inhabitants
+#> 917                                                                                        Per 100,000 inhabitants
+#> 918                                                                                        Per 100,000 inhabitants
+#> 919                                                                                        Per 100,000 inhabitants
+#> 920                                                                                        Per 100,000 inhabitants
 #> 921                                                                               Per hundred thousand inhabitants
 #> 922                                                                                                         Number
 #> 923                                                                                                         Number
@@ -4284,7 +4284,7 @@ indicators()[, c("id", "level", "name", "unit")]
 #> 1063                                                                    Percentage of gross domestic product (GDP)
 #> 1064                                                                    Percentage of gross domestic product (GDP)
 #> 1065                                                                    Percentage of gross domestic product (GDP)
-#> 1066                                                                                            Three-year average
+#> 1066                                              Percentage of population in the labour force, three-year average
 #> 1067                                                                  Percentage of population in the labour force
 #> 1068                                                                             Percentage point change (t-(t-3))
 #> 1069                                                                  Percentage of population in the labour force
@@ -4316,12 +4316,12 @@ indicators()[, c("id", "level", "name", "unit")]
 #> 1095                                                                                          Kilograms per capita
 #> 1096                                                                                          Kilograms per capita
 #> 1097                                                                                                    Percentage
-#> 1098                                                                                Rate (2025 target and onwards)
-#> 1099                                                                                Rate (2025 target and onwards)
-#> 1100                                                                                Rate (2025 target and onwards)
-#> 1101                                                                                Rate (2025 target and onwards)
-#> 1102                                                                                Rate (2025 target and onwards)
-#> 1103                                                                                Rate (2025 target and onwards)
+#> 1098                                                                          Percentage (2025 target and onwards)
+#> 1099                                                                          Percentage (2025 target and onwards)
+#> 1100                                                                          Percentage (2025 target and onwards)
+#> 1101                                                                          Percentage (2025 target and onwards)
+#> 1102                                                                          Percentage (2025 target and onwards)
+#> 1103                                                                          Percentage (2025 target and onwards)
 #> 1104                                                                                                    Percentage
 #> 1105                                                                                            Planetary Boundary
 #> 1106                                                                                                    Percentage
@@ -4364,9 +4364,9 @@ indicators()[, c("id", "level", "name", "unit")]
 #> 1143                                                                                                    Percentage
 #> 1144                                                                                                    Percentage
 #> 1145                                                                                                    Percentage
-#> 1146                                                                                                          Rate
-#> 1147                                                                                                          Rate
-#> 1148                                                                                                          Rate
+#> 1146                                                                                       Per 100,000 inhabitants
+#> 1147                                                                                       Per 100,000 inhabitants
+#> 1148                                                                                       Per 100,000 inhabitants
 #> 1149                                                                                                Incidence rate
 #> 1150                                                                                                Incidence rate
 #> 1151                                                                                                Incidence rate
@@ -4374,15 +4374,15 @@ indicators()[, c("id", "level", "name", "unit")]
 #> 1153                                                                                                    Percentage
 #> 1154                                                                                                    Percentage
 #> 1155                                                                                                        Number
-#> 1156                                                                                                          Rate
+#> 1156                                                                                       Per 100,000 inhabitants
 #> 1157                                                                                                        Number
-#> 1158                                                                                                          Rate
+#> 1158                                                                                       Per 100,000 inhabitants
 #> 1159                                                                                                        Number
-#> 1160                                                                                                          Rate
+#> 1160                                                                                       Per 100,000 inhabitants
 #> 1161                                                                                                        Number
-#> 1162                                                                                                          Rate
+#> 1162                                                                                       Per 100,000 inhabitants
 #> 1163                                                                                                        Number
-#> 1164                                                                                                          Rate
+#> 1164                                                                                       Per 100,000 inhabitants
 #> 1165                                                                                                    Percentage
 #> 1166                                                                                                    Percentage
 #> 1167                                                                                                    Percentage
@@ -4493,8 +4493,8 @@ indicators()[, c("id", "level", "name", "unit")]
 #> 1272                                                                                                    Percentage
 #> 1273                                                                                Percentage of total population
 #> 1274                                                                                                    Percentage
-#> 1275                                                                                                              
-#> 1276                                                                                                    Percentage
+#> 1275                                                                                                         Ratio
+#> 1276                                                                                                         Ratio
 #> 1277                                                                                                    Percentage
 #> 1278                                                                                                    Percentage
 #> 1279                                                                                                    Percentage
@@ -4505,7 +4505,7 @@ indicators()[, c("id", "level", "name", "unit")]
 #> 1284                                                                                                    Percentage
 #> 1285                                                                                                    Percentage
 #> 1286                                                       Percentage change on previous period (based on persons)
-#> 1287                                                                                Percentage of total population
+#> 1287                                                                                             Percentage points
 #> 1288                                                                                                    Percentage
 #> 1289                                                                                Percentage of total employment
 #> 1290                                                                                       Percentage of employees
@@ -4519,7 +4519,7 @@ indicators()[, c("id", "level", "name", "unit")]
 #> 1298                                                                                       Percentage of employees
 #> 1299                                                                                                    Percentage
 #> 1300                                                                                                    Percentage
-#> 1301                                                                                                          Rate
+#> 1301                                                                                                    Percentage
 #> 1302                                                                                                    Percentage
 #> 1303                                                                                                    Percentage
 #> 1304                                                                                                    Percentage
@@ -4700,7 +4700,7 @@ indicators()[, c("id", "level", "name", "unit")]
 #> 1479                                                                                                    Percentage
 #> 1480                                                                                                    Percentage
 #> 1481                                                                                                    Percentage
-#> 1482                                                                                                              
+#> 1482                                                                                  0 = equal, 100 = one has all
 #> 1483                                                                                                    Percentage
 #> 1484                                                                                                    Percentage
 #> 1485                                                                                                    Percentage
@@ -4748,12 +4748,12 @@ indicators()[, c("id", "level", "name", "unit")]
 #> 1527                                                                                                    Percentage
 #> 1528                                                                                                    Percentage
 #> 1529                                                                                                    Percentage
-#> 1530                                                                                                              
-#> 1531                                                                                                              
-#> 1532                                                                                                              
-#> 1533                                                                                                    Percentage
-#> 1534                                                                                                    Percentage
-#> 1535                                                                                                    Percentage
+#> 1530                                                                                                         Ratio
+#> 1531                                                                                                         Ratio
+#> 1532                                                                                                         Ratio
+#> 1533                                                                                                         Ratio
+#> 1534                                                                                                         Ratio
+#> 1535                                                                                                         Ratio
 #> 1536                                                                                                         Ratio
 #> 1537                                                                                                         Ratio
 #> 1538                                                                                                         Ratio
@@ -4769,8 +4769,8 @@ indicators()[, c("id", "level", "name", "unit")]
 #> 1548                                                                                                    Percentage
 #> 1549                                                                                                    Percentage
 #> 1550                                                                                                    Percentage
-#> 1551                                                                                                        Number
-#> 1552                                                                                                        Number
+#> 1551                                                                                             Percentage points
+#> 1552                                                                                             Percentage points
 #> 1553                                                                                                              
 #> 1554                                                                                                        Number
 #> 1555                                                                                                              

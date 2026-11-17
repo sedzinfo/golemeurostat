@@ -32,3 +32,8 @@ system("R CMD build . --resave-data")
 # rsconnect::writeManifest(appDir = ".", appPrimaryDoc = "app.R")
 
 golemeurostat::run_app(analytics = TRUE)
+
+
+
+
+
