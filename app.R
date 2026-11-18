@@ -9,6 +9,9 @@ Sys.unsetenv("RSTUDIO")
 
 pkgload::load_all(export_all = FALSE, helpers = FALSE, attach_testthat = FALSE)
 options("golem.app.prod" = TRUE)
-golemeurostat::run_app(analytics = TRUE) # Google Analytics, after the visitor accepts the cookie banner
+# run_app() without the golemeurostat:: prefix: load_all() has attached it already, and the prefix
+# makes renv (rsconnect::deployApp) list golemeurostat itself as a dependency, which fails the deploy
+# with "packages installed from an unknown source" whenever the package is installed locally
+run_app(analytics = TRUE) # Google Analytics, after the visitor accepts the cookie banner
 
 # rsconnect::writeManifest(appDir = ".", appPrimaryDoc = "app.R")

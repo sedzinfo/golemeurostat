@@ -1,0 +1,14 @@
+.github
+.Rbuildignore
+.RData
+_pkgdown.yml
+data-raw
+docs
+generate_package.R
+golemeurostat.pdf
+golemeurostat_0.0.0.9000.tar.gz
+LICENSE
+man
+pkgdown
+README.md
+tests

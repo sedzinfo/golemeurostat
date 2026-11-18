@@ -1,6 +1,6 @@
 # Eurostat Indicators Explorer
 
-[Website](https://sedzinfo.github.io/golemeurostat/)
+**[Open the live app](https://sedzinfo.shinyapps.io/golemeurostat/)** · [Website](https://sedzinfo.github.io/golemeurostat/)
 
 A Shiny app, built as a golem package, for exploring indicators of [Eurostat](https://ec.europa.eu/eurostat), the statistical office of the European Union: for the 27 countries of the EU, the 4 of EFTA and the 9 candidate countries, with the EU-27 average for comparison, and for the regions of Europe. It follows the design of [golemworldbank](https://github.com/sedzinfo/golemworldbank), and shares its stylesheets and scripts, which both apps load from [sedzinfo.github.io](https://github.com/sedzinfo/sedzinfo.github.io/tree/main/shiny): the layout of the page, on a desktop and on a phone, and the dark mode.
 
