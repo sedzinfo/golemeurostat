@@ -1,5 +1,6 @@
 # Eurostat Indicators Explorer
 
+**[Open the live app](https://sedzinfo.shinyapps.io/golemeurostat/)** ·
 [Website](https://sedzinfo.github.io/golemeurostat/)
 
 A Shiny app, built as a golem package, for exploring indicators of
