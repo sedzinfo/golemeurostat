@@ -1,0 +1,21 @@
+# How to cite this package. GitHub shows it as "Cite this repository"; Zenodo uses it for the DOI of each release.
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "golemeurostat: Eurostat Indicators Explorer"
+abstract: "A 'shiny' application, built as a 'golem' package, for exploring indicators of 'Eurostat', the statistical office of the European Union, for the countries of the EU and EFTA and the candidate countries, and for the regions of Europe, in the tabs of 'golemworldbank': country and indicator comparisons, population pyramids, a ranked bar chart race, a scatter plot, maps of the countries and of the regions, and the change of every indicator between two years. The data are downloaded from the 'Eurostat' API when first needed and kept on disk for a day."
+authors:
+  - family-names: "Zacharatos"
+    given-names: "Dimitrios"
+    orcid: "https://orcid.org/0000-0003-1789-8294"
+license: GPL-3.0-only
+repository-code: "https://github.com/sedzinfo/golemeurostat"
+url: "https://sedzinfo.github.io/golemeurostat/"
+keywords:
+  - "golem"
+  - "shiny"
+  - "data-visualization"
+  - "europe"
+  - "eurostat"
+  - "open-data"
+  - "plotly"
