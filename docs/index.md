@@ -13,9 +13,10 @@ its stylesheets and scripts, which both apps load from
 [sedzinfo.github.io](https://github.com/sedzinfo/sedzinfo.github.io/tree/main/shiny):
 the layout of the page, on a desktop and on a phone, and the dark mode.
 
-# Tabs
+## Tabs
 
-The tabs of golemworldbank, with two maps:
+The same tabs as golemworldbank, plus a second map for the regions of
+Europe:
 
 - **Country Comparison**: an indicator over the years for the countries
   you pick, with the EU-27 average as a dashed line
@@ -53,40 +54,40 @@ Eurostat’s main tables, about 1,500 more, in the groups of Eurostat’s
 themes. Type in a list of indicators to search their names, or the code
 of a dataset, such as `une_rt_a`.
 
-# Installation
+## Installation
+
+### Prerequisites
+
+1.  **Install R**: <https://cran.r-project.org/>
+2.  **Install RStudio** (optional but recommended):
+    <https://posit.co/downloads/>
+
+### Package Installation
 
 Open RStudio (or an R console) and run:
 
-``` r
+[`install.packages`](https://rdrr.io/r/utils/install.packages.html)`(`` `` ``"golemeurostat"``,`` `` repos ``=`` `[`c`](https://rdrr.io/r/base/c.html)`(``"https://sedzinfo.r-universe.dev"``, ``"https://cloud.r-project.org"``)`` ``)`
 
-# Install devtools if you haven't already
-install.packages("devtools")
-# Install golemeurostat from GitHub
-devtools::install_github("sedzinfo/golemeurostat")
-```
+[R-universe](https://sedzinfo.r-universe.dev/golemeurostat) builds
+golemeurostat from this repository, and CRAN provides the packages it
+needs.
 
-Without devtools, install the source tarball of the [latest
+To install from GitHub instead:
+
+`# Install devtools if you haven't already`` `[`install.packages`](https://rdrr.io/r/utils/install.packages.html)`(``"devtools"``)`` ``# Install golemeurostat from GitHub`` ``devtools``::`[`install_github`](https://devtools.r-lib.org/reference/install-deprecated.html)`(``"sedzinfo/golemeurostat"``)`
+
+Or install the source tarball of the [latest
 release](https://github.com/sedzinfo/golemeurostat/releases/tag/latest),
 which is rebuilt from `main` on every change, together with the PDF
 manual:
 
-``` r
+[`install.packages`](https://rdrr.io/r/utils/install.packages.html)`(`` `` ``"https://github.com/sedzinfo/golemeurostat/releases/download/latest/golemeurostat_0.0.0.9000.tar.gz"``,`` `` repos ``=`` ``NULL``, type ``=`` ``"source"`` ``)`
 
-install.packages(
-  "https://github.com/sedzinfo/golemeurostat/releases/download/latest/golemeurostat_0.0.0.9000.tar.gz",
-  repos = NULL, type = "source"
-)
-```
-
-# Usage
+## Usage
 
 From the package folder:
 
-``` r
-
-pkgload::load_all()
-run_app()
-```
+`pkgload``::`[`load_all`](https://pkgload.r-lib.org/reference/load_all.html)`(``)`` `[`run_app`](https://sedzinfo.github.io/golemeurostat/reference/run_app.md)`(``)`
 
 `app.R`, which the deployment runs, starts it with
 `run_app(analytics = TRUE)`: Google Analytics, through the cookie banner
@@ -96,25 +97,19 @@ links, as in golemworldbank. Without it, the app sends nothing.
 
 The data and the charts can also be used from R:
 
-``` r
-
-indicators()                       # the catalogue of indicators
-unemployment <- get_indicator("unemployment")
-plot_country_comp(unemployment, c("EL", "BG", "PT"), "unemployment")
-plot_regions(get_regional("r_gdp_pps"), "r_gdp_pps")
-```
+[`indicators`](https://sedzinfo.github.io/golemeurostat/reference/indicators.md)`(``)`` ``# the catalogue of indicators`` ``unemployment`` ``<-`` `[`get_indicator`](https://sedzinfo.github.io/golemeurostat/reference/get_indicator.md)`(``"unemployment"``)`` `[`plot_country_comp`](https://sedzinfo.github.io/golemeurostat/reference/plot_country_comp.md)`(``unemployment``, `[`c`](https://rdrr.io/r/base/c.html)`(``"EL"``, ``"BG"``, ``"PT"``)``, ``"unemployment"``)`` `[`plot_regions`](https://sedzinfo.github.io/golemeurostat/reference/plot_regions.md)`(`[`get_regional`](https://sedzinfo.github.io/golemeurostat/reference/get_regional.md)`(``"r_gdp_pps"``)``, ``"r_gdp_pps"``)`
 
 Eurostat codes the countries with two letters, as ISO does, except
 Greece, which is `EL`.
 
-# Adding an indicator
+## Adding an indicator
 
 The indicators come from two files of `inst/extdata`, with the same
 columns: `indicators.csv`, written by hand, and
 `indicators_generated.csv`, written by a script from the catalogue of
 Eurostat.
 
-## By hand
+### By hand
 
 An indicator added to `indicators.csv` comes first in the lists, under
 its own topic, and needs no R code:
@@ -138,7 +133,7 @@ than one value per country and year. Run
 now and then to check them all, as Eurostat sometimes renames or retires
 a dataset.
 
-## From Eurostat’s main tables
+### From Eurostat’s main tables
 
 `indicators_generated.csv` holds the series of the [main
 tables](https://ec.europa.eu/eurostat/web/main/data/database) of
@@ -146,10 +141,7 @@ Eurostat, its own selection of headline indicators with few breakdowns
 (codes such as `tps00001`, `tec00115` or `sdg_08_10`). To rebuild it, as
 Eurostat adds, renames and retires tables, run from the package folder:
 
-``` r
-
-source("data-raw/build_indicators.R")
-```
+[`source`](https://rdrr.io/r/base/source.html)`(``"data-raw/build_indicators.R"``)`
 
 The script reads Eurostat’s table of contents and the dimensions of
 every dataset, downloads each main table with yearly data once (about
@@ -182,7 +174,7 @@ A generated row that downloads the same as a hand-written one is left
 out, so to rename or describe a generated indicator better, copy its row
 to `indicators.csv` and change it there.
 
-# Data
+## Data
 
 Each indicator is downloaded from the Eurostat API, which needs no key,
 the first time a tab shows it, and kept on disk for a day, in
@@ -217,7 +209,7 @@ and the examples of the charts use them, such as
 Source of the data: Eurostat. Administrative boundaries: ©
 EuroGeographics.
 
-# Development
+## Development
 
 Run the tests with
 [`devtools::test()`](https://devtools.r-lib.org/reference/test.html),
@@ -225,7 +217,7 @@ which use saved Eurostat answers and need no internet, and the full
 package check with
 [`devtools::check()`](https://devtools.r-lib.org/reference/check.html).
 
-# Screenshots
+## Screenshots
 
 ![Country Comparison tab: GDP per inhabitant in PPS of Greece and
 Bulgaria, with the EU-27 average](reference/figures/eurostat1.png)
@@ -276,3 +268,12 @@ Change (%) tab: the indicators of Greece that rose from 2024 to 2025
 definition](reference/figures/eurostat9.png)
 
 Indicators tab: the indicators with their unit, dataset and definition
+
+------------------------------------------------------------------------
+
+[![R-universe](https://sedzinfo.r-universe.dev/golemeurostat/badges/version)](https://sedzinfo.r-universe.dev/golemeurostat)
+![Stars](https://img.shields.io/github/stars/sedzinfo/golemeurostat)![Watchers](https://img.shields.io/github/watchers/sedzinfo/golemeurostat)![Repo
+Size](https://img.shields.io/github/repo-size/sedzinfo/golemeurostat)![Open
+Issues](https://img.shields.io/github/issues/sedzinfo/golemeurostat)![Forks](https://img.shields.io/github/forks/sedzinfo/golemeurostat)![Last
+Commit](https://img.shields.io/github/last-commit/sedzinfo/golemeurostat)![Contributors](https://img.shields.io/github/contributors/sedzinfo/golemeurostat)![License](https://img.shields.io/github/license/sedzinfo/golemeurostat)![Workflow
+Status](https://img.shields.io/github/actions/workflow/status/sedzinfo/golemeurostat/build-tarball.yml)![R-CMD-check](https://github.com/sedzinfo/golemeurostat/actions/workflows/R-CMD-check.yaml/badge.svg)
