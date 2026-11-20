@@ -51,8 +51,12 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="eurostat-indicators-explorer">Eurostat Indicators Explorer<a class="anchor" aria-label="anchor" href="#eurostat-indicators-explorer"></a>
 </h1></div>
-<p><strong><a href="https://sedzinfo.shinyapps.io/golemeurostat/" class="external-link">Open the live app</a></strong> · <a href="https://sedzinfo.github.io/golemeurostat/">Website</a></p>
+<p><strong><a href="https://sedzinfo.shinyapps.io/golemeurostat/" class="external-link">Open the live app</a></strong> · <a href="https://sedzinfo.github.io/golemeurostat/reference/">Help pages</a></p>
+<div class="section level2">
+<h2 id="what-it-does">What it does<a class="anchor" aria-label="anchor" href="#what-it-does"></a>
+</h2>
 <p>A Shiny app, built as a golem package, for exploring indicators of <a href="https://ec.europa.eu/eurostat" class="external-link">Eurostat</a>, the statistical office of the European Union: for the 27 countries of the EU, the 4 of EFTA and the 9 candidate countries, with the EU-27 average for comparison, and for the regions of Europe. It follows the design of <a href="https://github.com/sedzinfo/golemworldbank" class="external-link">golemworldbank</a>, and shares its stylesheets and scripts, which both apps load from <a href="https://github.com/sedzinfo/sedzinfo.github.io/tree/main/shiny" class="external-link">sedzinfo.github.io</a>: the layout of the page, on a desktop and on a phone, and the dark mode.</p>
+</div>
 <div class="section level2">
 <h2 id="tabs">Tabs<a class="anchor" aria-label="anchor" href="#tabs"></a>
 </h2>
@@ -86,56 +90,106 @@
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <div class="section level3">
-<h3 id="prerequisites">Prerequisites<a class="anchor" aria-label="anchor" href="#prerequisites"></a>
+<h3 id="id_1-install-r">1. Install R<a class="anchor" aria-label="anchor" href="#id_1-install-r"></a>
 </h3>
-<ol style="list-style-type: decimal">
-<li>
-<strong>Install R</strong>: <a href="https://cran.r-project.org/" class="external-link uri">https://cran.r-project.org/</a>
-</li>
-<li>
-<strong>Install RStudio</strong> (optional but recommended): <a href="https://posit.co/downloads/" class="external-link uri">https://posit.co/downloads/</a>
-</li>
-</ol>
+<p>Download R from <a href="https://cran.r-project.org/" class="external-link">CRAN</a>, for Windows, macOS or Linux, and run the installer.</p>
 </div>
 <div class="section level3">
-<h3 id="package-installation">Package Installation<a class="anchor" aria-label="anchor" href="#package-installation"></a>
+<h3 id="id_2-install-rstudio-or-positron">2. Install RStudio or Positron<a class="anchor" aria-label="anchor" href="#id_2-install-rstudio-or-positron"></a>
 </h3>
-<p>Open RStudio (or an R console) and run:</p>
+<p>An editor makes R easier to use. It is optional, and both are free, from Posit:</p>
+<ul>
+<li><a href="https://posit.co/download/rstudio-desktop/" class="external-link">RStudio Desktop</a></li>
+<li>
+<a href="https://positron.posit.co/download.html" class="external-link">Positron</a>, which also runs Python</li>
+</ul>
+</div>
+<div class="section level3">
+<h3 id="id_3-install-golemeurostat">3. Install golemeurostat<a class="anchor" aria-label="anchor" href="#id_3-install-golemeurostat"></a>
+</h3>
+<p>Run one of these in RStudio, Positron or the R console. Each one also installs the packages golemeurostat needs.</p>
+<div class="section level4">
+<h4 id="from-r-universe-recommended">From R-universe (recommended)<a class="anchor" aria-label="anchor" href="#from-r-universe-recommended"></a>
+</h4>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span></span>
 <span>  <span class="st">"golemeurostat"</span>,</span>
 <span>  repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"https://sedzinfo.r-universe.dev"</span>, <span class="st">"https://cloud.r-project.org"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><a href="https://sedzinfo.r-universe.dev/golemeurostat" class="external-link">R-universe</a> builds golemeurostat from this repository, and CRAN provides the packages it needs.</p>
-<p>To install from GitHub instead:</p>
+<p><a href="https://sedzinfo.r-universe.dev/golemeurostat" class="external-link">R-universe</a> builds golemeurostat from this repository after every change, ready to install on Windows, macOS and Linux, and CRAN provides the packages it needs.</p>
+</div>
+<div class="section level4">
+<h4 id="from-github">From GitHub<a class="anchor" aria-label="anchor" href="#from-github"></a>
+</h4>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Install devtools if you haven't already</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
-<span><span class="co"># Install golemeurostat from GitHub</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/install-deprecated.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"sedzinfo/golemeurostat"</span><span class="op">)</span></span></code></pre></div>
-<p>Or install the source tarball of the <a href="https://github.com/sedzinfo/golemeurostat/releases/tag/latest" class="external-link">latest release</a>, which is rebuilt from <code>main</code> on every change, together with the PDF manual:</p>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"pak"</span><span class="op">)</span>   <span class="co"># once</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"sedzinfo/golemeurostat"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="from-the-release-tarball">From the release tarball<a class="anchor" aria-label="anchor" href="#from-the-release-tarball"></a>
+</h4>
+<p>The <a href="https://github.com/sedzinfo/golemeurostat/releases/tag/latest" class="external-link">latest release</a> has the source tarball and the PDF manual, rebuilt from <code>main</code> on every change:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span></span>
-<span>  <span class="st">"https://github.com/sedzinfo/golemeurostat/releases/download/latest/golemeurostat_0.0.0.9000.tar.gz"</span>,</span>
-<span>  repos <span class="op">=</span> <span class="cn">NULL</span>, type <span class="op">=</span> <span class="st">"source"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"pak"</span><span class="op">)</span>   <span class="co"># once</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"url::https://github.com/sedzinfo/golemeurostat/releases/download/latest/golemeurostat_0.0.0.9000.tar.gz"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="from-a-clone-of-the-repository">From a clone of the repository<a class="anchor" aria-label="anchor" href="#from-a-clone-of-the-repository"></a>
+</h4>
+<p>This repository keeps no files in <a href="https://git-lfs.com" class="external-link">Git LFS</a>, so a plain clone with <a href="https://git-scm.com/downloads" class="external-link">Git</a> has everything:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/sedzinfo/golemeurostat.git</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"pak"</span><span class="op">)</span>   <span class="co"># once</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/local_install.html" class="external-link">local_install</a></span><span class="op">(</span><span class="st">"path/to/golemeurostat"</span><span class="op">)</span></span></code></pre></div>
+</div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h2>
-<p>From the package folder:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">pkgload</span><span class="fu">::</span><span class="fu"><a href="https://pkgload.r-lib.org/reference/load_all.html" class="external-link">load_all</a></span><span class="op">(</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://sedzinfo.github.io/golemeurostat/">golemeurostat</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/run_app.html">run_app</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>From the package folder, <code><a href="https://pkgload.r-lib.org/reference/load_all.html" class="external-link">pkgload::load_all()</a></code> and then <code><a href="reference/run_app.html">run_app()</a></code> start it without installing.</p>
 <p><code>app.R</code>, which the deployment runs, starts it with <code>run_app(analytics = TRUE)</code>: Google Analytics, through the cookie banner shared with the sites of sedzinfo.github.io, which loads it only after the visitor accepts, and a footer with the Cookie settings and Privacy links, as in golemworldbank. Without it, the app sends nothing.</p>
 <p>The data and the charts can also be used from R:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/indicators.html">indicators</a></span><span class="op">(</span><span class="op">)</span>                       <span class="co"># the catalogue of indicators</span></span>
 <span><span class="va">unemployment</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_indicator.html">get_indicator</a></span><span class="op">(</span><span class="st">"unemployment"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/plot_country_comp.html">plot_country_comp</a></span><span class="op">(</span><span class="va">unemployment</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"EL"</span>, <span class="st">"BG"</span>, <span class="st">"PT"</span><span class="op">)</span>, <span class="st">"unemployment"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/plot_regions.html">plot_regions</a></span><span class="op">(</span><span class="fu"><a href="reference/get_regional.html">get_regional</a></span><span class="op">(</span><span class="st">"r_gdp_pps"</span><span class="op">)</span>, <span class="st">"r_gdp_pps"</span><span class="op">)</span></span></code></pre></div>
 <p>Eurostat codes the countries with two letters, as ISO does, except Greece, which is <code>EL</code>.</p>
+</div>
+<div class="section level2">
+<h2 id="screenshots">Screenshots<a class="anchor" aria-label="anchor" href="#screenshots"></a>
+</h2>
+<div class="float">
+<img src="reference/figures/eurostat1.png" alt="Country Comparison tab: GDP per inhabitant in PPS of Greece and Bulgaria, with the EU-27 average"><div class="figcaption">Country Comparison tab: GDP per inhabitant in PPS of Greece and Bulgaria, with the EU-27 average</div>
+</div>
+<div class="float">
+<img src="reference/figures/eurostat2.png" alt="Indicator Comparison tab: the unemployment and youth unemployment rates of Greece"><div class="figcaption">Indicator Comparison tab: the unemployment and youth unemployment rates of Greece</div>
+</div>
+<div class="float">
+<img src="reference/figures/eurostat3.png" alt="Pyramid tab: the population of Greece by age group and sex in 2025"><div class="figcaption">Pyramid tab: the population of Greece by age group and sex in 2025</div>
+</div>
+<div class="float">
+<img src="reference/figures/eurostat4.png" alt="Barplot tab: the countries ranked by the net earnings of a single worker in 2025, Greece in red"><div class="figcaption">Barplot tab: the countries ranked by the net earnings of a single worker in 2025, Greece in red</div>
+</div>
+<div class="float">
+<img src="reference/figures/eurostat5.png" alt="Scatterplot tab: GDP per inhabitant in PPS and life expectancy at birth of the countries in 2024, the bubbles as large as their population"><div class="figcaption">Scatterplot tab: GDP per inhabitant in PPS and life expectancy at birth of the countries in 2024, the bubbles as large as their population</div>
+</div>
+<div class="float">
+<img src="reference/figures/eurostat6.png" alt="Map tab: the unemployment rate of the countries in 2025"><div class="figcaption">Map tab: the unemployment rate of the countries in 2025</div>
+</div>
+<div class="float">
+<img src="reference/figures/eurostat7.png" alt="Regions tab: GDP per inhabitant in PPS of the regions in 2024"><div class="figcaption">Regions tab: GDP per inhabitant in PPS of the regions in 2024</div>
+</div>
+<div class="float">
+<img src="reference/figures/eurostat8.png" alt="Change (%) tab: the indicators of Greece that rose from 2024 to 2025"><div class="figcaption">Change (%) tab: the indicators of Greece that rose from 2024 to 2025</div>
+</div>
+<div class="float">
+<img src="reference/figures/eurostat9.png" alt="Indicators tab: the indicators with their unit, dataset and definition"><div class="figcaption">Indicators tab: the indicators with their unit, dataset and definition</div>
+</div>
 </div>
 <div class="section level2">
 <h2 id="adding-an-indicator">Adding an indicator<a class="anchor" aria-label="anchor" href="#adding-an-indicator"></a>
@@ -192,7 +246,7 @@
 <h3 id="from-eurostats-main-tables">From Eurostat’s main tables<a class="anchor" aria-label="anchor" href="#from-eurostats-main-tables"></a>
 </h3>
 <p><code>indicators_generated.csv</code> holds the series of the <a href="https://ec.europa.eu/eurostat/web/main/data/database" class="external-link">main tables</a> of Eurostat, its own selection of headline indicators with few breakdowns (codes such as <code>tps00001</code>, <code>tec00115</code> or <code>sdg_08_10</code>). To rebuild it, as Eurostat adds, renames and retires tables, run from the package folder:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"data-raw/build_indicators.R"</span><span class="op">)</span></span></code></pre></div>
 <p>The script reads Eurostat’s table of contents and the dimensions of every dataset, downloads each main table with yearly data once (about 680 tables, about 10 minutes the first time; the downloads are kept a week in <code>data-raw/cache</code>), and writes a row for each series, a combination of the dimensions other than the country and the year, that has values for at least 10 countries, or 50 regions for the Regions tab, up to 2015 or later. A table with more than 10 such series is left out, and so are amounts in national currency, which cannot be compared between countries, and a series that another table already has under the same name. The names come from the titles of the tables and the labels of the codes, and the units from the labels of the units; the topic is the folder of the table in Eurostat’s themes. These limits are at the top of the script. Some labels of Eurostat do not describe their series, such as a unit of “Percentage” for amounts or a title in tonnes for values in kilograms, and some tables have no unit at all: <code>data-raw/corrections.csv</code> gives the unit, and the name or definition when they are wrong too, for the series of a table or those with a code, such as <code>unit=RT</code>, with the reason, and the script says when a correction no longer finds its series. At its end, it runs <code>data-raw/build_values.R</code>, which writes <code>inst/extdata/values.rds</code>, the values of every indicator of the countries (about 750,000, 1 MB), for the Change (%) tab, <code>regions.rds</code> and <code>pyramids.rds</code>, the values of every indicator of the regions and the population of each country by age group and sex (0.5 MB together), and <code>inst/app/www/countries_RG_20M_2024_4326.geojson</code>, the outlines of the countries of the Map tab.</p>
 <p>A generated row that downloads the same as a hand-written one is left out, so to rename or describe a generated indicator better, copy its row to <code>indicators.csv</code> and change it there.</p>
@@ -208,37 +262,6 @@
 <h2 id="development">Development<a class="anchor" aria-label="anchor" href="#development"></a>
 </h2>
 <p>Run the tests with <code><a href="https://devtools.r-lib.org/reference/test.html" class="external-link">devtools::test()</a></code>, which use saved Eurostat answers and need no internet, and the full package check with <code><a href="https://devtools.r-lib.org/reference/check.html" class="external-link">devtools::check()</a></code>.</p>
-</div>
-<div class="section level2">
-<h2 id="screenshots">Screenshots<a class="anchor" aria-label="anchor" href="#screenshots"></a>
-</h2>
-<div class="float">
-<img src="reference/figures/eurostat1.png" alt="Country Comparison tab: GDP per inhabitant in PPS of Greece and Bulgaria, with the EU-27 average"><div class="figcaption">Country Comparison tab: GDP per inhabitant in PPS of Greece and Bulgaria, with the EU-27 average</div>
-</div>
-<div class="float">
-<img src="reference/figures/eurostat2.png" alt="Indicator Comparison tab: the unemployment and youth unemployment rates of Greece"><div class="figcaption">Indicator Comparison tab: the unemployment and youth unemployment rates of Greece</div>
-</div>
-<div class="float">
-<img src="reference/figures/eurostat3.png" alt="Pyramid tab: the population of Greece by age group and sex in 2025"><div class="figcaption">Pyramid tab: the population of Greece by age group and sex in 2025</div>
-</div>
-<div class="float">
-<img src="reference/figures/eurostat4.png" alt="Barplot tab: the countries ranked by the net earnings of a single worker in 2025, Greece in red"><div class="figcaption">Barplot tab: the countries ranked by the net earnings of a single worker in 2025, Greece in red</div>
-</div>
-<div class="float">
-<img src="reference/figures/eurostat5.png" alt="Scatterplot tab: GDP per inhabitant in PPS and life expectancy at birth of the countries in 2024, the bubbles as large as their population"><div class="figcaption">Scatterplot tab: GDP per inhabitant in PPS and life expectancy at birth of the countries in 2024, the bubbles as large as their population</div>
-</div>
-<div class="float">
-<img src="reference/figures/eurostat6.png" alt="Map tab: the unemployment rate of the countries in 2025"><div class="figcaption">Map tab: the unemployment rate of the countries in 2025</div>
-</div>
-<div class="float">
-<img src="reference/figures/eurostat7.png" alt="Regions tab: GDP per inhabitant in PPS of the regions in 2024"><div class="figcaption">Regions tab: GDP per inhabitant in PPS of the regions in 2024</div>
-</div>
-<div class="float">
-<img src="reference/figures/eurostat8.png" alt="Change (%) tab: the indicators of Greece that rose from 2024 to 2025"><div class="figcaption">Change (%) tab: the indicators of Greece that rose from 2024 to 2025</div>
-</div>
-<div class="float">
-<img src="reference/figures/eurostat9.png" alt="Indicators tab: the indicators with their unit, dataset and definition"><div class="figcaption">Indicators tab: the indicators with their unit, dataset and definition</div>
-</div>
 <hr>
 <p><a href="https://sedzinfo.r-universe.dev/golemeurostat" class="external-link"><img src="https://sedzinfo.r-universe.dev/golemeurostat/badges/version" alt="R-universe"></a> <img src="https://img.shields.io/github/stars/sedzinfo/golemeurostat" alt="Stars"><img src="https://img.shields.io/github/watchers/sedzinfo/golemeurostat" alt="Watchers"><img src="https://img.shields.io/github/repo-size/sedzinfo/golemeurostat" alt="Repo Size"><img src="https://img.shields.io/github/issues/sedzinfo/golemeurostat" alt="Open Issues"><img src="https://img.shields.io/github/forks/sedzinfo/golemeurostat" alt="Forks"><img src="https://img.shields.io/github/last-commit/sedzinfo/golemeurostat" alt="Last Commit"><img src="https://img.shields.io/github/contributors/sedzinfo/golemeurostat" alt="Contributors"><img src="https://img.shields.io/github/license/sedzinfo/golemeurostat" alt="License"><img src="https://img.shields.io/github/actions/workflow/status/sedzinfo/golemeurostat/build-tarball.yml" alt="Workflow Status"><img src="https://github.com/sedzinfo/golemeurostat/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></p>
 </div>

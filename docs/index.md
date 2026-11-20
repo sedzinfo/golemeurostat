@@ -1,7 +1,9 @@
 # Eurostat Indicators Explorer
 
 **[Open the live app](https://sedzinfo.shinyapps.io/golemeurostat/)** ·
-[Website](https://sedzinfo.github.io/golemeurostat/)
+[Help pages](https://sedzinfo.github.io/golemeurostat/reference/)
+
+## What it does
 
 A Shiny app, built as a golem package, for exploring indicators of
 [Eurostat](https://ec.europa.eu/eurostat), the statistical office of the
@@ -56,38 +58,66 @@ of a dataset, such as `une_rt_a`.
 
 ## Installation
 
-### Prerequisites
+### 1. Install R
 
-1.  **Install R**: <https://cran.r-project.org/>
-2.  **Install RStudio** (optional but recommended):
-    <https://posit.co/downloads/>
+Download R from [CRAN](https://cran.r-project.org/), for Windows, macOS
+or Linux, and run the installer.
 
-### Package Installation
+### 2. Install RStudio or Positron
 
-Open RStudio (or an R console) and run:
+An editor makes R easier to use. It is optional, and both are free, from
+Posit:
+
+- [RStudio Desktop](https://posit.co/download/rstudio-desktop/)
+- [Positron](https://positron.posit.co/download.html), which also runs
+  Python
+
+### 3. Install golemeurostat
+
+Run one of these in RStudio, Positron or the R console. Each one also
+installs the packages golemeurostat needs.
+
+#### From R-universe (recommended)
 
 [`install.packages`](https://rdrr.io/r/utils/install.packages.html)`(`` `` ``"golemeurostat"``,`` `` repos ``=`` `[`c`](https://rdrr.io/r/base/c.html)`(``"https://sedzinfo.r-universe.dev"``, ``"https://cloud.r-project.org"``)`` ``)`
 
 [R-universe](https://sedzinfo.r-universe.dev/golemeurostat) builds
-golemeurostat from this repository, and CRAN provides the packages it
-needs.
+golemeurostat from this repository after every change, ready to install
+on Windows, macOS and Linux, and CRAN provides the packages it needs.
 
-To install from GitHub instead:
+#### From GitHub
 
-`# Install devtools if you haven't already`` `[`install.packages`](https://rdrr.io/r/utils/install.packages.html)`(``"devtools"``)`` ``# Install golemeurostat from GitHub`` ``devtools``::`[`install_github`](https://devtools.r-lib.org/reference/install-deprecated.html)`(``"sedzinfo/golemeurostat"``)`
+[`install.packages`](https://rdrr.io/r/utils/install.packages.html)`(``"pak"``)`` ``# once`` ``pak``::`[`pak`](https://pak.r-lib.org/reference/pak.html)`(``"sedzinfo/golemeurostat"``)`
 
-Or install the source tarball of the [latest
-release](https://github.com/sedzinfo/golemeurostat/releases/tag/latest),
-which is rebuilt from `main` on every change, together with the PDF
-manual:
+#### From the release tarball
 
-[`install.packages`](https://rdrr.io/r/utils/install.packages.html)`(`` `` ``"https://github.com/sedzinfo/golemeurostat/releases/download/latest/golemeurostat_0.0.0.9000.tar.gz"``,`` `` repos ``=`` ``NULL``, type ``=`` ``"source"`` ``)`
+The [latest
+release](https://github.com/sedzinfo/golemeurostat/releases/tag/latest)
+has the source tarball and the PDF manual, rebuilt from `main` on every
+change:
+
+[`install.packages`](https://rdrr.io/r/utils/install.packages.html)`(``"pak"``)`` ``# once`` ``pak``::`[`pak`](https://pak.r-lib.org/reference/pak.html)`(``"url::https://github.com/sedzinfo/golemeurostat/releases/download/latest/golemeurostat_0.0.0.9000.tar.gz"``)`
+
+#### From a clone of the repository
+
+This repository keeps no files in [Git LFS](https://git-lfs.com), so a
+plain clone with [Git](https://git-scm.com/downloads) has everything:
+
+``` bash
+git clone https://github.com/sedzinfo/golemeurostat.git
+```
+
+[`install.packages`](https://rdrr.io/r/utils/install.packages.html)`(``"pak"``)`` ``# once`` ``pak``::`[`local_install`](https://pak.r-lib.org/reference/local_install.html)`(``"path/to/golemeurostat"``)`
 
 ## Usage
 
-From the package folder:
+[`library`](https://rdrr.io/r/base/library.html)`(`[`golemeurostat`](https://sedzinfo.github.io/golemeurostat/)`)`` `[`run_app`](https://sedzinfo.github.io/golemeurostat/reference/run_app.md)`(``)`
 
-`pkgload``::`[`load_all`](https://pkgload.r-lib.org/reference/load_all.html)`(``)`` `[`run_app`](https://sedzinfo.github.io/golemeurostat/reference/run_app.md)`(``)`
+From the package folder,
+[`pkgload::load_all()`](https://pkgload.r-lib.org/reference/load_all.html)
+and then
+[`run_app()`](https://sedzinfo.github.io/golemeurostat/reference/run_app.md)
+start it without installing.
 
 `app.R`, which the deployment runs, starts it with
 `run_app(analytics = TRUE)`: Google Analytics, through the cookie banner
@@ -101,6 +131,58 @@ The data and the charts can also be used from R:
 
 Eurostat codes the countries with two letters, as ISO does, except
 Greece, which is `EL`.
+
+## Screenshots
+
+![Country Comparison tab: GDP per inhabitant in PPS of Greece and
+Bulgaria, with the EU-27 average](reference/figures/eurostat1.png)
+
+Country Comparison tab: GDP per inhabitant in PPS of Greece and
+Bulgaria, with the EU-27 average
+
+![Indicator Comparison tab: the unemployment and youth unemployment
+rates of Greece](reference/figures/eurostat2.png)
+
+Indicator Comparison tab: the unemployment and youth unemployment rates
+of Greece
+
+![Pyramid tab: the population of Greece by age group and sex in
+2025](reference/figures/eurostat3.png)
+
+Pyramid tab: the population of Greece by age group and sex in 2025
+
+![Barplot tab: the countries ranked by the net earnings of a single
+worker in 2025, Greece in red](reference/figures/eurostat4.png)
+
+Barplot tab: the countries ranked by the net earnings of a single worker
+in 2025, Greece in red
+
+![Scatterplot tab: GDP per inhabitant in PPS and life expectancy at
+birth of the countries in 2024, the bubbles as large as their
+population](reference/figures/eurostat5.png)
+
+Scatterplot tab: GDP per inhabitant in PPS and life expectancy at birth
+of the countries in 2024, the bubbles as large as their population
+
+![Map tab: the unemployment rate of the countries in
+2025](reference/figures/eurostat6.png)
+
+Map tab: the unemployment rate of the countries in 2025
+
+![Regions tab: GDP per inhabitant in PPS of the regions in
+2024](reference/figures/eurostat7.png)
+
+Regions tab: GDP per inhabitant in PPS of the regions in 2024
+
+![Change (%) tab: the indicators of Greece that rose from 2024 to
+2025](reference/figures/eurostat8.png)
+
+Change (%) tab: the indicators of Greece that rose from 2024 to 2025
+
+![Indicators tab: the indicators with their unit, dataset and
+definition](reference/figures/eurostat9.png)
+
+Indicators tab: the indicators with their unit, dataset and definition
 
 ## Adding an indicator
 
@@ -216,58 +298,6 @@ Run the tests with
 which use saved Eurostat answers and need no internet, and the full
 package check with
 [`devtools::check()`](https://devtools.r-lib.org/reference/check.html).
-
-## Screenshots
-
-![Country Comparison tab: GDP per inhabitant in PPS of Greece and
-Bulgaria, with the EU-27 average](reference/figures/eurostat1.png)
-
-Country Comparison tab: GDP per inhabitant in PPS of Greece and
-Bulgaria, with the EU-27 average
-
-![Indicator Comparison tab: the unemployment and youth unemployment
-rates of Greece](reference/figures/eurostat2.png)
-
-Indicator Comparison tab: the unemployment and youth unemployment rates
-of Greece
-
-![Pyramid tab: the population of Greece by age group and sex in
-2025](reference/figures/eurostat3.png)
-
-Pyramid tab: the population of Greece by age group and sex in 2025
-
-![Barplot tab: the countries ranked by the net earnings of a single
-worker in 2025, Greece in red](reference/figures/eurostat4.png)
-
-Barplot tab: the countries ranked by the net earnings of a single worker
-in 2025, Greece in red
-
-![Scatterplot tab: GDP per inhabitant in PPS and life expectancy at
-birth of the countries in 2024, the bubbles as large as their
-population](reference/figures/eurostat5.png)
-
-Scatterplot tab: GDP per inhabitant in PPS and life expectancy at birth
-of the countries in 2024, the bubbles as large as their population
-
-![Map tab: the unemployment rate of the countries in
-2025](reference/figures/eurostat6.png)
-
-Map tab: the unemployment rate of the countries in 2025
-
-![Regions tab: GDP per inhabitant in PPS of the regions in
-2024](reference/figures/eurostat7.png)
-
-Regions tab: GDP per inhabitant in PPS of the regions in 2024
-
-![Change (%) tab: the indicators of Greece that rose from 2024 to
-2025](reference/figures/eurostat8.png)
-
-Change (%) tab: the indicators of Greece that rose from 2024 to 2025
-
-![Indicators tab: the indicators with their unit, dataset and
-definition](reference/figures/eurostat9.png)
-
-Indicators tab: the indicators with their unit, dataset and definition
 
 ------------------------------------------------------------------------
 

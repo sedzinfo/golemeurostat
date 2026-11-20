@@ -1,10 +1,13 @@
 # Eurostat Indicators Explorer
 
-**[Open the live app](https://sedzinfo.shinyapps.io/golemeurostat/)** · [Website](https://sedzinfo.github.io/golemeurostat/)
+**[Open the live app](https://sedzinfo.shinyapps.io/golemeurostat/)** · [Help pages](https://sedzinfo.github.io/golemeurostat/reference/)
+
+## What it does
 
 A Shiny app, built as a golem package, for exploring indicators of [Eurostat](https://ec.europa.eu/eurostat), the statistical office of the European Union: for the 27 countries of the EU, the 4 of EFTA and the 9 candidate countries, with the EU-27 average for comparison, and for the regions of Europe. It follows the design of [golemworldbank](https://github.com/sedzinfo/golemworldbank), and shares its stylesheets and scripts, which both apps load from [sedzinfo.github.io](https://github.com/sedzinfo/sedzinfo.github.io/tree/main/shiny): the layout of the page, on a desktop and on a phone, and the dark mode.
 
 ## Tabs
+
 The same tabs as golemworldbank, plus a second map for the regions of Europe:
 
 - **Country Comparison**: an indicator over the years for the countries you pick, with the EU-27 average as a dashed line
@@ -24,14 +27,22 @@ The indicators are the 62 chosen by hand and, after them, the series of Eurostat
 
 ## Installation
 
-### Prerequisites
+### 1. Install R
 
-1. **Install R**: https://cran.r-project.org/
-2. **Install RStudio** (optional but recommended): https://posit.co/downloads/
+Download R from [CRAN](https://cran.r-project.org/), for Windows, macOS or Linux, and run the installer.
 
-### Package Installation
+### 2. Install RStudio or Positron
 
-Open RStudio (or an R console) and run:
+An editor makes R easier to use. It is optional, and both are free, from Posit:
+
+- [RStudio Desktop](https://posit.co/download/rstudio-desktop/)
+- [Positron](https://positron.posit.co/download.html), which also runs Python
+
+### 3. Install golemeurostat
+
+Run one of these in RStudio, Positron or the R console. Each one also installs the packages golemeurostat needs.
+
+#### From R-universe (recommended)
 
 ```r
 install.packages(
@@ -40,32 +51,46 @@ install.packages(
 )
 ```
 
-[R-universe](https://sedzinfo.r-universe.dev/golemeurostat) builds golemeurostat from this repository, and CRAN provides the packages it needs.
+[R-universe](https://sedzinfo.r-universe.dev/golemeurostat) builds golemeurostat from this repository after every change, ready to install on Windows, macOS and Linux, and CRAN provides the packages it needs.
 
-To install from GitHub instead:
+#### From GitHub
 
 ```r
-# Install devtools if you haven't already
-install.packages("devtools")
-# Install golemeurostat from GitHub
-devtools::install_github("sedzinfo/golemeurostat")
+install.packages("pak")   # once
+pak::pak("sedzinfo/golemeurostat")
 ```
 
-Or install the source tarball of the [latest release](https://github.com/sedzinfo/golemeurostat/releases/tag/latest), which is rebuilt from `main` on every change, together with the PDF manual:
+#### From the release tarball
+
+The [latest release](https://github.com/sedzinfo/golemeurostat/releases/tag/latest) has the source tarball and the PDF manual, rebuilt from `main` on every change:
 
 ```r
-install.packages(
-  "https://github.com/sedzinfo/golemeurostat/releases/download/latest/golemeurostat_0.0.0.9000.tar.gz",
-  repos = NULL, type = "source"
-)
+install.packages("pak")   # once
+pak::pak("url::https://github.com/sedzinfo/golemeurostat/releases/download/latest/golemeurostat_0.0.0.9000.tar.gz")
+```
+
+#### From a clone of the repository
+
+This repository keeps no files in [Git LFS](https://git-lfs.com), so a plain clone with [Git](https://git-scm.com/downloads) has everything:
+
+```bash
+git clone https://github.com/sedzinfo/golemeurostat.git
+```
+
+```r
+install.packages("pak")   # once
+pak::local_install("path/to/golemeurostat")
 ```
 
 ## Usage
-From the package folder:
+
 ```r
-pkgload::load_all()
+library(golemeurostat)
 run_app()
 ```
+
+From the package folder, `pkgload::load_all()` and then `run_app()` start it without installing.
+
 `app.R`, which the deployment runs, starts it with `run_app(analytics = TRUE)`: Google Analytics, through the cookie banner shared with the sites of sedzinfo.github.io, which loads it only after the visitor accepts, and a footer with the Cookie settings and Privacy links, as in golemworldbank. Without it, the app sends nothing.
 
 The data and the charts can also be used from R:
@@ -77,7 +102,28 @@ plot_regions(get_regional("r_gdp_pps"), "r_gdp_pps")
 ```
 Eurostat codes the countries with two letters, as ISO does, except Greece, which is `EL`.
 
+## Screenshots
+
+![Country Comparison tab: GDP per inhabitant in PPS of Greece and Bulgaria, with the EU-27 average](man/figures/eurostat1.png)
+
+![Indicator Comparison tab: the unemployment and youth unemployment rates of Greece](man/figures/eurostat2.png)
+
+![Pyramid tab: the population of Greece by age group and sex in 2025](man/figures/eurostat3.png)
+
+![Barplot tab: the countries ranked by the net earnings of a single worker in 2025, Greece in red](man/figures/eurostat4.png)
+
+![Scatterplot tab: GDP per inhabitant in PPS and life expectancy at birth of the countries in 2024, the bubbles as large as their population](man/figures/eurostat5.png)
+
+![Map tab: the unemployment rate of the countries in 2025](man/figures/eurostat6.png)
+
+![Regions tab: GDP per inhabitant in PPS of the regions in 2024](man/figures/eurostat7.png)
+
+![Change (%) tab: the indicators of Greece that rose from 2024 to 2025](man/figures/eurostat8.png)
+
+![Indicators tab: the indicators with their unit, dataset and definition](man/figures/eurostat9.png)
+
 ## Adding an indicator
+
 The indicators come from two files of `inst/extdata`, with the same columns: `indicators.csv`, written by hand, and `indicators_generated.csv`, written by a script from the catalogue of Eurostat.
 
 ### By hand
@@ -104,32 +150,14 @@ The script reads Eurostat's table of contents and the dimensions of every datase
 A generated row that downloads the same as a hand-written one is left out, so to rename or describe a generated indicator better, copy its row to `indicators.csv` and change it there.
 
 ## Data
+
 Each indicator is downloaded from the Eurostat API, which needs no key, the first time a tab shows it, and kept on disk for a day, in `tools::R_user_dir("golemeurostat", "cache")`; set `options(golemeurostat.cache_dir = )` to keep it elsewhere. A few values that are plainly wrong in Eurostat's data, such as a share of the population of 933.2% in a year between two of about 94%, are listed in `inst/extdata/errors.csv`, with the reason, and left out for as long as Eurostat gives them; a value more than 1,000 times the median of its year and of its country, in the wrong units, is left out too. The outlines of the countries and regions of the maps, the NUTS 2024 classification, come from [GISCO](https://ec.europa.eu/eurostat/web/gisco): those of the regions are downloaded once, and those of the countries are in the package, with Moldova and Georgia, which the classification leaves out, from GISCO's outlines of the countries. The Change (%) tab, which compares all the indicators of a country at once, uses instead the values written into the package by `data-raw/build_values.R`, and says their date. The same saved values work without internet: `saved_indicator()`, `saved_regional()` and `saved_pyramid()` give them in the shape of `get_indicator()`, `get_regional()` and `get_pyramid()`, and the examples of the charts use them, such as `plot_bar(saved_indicator("unemployment"), "unemployment", country = "EL", top_n = 10)`.
 
 Source of the data: Eurostat. Administrative boundaries: © EuroGeographics.
 
 ## Development
+
 Run the tests with `devtools::test()`, which use saved Eurostat answers and need no internet, and the full package check with `devtools::check()`.
-
-## Screenshots
-
-![Country Comparison tab: GDP per inhabitant in PPS of Greece and Bulgaria, with the EU-27 average](man/figures/eurostat1.png)
-
-![Indicator Comparison tab: the unemployment and youth unemployment rates of Greece](man/figures/eurostat2.png)
-
-![Pyramid tab: the population of Greece by age group and sex in 2025](man/figures/eurostat3.png)
-
-![Barplot tab: the countries ranked by the net earnings of a single worker in 2025, Greece in red](man/figures/eurostat4.png)
-
-![Scatterplot tab: GDP per inhabitant in PPS and life expectancy at birth of the countries in 2024, the bubbles as large as their population](man/figures/eurostat5.png)
-
-![Map tab: the unemployment rate of the countries in 2025](man/figures/eurostat6.png)
-
-![Regions tab: GDP per inhabitant in PPS of the regions in 2024](man/figures/eurostat7.png)
-
-![Change (%) tab: the indicators of Greece that rose from 2024 to 2025](man/figures/eurostat8.png)
-
-![Indicators tab: the indicators with their unit, dataset and definition](man/figures/eurostat9.png)
 
 ---
 
