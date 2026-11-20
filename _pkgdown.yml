@@ -22,14 +22,13 @@ destination: docs
 navbar:
   structure:
     left: [intro, reference, articles]
-    right: [sedzinfo, github]
+    right: [app, sedzinfo, github]
   components:
-    # no live app yet: once it is deployed, put app in front of sedzinfo in right: above and uncomment
-    # app:
-    #   icon: fas fa-play
-    #   text: live app
-    #   href: <address of the live app>
-    #   aria-label: Open the live app
+    app:
+      icon: fas fa-play
+      text: live app
+      href: https://sedzinfo.shinyapps.io/golemeurostat/
+      aria-label: Open the live app
     sedzinfo:
       icon: fas fa-house
       text: home
